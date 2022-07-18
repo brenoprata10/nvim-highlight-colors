@@ -1,10 +1,12 @@
-function turnOff()
-	local test = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
-	print(test)
+local utils = require("nvim-highlight-colors.utils")
+
+function turnOn()
+	utils.createWindow(10, 10)
 end
 
 local M = {}
 
-M.turnOff = turnOff
+M.turnOff = utils.getBufferContents
+M.turnOn = turnOn
 
 return M

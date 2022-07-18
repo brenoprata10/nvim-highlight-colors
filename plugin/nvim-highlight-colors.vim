@@ -1,8 +1,8 @@
-if exists("g:loaded_nvim-highlight-colors")
+if exists("g:loaded_nvim_highlight_colors")
 	finish
 endif
 
-let g:loaded_nvim-highlight-colors = 1
+let g:loaded_nvim_highlight_colors = 1
 
 " Defines a package path for Lua. This facilitates importing the
 " Lua modules from the plugin's dependency directory.
