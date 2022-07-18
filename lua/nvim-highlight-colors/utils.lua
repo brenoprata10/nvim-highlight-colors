@@ -29,8 +29,7 @@ function M.create_window(row, col, bg_color)
 	local buf = vim.api.nvim_create_buf(false, true)
 	local window = vim.api.nvim_open_win(buf, false, {
 		relative = "win",
-		col = col,
-		row = row - 1,
+		bufpos={row - 2, col},
 		width = 1,
 		height = 1,
 		focusable = false
