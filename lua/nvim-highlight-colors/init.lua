@@ -1,12 +1,18 @@
 local utils = require("nvim-highlight-colors.utils")
 
-function turnOn()
-	utils.createWindow(10, 10)
+function turn_on()
+	local positions = utils.get_positions_by_regex("asd")
+	for index, data in ipairs(positions) do
+		utils.create_window(data.row, data.startColumn, "yellow")
+	end
+end
+
+function turn_off()
 end
 
 local M = {}
 
-M.turnOff = utils.getBufferContents
-M.turnOn = turnOn
+M.turnOff = turn_off
+M.turnOn = turn_on
 
 return M
