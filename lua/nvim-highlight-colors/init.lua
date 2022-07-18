@@ -1,7 +1,7 @@
 local utils = require("nvim-highlight-colors.utils")
 
 function turn_on()
-	local positions = utils.get_positions_by_regex("asd")
+	local positions = utils.get_positions_by_regex("#[%a%d]+")
 	for index, data in ipairs(positions) do
 		utils.create_window(data.row, 2, "yellow")
 	end
