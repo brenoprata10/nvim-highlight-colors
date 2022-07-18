@@ -15,8 +15,7 @@ function M.createWindow(col, row)
 		height = 1,
 		focusable = false
 	})
-	local command = nvim_parse_cmd("highlight MyHighlight guifg=BLUE guibg=RED")
-	print(vim.api.nvim_cmd(command))
+	vim.api.nvim_command("highlight MyHighlight guibg=RED")
 	vim.api.nvim_win_set_option(window, 'winhighlight', 'Normal:MyHighlight,FloatBorder:MyHighlight')
 end
 
