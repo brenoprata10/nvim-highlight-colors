@@ -24,7 +24,6 @@ function M.get_positions_by_regex(pattern)
 end
 
 function M.create_window(row, col, bg_color)
-	print(col)
 	local buf = vim.api.nvim_create_buf(false, true)
 	local window = vim.api.nvim_open_win(buf, false, {
 		relative = "win",
