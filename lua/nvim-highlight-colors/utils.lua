@@ -4,6 +4,18 @@ function M.get_buffer_contents()
 	return vim.api.nvim_buf_get_lines(0, 0, -1, false)
 end
 
+function M.get_win_visible_rows(winid)
+	return vim.api.nvim_win_call(
+		winid,
+		function() 
+			return {
+				vim.fn.line('w0'),
+				vim.fn.line('w$')
+			}
+		end
+	)
+end
+
 function M.get_positions_by_regex(pattern)
 	local positions = {}
 	local content = M.get_buffer_contents()
@@ -32,10 +44,20 @@ function M.create_window(row, col, bg_color)
 		bufpos={row - 2, col},
 		width = 1,
 		height = 1,
-		focusable = false
+		focusable = false,
+		noautocmd = true,
+		zindex = 1,
 	})
 	vim.api.nvim_command("highlight " .. highlightColorName .. " guibg=" .. bg_color)
 	vim.api.nvim_win_set_option(window, 'winhighlight', 'Normal:' .. highlightColorName .. ',FloatBorder:' .. highlightColorName)
+	return window
+end
+
+
+function M.close_windows (windows)
+	for index, data in ipairs(windows) do
+		vim.api.nvim_win_close(data, false)
+	end
 end
 
 return M
