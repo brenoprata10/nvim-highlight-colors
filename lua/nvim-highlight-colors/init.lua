@@ -30,7 +30,7 @@ function close_not_visible_windows(min_row, max_row)
 end
 
 function show_visible_windows(min_row, max_row)
-	local positions = utils.get_positions_by_regex("#[%a%d]+", min_row, max_row, row_offset)
+	local positions = utils.get_positions_by_regex("#[%a%d]+", min_row - 1, max_row, row_offset)
 	for index, data in pairs(positions) do
 		local is_already_on_screen = false
 		-- Check is color window already exists
