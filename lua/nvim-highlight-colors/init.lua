@@ -1,4 +1,5 @@
 local utils = require("nvim-highlight-colors.utils")
+local loadOnStartUp = false
 local row_offset = 2
 local windows = {}
 
@@ -73,6 +74,10 @@ function turn_off()
 	close_windows()
 end
 
+function setup()
+	loadOnStartUp = true
+end
+
 vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
 	callback = turn_on,
 })
@@ -81,9 +86,18 @@ vim.api.nvim_create_autocmd({"WinScrolled"}, {
 	callback = update_windows_visibility,
 })
 
+vim.api.nvim_create_autocmd({"BufEnter"}, {
+	callback = function ()
+		if loadOnStartUp == true then
+			turn_on()
+		end
+	end,
+})
+
 local M = {}
 
 M.turnOff = turn_off
 M.turnOn = turn_on
+M.setup = setup
 
 return M
