@@ -12,25 +12,30 @@ function close_windows()
 end
 
 function close_not_visible_windows(min_row, max_row)
+	local windows_to_remove = {}
+	local new_windows_table = {}
 	for index, window_data in ipairs(windows) do
 		local window_config = vim.api.nvim_win_get_config(window_data.win_id)
 		local window_bufpos = window_config.bufpos
 		local window_row = window_bufpos[1] + row_offset
 		local is_visible = window_row <= max_row and window_row >= min_row
-		--print("win_row" .. window_row .. "--min_row-" .. min_row .. "--max_row-" .. max_row .. "--is_visible-" .. tostring(is_visible))
 		if is_visible == false then
-			utils.close_windows({window_data.win_id})
-			table.remove(windows, index)
+			table.insert(windows_to_remove, window_data.win_id)
+		else
+			table.insert(new_windows_table, window_data)
 		end
 	end
+	utils.close_windows(windows_to_remove)
+	windows = new_windows_table
 end
 
 function show_visible_windows(min_row, max_row)
 	local positions = utils.get_positions_by_regex("#[%a%d]+", min_row, max_row, row_offset)
 	for index, data in pairs(positions) do
 		local is_already_on_screen = false
+		-- Check is color window already exists
 		for index, windows_data in ipairs(windows) do
-			if windows_data.row == data.row and data.value == windows_data.color then
+			if is_already_on_screen == false and windows_data.row == data.row and data.value == windows_data.color then
 				is_already_on_screen = true
 			end
 		end
