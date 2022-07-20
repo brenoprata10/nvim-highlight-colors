@@ -37,6 +37,6 @@ There are only two available command for now:
 - Only one color per line
 
 ## TODO
-- Add RGB support
-- Add RGBA support
-- Detect variables in css files and evaluate their value
+[X] Add RGB support
+[X] Add RGBA support
+[] Detect variables in css files and evaluate their value
