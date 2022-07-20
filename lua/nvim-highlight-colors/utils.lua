@@ -1,7 +1,37 @@
 local M = {}
 
+M.rgb_regex = "rgba?[(]+" .. string.rep("%s*%d+%s*", 3, ",") ..",?%s*%d*%.?%d*%s*[)]+"
+
+function M.get_color_value(color)
+	if (M.is_short_hex_color(color)) then
+		return M.convert_short_hex_to_hex(color)
+	end
+
+	if (M.is_rgb_color(color)) then
+		local rgb_table = {}
+		local count = 1
+		for color_number in string.gmatch(color, "%d+") do
+			rgb_table[count] = color_number
+			count = count + 1
+		end
+		if (count >= 4) then
+			return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
+		end
+	end
+
+	return color
+end
+
+function M.convert_rgb_to_hex(r, g, b)
+ 	return string.format("#%02X%02X%02X", r, g, b)
+end
+
 function M.is_short_hex_color(color)
 	return string.len(color) == 4
+end
+
+function M.is_rgb_color(color)
+	return string.match(color, M.rgb_regex)
 end
 
 function M.convert_short_hex_to_hex(color)
@@ -34,20 +64,22 @@ function M.get_win_visible_rows(winid)
 	)
 end
 
-function M.get_positions_by_regex(pattern, min_row, max_row, row_offset)
+function M.get_positions_by_regex(patterns, min_row, max_row, row_offset)
 	local positions = {}
 	local content = M.get_buffer_contents(min_row, max_row)
 
-	for key, value in pairs(content) do
-		for match in string.gmatch(value, pattern) do
-			local start_column = vim.fn.match(value, match)
-			local end_column = vim.fn.matchend(value, match)
-			table.insert(positions, {
-				value = match,
-				row = key + min_row - row_offset,
-				start_column = start_column,
-				end_column = end_column
-			})
+	for key, pattern in pairs(patterns) do
+		for key, value in pairs(content) do
+			for match in string.gmatch(value, pattern) do
+				local start_column = vim.fn.match(value, match)
+				local end_column = vim.fn.matchend(value, match)
+				table.insert(positions, {
+					value = match,
+					row = key + min_row - row_offset,
+					start_column = start_column,
+					end_column = end_column
+				})
+			end
 		end
 	end
 
@@ -55,7 +87,7 @@ function M.get_positions_by_regex(pattern, min_row, max_row, row_offset)
 end
 
 function M.create_window(row, col, bg_color)
-	local highlight_color_name = string.gsub(bg_color, "#", "")
+	local highlight_color_name = string.gsub(bg_color, "#", ""):gsub("[(),%s%.]+", "")
 	local buf = vim.api.nvim_create_buf(false, true)
 	local window = vim.api.nvim_open_win(buf, false, {
 		relative = "win",
@@ -66,13 +98,7 @@ function M.create_window(row, col, bg_color)
 		noautocmd = true,
 		zindex = 1,
 	})
-	vim.api.nvim_command(
-		"highlight " .. highlight_color_name .. " guibg=" .. (
-			M.is_short_hex_color(bg_color)
-				and M.convert_short_hex_to_hex(bg_color)
-				or bg_color
-		)
-	)
+	vim.api.nvim_command("highlight " .. highlight_color_name .. " guibg=" .. M.get_color_value(bg_color))
 	vim.api.nvim_win_set_option(window, 'winhighlight', 'Normal:' .. highlight_color_name .. ',FloatBorder:' .. highlight_color_name)
 	return window
 end

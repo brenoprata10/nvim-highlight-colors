@@ -41,7 +41,7 @@ function close_not_visible_windows(min_row, max_row)
 end
 
 function show_visible_windows(min_row, max_row)
-	local positions = utils.get_positions_by_regex("#[%a%d]+", min_row - 1, max_row, row_offset)
+	local positions = utils.get_positions_by_regex({"#[%a%d]+", utils.rgb_regex}, min_row - 1, max_row, row_offset)
 	for index, data in pairs(positions) do
 		if is_window_already_created(data.row, data.value) == false then
 			table.insert(

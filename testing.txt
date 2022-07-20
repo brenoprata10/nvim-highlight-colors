@@ -1,10 +1,8 @@
 " xterm-8 colors "{{{2
 let s:xterm_8colors = {
 
+\ rgb(250,20,200)
 
-asdlkjasdlkjasdoasdasd
-
-asdasdi
 \ 'black':          '#000000',
 \ 'darkblue':       '#00008B',
 \ 'darkgreen':      '#00CD00',
@@ -183,6 +181,8 @@ let s:w3c_color_names = {
 \ 'yellow': '#FFFF00',
 \ 'yellowgreen': '#9ACD32'
 \ }
+
+\  r
 
 " X11 color names taken from "{{{2
 " http://cvsweb.xfree86.org/cvsweb/*checkout*/xc/programs/rgb/rgb.txt?rev=1.2
