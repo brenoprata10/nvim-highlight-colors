@@ -1,7 +1,7 @@
 local M = {}
 
-function M.get_buffer_contents(minRow, maxRow)
-	return vim.api.nvim_buf_get_lines(0, minRow, maxRow, false)
+function M.get_buffer_contents(min_row, max_row)
+	return vim.api.nvim_buf_get_lines(0, min_row, max_row, false)
 end
 
 function M.get_win_visible_rows(winid)
@@ -16,19 +16,19 @@ function M.get_win_visible_rows(winid)
 	)
 end
 
-function M.get_positions_by_regex(pattern, minRow, maxRow, row_offset)
+function M.get_positions_by_regex(pattern, min_row, max_row, row_offset)
 	local positions = {}
-	local content = M.get_buffer_contents(minRow, maxRow)
+	local content = M.get_buffer_contents(min_row, max_row)
 
 	for key, value in pairs(content) do
 		for match in string.gmatch(value, pattern) do
-			local startColumn = vim.fn.match(value, match)
-			local endColumn = vim.fn.matchend(value, match)
+			local start_column = vim.fn.match(value, match)
+			local end_column = vim.fn.matchend(value, match)
 			table.insert(positions, {
 				value = match,
-				row = key + minRow - row_offset,
-				startColumn = startColumn,
-				endColumn = endColumn
+				row = key + min_row - row_offset,
+				start_column = start_column,
+				end_column = end_column
 			})
 		end
 	end
@@ -37,7 +37,7 @@ function M.get_positions_by_regex(pattern, minRow, maxRow, row_offset)
 end
 
 function M.create_window(row, col, bg_color)
-	local highlightColorName = string.gsub(bg_color, "#", "")
+	local highlight_color_name = string.gsub(bg_color, "#", "")
 	local buf = vim.api.nvim_create_buf(false, true)
 	local window = vim.api.nvim_open_win(buf, false, {
 		relative = "win",
@@ -48,8 +48,8 @@ function M.create_window(row, col, bg_color)
 		noautocmd = true,
 		zindex = 1,
 	})
-	vim.api.nvim_command("highlight " .. highlightColorName .. " guibg=" .. bg_color)
-	vim.api.nvim_win_set_option(window, 'winhighlight', 'Normal:' .. highlightColorName .. ',FloatBorder:' .. highlightColorName)
+	vim.api.nvim_command("highlight " .. highlight_color_name .. " guibg=" .. bg_color)
+	vim.api.nvim_win_set_option(window, 'winhighlight', 'Normal:' .. highlight_color_name .. ',FloatBorder:' .. highlight_color_name)
 	return window
 end
 

@@ -1,7 +1,17 @@
 local utils = require("nvim-highlight-colors.utils")
-local loadOnStartUp = false
+local load_on_start_up = false
 local row_offset = 2
 local windows = {}
+
+function is_window_already_created(row, value)
+	for index, windows_data in ipairs(windows) do
+		if windows_data.row == row and value == windows_data.color then
+			return true
+		end
+	end
+
+	return false
+end
 
 function close_windows()
 	local ids = {}
@@ -33,14 +43,7 @@ end
 function show_visible_windows(min_row, max_row)
 	local positions = utils.get_positions_by_regex("#[%a%d]+", min_row - 1, max_row, row_offset)
 	for index, data in pairs(positions) do
-		local is_already_on_screen = false
-		-- Check is color window already exists
-		for index, windows_data in ipairs(windows) do
-			if is_already_on_screen == false and windows_data.row == data.row and data.value == windows_data.color then
-				is_already_on_screen = true
-			end
-		end
-		if is_already_on_screen == false then
+		if is_window_already_created(data.row, data.value) == false then
 			table.insert(
 				windows,
 				{
@@ -75,7 +78,7 @@ function turn_off()
 end
 
 function setup()
-	loadOnStartUp = true
+	load_on_start_up = true
 end
 
 vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
@@ -88,7 +91,7 @@ vim.api.nvim_create_autocmd({"WinScrolled"}, {
 
 vim.api.nvim_create_autocmd({"BufEnter"}, {
 	callback = function ()
-		if loadOnStartUp == true then
+		if load_on_start_up == true then
 			turn_on()
 		end
 	end,
