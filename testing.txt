@@ -1,3 +1,4 @@
+$green = #4A8E05
 " xterm-8 colors "{{{2
 let s:xterm_8colors = {
 
