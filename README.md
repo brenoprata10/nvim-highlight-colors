@@ -3,6 +3,11 @@ Highlight colors with neovim
 
 ![image](https://user-images.githubusercontent.com/26099427/179988116-ff24d0a7-084d-403f-bca8-63dd7bb08fed.png)
 
+## Featured
+- Displays colors based on their HEX value
+- Super fast no matter the amount of colors
+- See the colors change as you edit them
+
 ## Installation
 Add this to your init.vim
 ```
@@ -29,6 +34,7 @@ There are only two available command for now:
 
 ## Limitations
 - This plugin was developed with CSS in mind, so the color will take up the space of the first available column in the buffer
+- Only one color per line
 
 ## TODO
 - Add RGB support
