@@ -39,4 +39,5 @@ There are only two available command for now:
 ## TODO
 - [X] Add RGB support
 - [X] Add RGBA support
+- [ ] Multicolor per line support
 - [ ] Detect variables in css files and evaluate their value
