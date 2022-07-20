@@ -3,7 +3,7 @@ Highlight colors with neovim
 
 ![image](https://user-images.githubusercontent.com/26099427/179988116-ff24d0a7-084d-403f-bca8-63dd7bb08fed.png)
 
-## Featured
+## Features
 - Displays colors based on their HEX value
 - Super fast no matter the amount of colors
 - See the colors change as you edit them
