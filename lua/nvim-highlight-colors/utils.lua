@@ -109,7 +109,7 @@ end
 
 function M.close_windows (windows)
 	for index, data in pairs(windows) do
-		vim.api.nvim_win_close(data, true)
+		vim.api.nvim_win_close(data, false)
 	end
 end
 
