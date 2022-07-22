@@ -100,9 +100,14 @@ function M.create_window(row, col, bg_color)
 		focusable = false,
 		noautocmd = true,
 		zindex = 1,
+		style= "minimal"
 	})
 	vim.api.nvim_command("highlight " .. highlight_color_name .. " guibg=" .. M.get_color_value(bg_color))
 	vim.api.nvim_win_set_option(window, 'winhighlight', 'Normal:' .. highlight_color_name .. ',FloatBorder:' .. highlight_color_name)
+
+	local row_content = M.get_buffer_contents(row + 1, row + 2)
+	vim.api.nvim_buf_set_lines(buf, 0, 0, true, {string.sub(row_content[1], 0, 1)})
+
 	return window
 end
 
