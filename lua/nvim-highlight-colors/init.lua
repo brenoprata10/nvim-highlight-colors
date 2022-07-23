@@ -1,10 +1,12 @@
 local utils = require("nvim-highlight-colors.utils")
+local colors= require("nvim-highlight-colors.colors")
+
 local load_on_start_up = false
 local row_offset = 2
 local windows = {}
 
 function is_window_already_created(row, value)
-	for index, windows_data in ipairs(windows) do
+	for _, windows_data in ipairs(windows) do
 		if windows_data.row == row and value == windows_data.color then
 			return true
 		end
@@ -15,7 +17,7 @@ end
 
 function close_windows()
 	local ids = {}
-	for index, window_data in ipairs(windows) do
+	for _, window_data in ipairs(windows) do
 		table.insert(ids, window_data.win_id)
 	end
 	utils.close_windows(ids)
@@ -25,7 +27,7 @@ end
 function close_not_visible_windows(min_row, max_row)
 	local windows_to_remove = {}
 	local new_windows_table = {}
-	for index, window_data in ipairs(windows) do
+	for _, window_data in ipairs(windows) do
 		local window_config = vim.api.nvim_win_get_config(window_data.win_id)
 		local window_bufpos = window_config.bufpos
 		local window_row = window_bufpos[1] + row_offset
@@ -41,8 +43,16 @@ function close_not_visible_windows(min_row, max_row)
 end
 
 function show_visible_windows(min_row, max_row)
-	local positions = utils.get_positions_by_regex({"#[%a%d]+", utils.rgb_regex}, min_row - 1, max_row, row_offset)
-	for index, data in pairs(positions) do
+	local positions = utils.get_positions_by_regex(
+		{
+			colors.hex_regex,
+			colors.rgb_regex
+		},
+		min_row - 1,
+		max_row,
+		row_offset
+	)
+	for _, data in pairs(positions) do
 		if is_window_already_created(data.row, data.value) == false then
 			table.insert(
 				windows,
