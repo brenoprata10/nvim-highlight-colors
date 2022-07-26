@@ -7,6 +7,7 @@ Highlight colors with neovim
 - Displays colors based on their HEX/rgb/rgba value
 - Super fast no matter the amount of colors
 - See the colors change as you edit them
+- CSS variables support
 
 ## Installation
 Add this to your init.vim
@@ -40,4 +41,6 @@ There are only two available command for now:
 - [X] Add RGB support
 - [X] Add RGBA support
 - [ ] Multicolor per line support
-- [ ] Detect variables in css files and evaluate their value
+- [X] Detect variables in css files and evaluate their value
+- [ ] Detect SCSS variable in scss files and evaluate their value
+- [ ] Detect Stylus variable in styl files and evaluate their value
