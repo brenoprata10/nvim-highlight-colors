@@ -1,4 +1,5 @@
 local utils = require("nvim-highlight-colors.utils")
+local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors= require("nvim-highlight-colors.colors")
 
 local load_on_start_up = false
@@ -43,21 +44,23 @@ function close_not_visible_windows(min_row, max_row)
 end
 
 function show_visible_windows(min_row, max_row)
-	local positions = utils.get_positions_by_regex(
+	local positions = buffer_utils.get_positions_by_regex(
 		{
 			colors.hex_regex,
-			colors.rgb_regex
+			colors.rgb_regex,
+			colors.var_usage_regex
 		},
 		min_row - 1,
 		max_row,
 		row_offset
 	)
+
 	for _, data in pairs(positions) do
 		if is_window_already_created(data.row, data.value) == false then
 			table.insert(
 				windows,
 				{
-					win_id = utils.create_window(data.row, 0, data.value),
+					win_id = utils.create_window(data.row, 0, data.value, row_offset),
 					row = data.row,
 					color = data.value
 				}
