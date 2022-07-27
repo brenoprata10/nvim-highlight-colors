@@ -33,6 +33,12 @@ There are only two available command for now:
 | HighlightColorsOn |  Turns on highlight feature |
 | HighlightColorsOff |    Turns off highlight feature   |
 
+You might also use:
+```
+lua require("nvim-highlight-colors").turnOff()
+lua require("nvim-highlight-colors").turnOn()
+```
+
 ## Limitations
 - This plugin was developed with CSS in mind, so the color will take up the space of the first available column in the buffer
 - Only one color per line
