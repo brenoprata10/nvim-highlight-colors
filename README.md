@@ -48,5 +48,7 @@ lua require("nvim-highlight-colors").turnOn()
 - [X] Add RGBA support
 - [ ] Multicolor per line support
 - [X] Detect variables in css files and evaluate their value
+- [ ] Create `Toggle` option for better usability
+- [ ] Add option config to colorize whole background of colors(much like `colorizer` plugin)
 - [ ] Detect SCSS variable in scss files and evaluate their value
 - [ ] Detect Stylus variable in styl files and evaluate their value
