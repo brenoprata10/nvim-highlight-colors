@@ -42,9 +42,9 @@ lua require("nvim-highlight-colors").toggle()
 ```
 
 ## Customization
-| Property |      Options      |
-|----------|:-------------:|
-| render |  first_column(default), foreground, background |
+| Property |      Options      | Description
+|----------|:-------------:|:----------:|
+| render |  first_column(default), foreground, background | Changes how the colors will be rendered |
 
 Here is how you might use the options:
 ```
