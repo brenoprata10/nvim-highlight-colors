@@ -32,11 +32,13 @@ There are only two available command for now:
 |----------|:-------------:|
 | HighlightColorsOn |  Turns on highlight feature |
 | HighlightColorsOff |    Turns off highlight feature   |
+| HighlightColorsToggle |    Toggles highlight feature   |
 
 You might also use:
 ```
 lua require("nvim-highlight-colors").turnOff()
 lua require("nvim-highlight-colors").turnOn()
+lua require("nvim-highlight-colors").toggle()
 ```
 
 ## Limitations
