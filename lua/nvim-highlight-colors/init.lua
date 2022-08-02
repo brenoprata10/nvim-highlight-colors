@@ -5,6 +5,7 @@ local colors= require("nvim-highlight-colors.colors")
 local load_on_start_up = false
 local row_offset = 2
 local windows = {}
+local is_loaded = false
 
 function is_window_already_created(row, value)
 	for _, windows_data in ipairs(windows) do
@@ -84,14 +85,24 @@ function turn_on()
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
 	show_visible_windows(min_row, max_row)
+	is_loaded = true
 end
 
 function turn_off()
 	close_windows()
+	is_loaded = false
 end
 
 function setup()
 	load_on_start_up = true
+end
+
+function toggle()
+	if is_loaded then
+		turn_off()
+	else 
+		turn_on()
+	end
 end
 
 vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
@@ -115,5 +126,6 @@ local M = {}
 M.turnOff = turn_off
 M.turnOn = turn_on
 M.setup = setup
+M.toggle = toggle
 
 return M
