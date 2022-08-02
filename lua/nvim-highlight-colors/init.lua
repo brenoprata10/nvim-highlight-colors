@@ -2,10 +2,19 @@ local utils = require("nvim-highlight-colors.utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors= require("nvim-highlight-colors.colors")
 
+local render_options = {
+	first_column = "first_column",
+	background = "background",
+	foreground = "foreground"
+}
+
 local load_on_start_up = false
 local row_offset = 2
 local windows = {}
 local is_loaded = false
+local options = {
+	render = render_options.first_column
+}
 
 function is_window_already_created(row, value)
 	for _, windows_data in ipairs(windows) do
@@ -24,6 +33,10 @@ function close_windows()
 	end
 	utils.close_windows(ids)
 	windows = {}
+end
+
+function clear_highlights()
+	vim.api.nvim_buf_clear_namespace(0, -1, 0, utils.get_last_row_index())
 end
 
 function close_not_visible_windows(min_row, max_row)
@@ -57,7 +70,15 @@ function show_visible_windows(min_row, max_row)
 	)
 
 	for _, data in pairs(positions) do
-		if is_window_already_created(data.row, data.value) == false then
+		if options.render == render_options.foreground or options.render == render_options.background then
+			utils.create_highlight(
+				data.row,
+				data.start_column,
+				data.end_column,
+				data.value,
+				options.render == render_options.foreground
+			)
+		elseif is_window_already_created(data.row, data.value) == false then
 			table.insert(
 				windows,
 				{
@@ -80,6 +101,7 @@ function update_windows_visibility()
 end
 
 function turn_on()
+	clear_highlights()
 	close_windows()
 	local visible_rows = utils.get_win_visible_rows(0)
 	local min_row = visible_rows[1]
@@ -90,17 +112,21 @@ end
 
 function turn_off()
 	close_windows()
+	clear_highlights()
 	is_loaded = false
 end
 
-function setup()
+function setup(user_options)
 	load_on_start_up = true
+	if (user_options ~= nil and user_options ~= {}) then
+		options.render = user_options.render ~= nil and user_options.render or options.render
+	end
 end
 
 function toggle()
 	if is_loaded then
 		turn_off()
-	else 
+	else
 		turn_on()
 	end
 end

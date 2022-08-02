@@ -3,6 +3,10 @@ local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 
 local M = {}
 
+function M.get_last_row_index()
+	return vim.fn.line('$')
+end
+
 function M.get_win_visible_rows(winid)
 	return vim.api.nvim_win_call(
 		winid,
@@ -15,8 +19,12 @@ function M.get_win_visible_rows(winid)
 	)
 end
 
+function create_highlight_name(color_value)
+	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-]+", "")
+end
+
 function M.create_window(row, col, bg_color, row_offset)
-	local highlight_color_name = string.gsub(bg_color, "#", ""):gsub("[(),%s%.-]+", "")
+	local highlight_color_name = create_highlight_name(bg_color)
 	local buf = vim.api.nvim_create_buf(false, true)
 	local window = vim.api.nvim_open_win(buf, false, {
 		relative = "win",
@@ -41,6 +49,19 @@ function M.create_window(row, col, bg_color, row_offset)
 	return window
 end
 
+function M.create_highlight(row, start_column, end_column, bg_color, should_colorize_foreground)
+	local highlight_color_name = create_highlight_name(bg_color)
+	local gui_color_type = should_colorize_foreground and "guifg" or "guibg"
+	vim.api.nvim_command("highlight " .. highlight_color_name .. " " .. gui_color_type .. "=" .. colors.get_color_value(bg_color, 2))
+	vim.api.nvim_buf_add_highlight(
+		0,
+		-1,
+		highlight_color_name,
+		row + 1,
+		start_column,
+		end_column
+	)
+end
 
 function M.close_windows (windows)
 	for _, data in pairs(windows) do
