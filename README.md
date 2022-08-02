@@ -41,6 +41,18 @@ lua require("nvim-highlight-colors").turnOn()
 lua require("nvim-highlight-colors").toggle()
 ```
 
+## Options
+| Property |      Description      |
+|----------|:-------------:|
+| render |  first_column(default), foreground, background |
+
+Here is how you might use the options:
+```
+lua require("nvim-highlight-colors").setup {
+	render = 'background' -- or 'foreground' or 'first_column'
+}
+```
+
 ## Limitations
 - This plugin was developed with CSS in mind, so the color will take up the space of the first available column in the buffer
 - Only one color per line
@@ -51,6 +63,6 @@ lua require("nvim-highlight-colors").toggle()
 - [ ] Multicolor per line support
 - [X] Detect variables in css files and evaluate their value
 - [X] Create `Toggle` option for better usability
-- [ ] Add option config to colorize whole background of colors(much like `colorizer` plugin)
+- [X] Add option config to colorize whole background of colors(much like `colorizer` plugin)
 - [ ] Detect SCSS variable in scss files and evaluate their value
 - [ ] Detect Stylus variable in styl files and evaluate their value
