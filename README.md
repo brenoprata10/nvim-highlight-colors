@@ -53,14 +53,10 @@ lua require("nvim-highlight-colors").setup {
 }
 ```
 
-## Limitations
-- This plugin was developed with CSS in mind, so the color will take up the space of the first available column in the buffer
-- Only one color per line
-
 ## TODO
 - [X] Add RGB support
 - [X] Add RGBA support
-- [ ] Multicolor per line support
+- [X] Multicolor per line support (for 'foreground' and 'background' render mode)
 - [X] Detect variables in css files and evaluate their value
 - [X] Create `Toggle` option for better usability
 - [X] Add option config to colorize whole background of colors(much like `colorizer` plugin)
