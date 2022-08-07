@@ -49,7 +49,11 @@ function M.convert_hex_to_rgb(hex)
 
 	hex = hex:gsub("#", "")
 
-	return tonumber("0x" .. hex:sub(1, 2)), tonumber("0x" .. hex:sub(3, 4)), tonumber("0x" .. hex:sub(5, 6))
+	local r = tonumber("0x" .. hex:sub(1, 2))
+	local g = tonumber("0x" .. hex:sub(3, 4))
+	local b = tonumber("0x" .. hex:sub(5, 6))
+
+	return r, g, b
 end
 
 function M.is_short_hex_color(color)
