@@ -1,6 +1,7 @@
 local utils = require("nvim-highlight-colors.utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors= require("nvim-highlight-colors.colors")
+local ns_id = vim.api.nvim_create_namespace("nvim-highlight-colors")
 
 local render_options = {
 	first_column = "first_column",
@@ -36,7 +37,7 @@ function close_windows()
 end
 
 function clear_highlights()
-	vim.api.nvim_buf_clear_namespace(0, -1, 0, utils.get_last_row_index())
+	vim.api.nvim_buf_clear_namespace(0, ns_id, 0, utils.get_last_row_index())
 end
 
 function close_not_visible_windows(min_row, max_row)
@@ -72,6 +73,7 @@ function show_visible_windows(min_row, max_row)
 	for _, data in pairs(positions) do
 		if options.render == render_options.foreground or options.render == render_options.background then
 			utils.create_highlight(
+				ns_id,
 				data.row,
 				data.start_column,
 				data.end_column,
