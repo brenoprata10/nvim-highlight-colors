@@ -1,5 +1,5 @@
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
-local table_utils = require("nvim-highlight-colors.table_utils")
+local table_utils  = require("nvim-highlight-colors.table_utils")
 
 local M = {}
 
@@ -15,13 +15,8 @@ function M.get_color_value(color, row_offset)
 	end
 
 	if (M.is_rgb_color(color)) then
-		local rgb_table = {}
-		local count = 1
-		for color_number in string.gmatch(color, "%d+") do
-			rgb_table[count] = color_number
-			count = count + 1
-		end
-		if (count >= 4) then
+		local rgb_table = M.get_rgb_values(color)
+		if (#rgb_table >= 3) then
 			return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 		end
 	end
@@ -76,6 +71,40 @@ function M.convert_short_hex_to_hex(color)
 	end
 
 	return color
+end
+
+function M.get_rgb_values(color)
+	local rgb_table = {}
+	for color_number in string.gmatch(color, "%d+") do
+		table.insert(rgb_table, color_number)
+	end
+
+	return rgb_table
+end
+
+function M.get_foreground_color_from_hex_color(color)
+	local color_score = 0
+	local color_threshhold = 40
+
+	for value in string.gmatch(color, ".") do
+		if type(value) == "number" then
+			color_score = color_score + value
+		elseif string.lower(value) == 'a' then
+			color_score = color_score + 10
+		elseif string.lower(value) == 'b' then
+			color_score = color_score + 11
+		elseif string.lower(value) == 'c' then
+			color_score = color_score + 12
+		elseif string.lower(value) == 'd' then
+			color_score = color_score + 13
+		elseif string.lower(value) == 'e' then
+			color_score = color_score + 14
+		elseif string.lower(value) == 'f' then
+			color_score = color_score + 15
+		end
+	end
+
+	return color_score >= color_threshhold and "#000000" or "#ffffff"
 end
 
 return M
