@@ -49,7 +49,7 @@ function M.create_window(row, col, bg_color, row_offset)
 	return window
 end
 
-function M.create_highlight(row, start_column, end_column, color, should_colorize_foreground)
+function M.create_highlight(ns_id, row, start_column, end_column, color, should_colorize_foreground)
 	local highlight_group = create_highlight_name(color)
 	local highlight_color_name = "highlight " .. highlight_group .. " "
 	local color_value = colors.get_color_value(color, 2)
@@ -62,7 +62,7 @@ function M.create_highlight(row, start_column, end_column, color, should_coloriz
 	end
 	vim.api.nvim_buf_add_highlight(
 		0,
-		-1,
+		ns_id,
 		highlight_group,
 		row + 1,
 		start_column,
