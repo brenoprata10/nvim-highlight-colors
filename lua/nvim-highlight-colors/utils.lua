@@ -50,21 +50,20 @@ function M.create_window(row, col, bg_color, row_offset)
 end
 
 function M.create_highlight(row, start_column, end_column, color, should_colorize_foreground)
-	local highlight_color_name = create_highlight_name(color)
+	local highlight_group = create_highlight_name(color)
+	local highlight_color_name = "highlight " .. highlight_group .. " "
+	local color_value = colors.get_color_value(color, 2)
 
 	if should_colorize_foreground then
-		vim.api.nvim_command("highlight " .. highlight_color_name .. " " .. "guifg".. "=" .. colors.get_color_value(color, 2))
+		vim.api.nvim_command(highlight_color_name .. "guifg=" .. color_value)
 	else
 		local foreground_color = colors.get_foreground_color_from_hex_color(color)
-		vim.api.nvim_command(
-			"highlight " .. highlight_color_name .. 
-			" " .. "guibg" .. "=" .. colors.get_color_value(color, 2) .. " guifg=" .. foreground_color
-		)
+		vim.api.nvim_command(highlight_color_name .. "guibg=" .. color_value .. " guifg=" .. foreground_color)
 	end
 	vim.api.nvim_buf_add_highlight(
 		0,
 		-1,
-		highlight_color_name,
+		highlight_group,
 		row + 1,
 		start_column,
 		end_column

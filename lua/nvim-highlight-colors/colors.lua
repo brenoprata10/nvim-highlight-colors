@@ -84,7 +84,7 @@ end
 
 function M.get_foreground_color_from_hex_color(color)
 	local color_score = 0
-	local color_threshhold = 50
+	local color_threshhold = 40
 
 	for value in string.gmatch(color, ".") do
 		if type(value) == "number" then
