@@ -1,5 +1,5 @@
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
-local table_utils = require("nvim-highlight-colors.table_utils")
+local table_utils  = require("nvim-highlight-colors.table_utils")
 
 local M = {}
 
@@ -10,25 +10,30 @@ M.var_declaration_regex = M.var_regex .. ":%s*" .. M.hex_regex
 M.var_usage_regex = "var%(" .. M.var_regex .. "%)"
 
 function M.get_color_value(color, row_offset)
-	if M.is_short_hex_color(color) then
+	if (M.is_short_hex_color(color)) then
 		return M.convert_short_hex_to_hex(color)
 	end
 
-	if M.is_rgb_color(color) then
+	if (M.is_rgb_color(color)) then
 		local rgb_table = M.get_rgb_values(color)
-		if #rgb_table >= 3 then
+		if (#rgb_table >= 3) then
 			return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 		end
 	end
 
-	if M.is_var_color(color) then
+	if (M.is_var_color(color)) then
 		local var_name = string.match(color, M.var_regex)
 		local var_name_regex = string.gsub(var_name, "%-", "%%-")
-		local var_position = buffer_utils.get_positions_by_regex({
-			var_name_regex .. ":%s*" .. M.hex_regex,
-			var_name_regex .. ":%s*" .. M.rgb_regex,
-		}, 0, vim.fn.line("$"), row_offset)
-		if #var_position > 0 then
+		local var_position = buffer_utils.get_positions_by_regex(
+			{
+				var_name_regex .. ":%s*" .. M.hex_regex,
+				var_name_regex .. ":%s*" .. M.rgb_regex
+			},
+			0,
+			vim.fn.line('$'),
+			row_offset
+		)
+		if (#var_position > 0) then
 			local hex_color = string.match(var_position[1].value, M.hex_regex)
 			local rgb_color = string.match(var_position[1].value, M.rgb_regex)
 			return hex_color and M.get_color_value(hex_color) or M.get_color_value(rgb_color)
@@ -39,7 +44,7 @@ function M.get_color_value(color, row_offset)
 end
 
 function M.convert_rgb_to_hex(r, g, b)
-	return string.format("#%02X%02X%02X", r, g, b)
+ 	return string.format("#%02X%02X%02X", r, g, b)
 end
 
 function M.convert_hex_to_rgb(hex)
@@ -69,10 +74,10 @@ function M.is_var_color(color)
 end
 
 function M.convert_short_hex_to_hex(color)
-	if M.is_short_hex_color(color) then
+	if (M.is_short_hex_color(color)) then
 		local new_color = "#"
-		for char in color:gmatch(".") do
-			if char ~= "#" then
+		for char in color:gmatch"." do
+			if (char ~= '#') then
 				new_color = new_color .. char:rep(2)
 			end
 		end
