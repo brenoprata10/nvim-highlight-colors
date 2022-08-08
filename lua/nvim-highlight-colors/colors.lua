@@ -3,7 +3,7 @@ local table_utils  = require("nvim-highlight-colors.table_utils")
 
 local M = {}
 
-M.rgb_regex = "rgba?[(]+" .. string.rep("%s*%d+%s*", 3, "[, ]") .. "[, /]?%s*%d*%.?%d*%s*[)]+"
+M.rgb_regex = "rgba?[(]+" .. string.rep("%s*%d+%s*", 3, "[,%s]") .. "[,%s/]?%s*%d*%.?%d*%s*[)]+"
 M.hex_regex = "#[%a%d]+[%a%d]+[%a%d]+"
 M.var_regex = "%-%-[%d%a-_]+"
 M.var_declaration_regex = M.var_regex .. ":%s*" .. M.hex_regex
