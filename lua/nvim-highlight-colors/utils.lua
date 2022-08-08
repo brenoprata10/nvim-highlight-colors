@@ -20,7 +20,7 @@ function M.get_win_visible_rows(winid)
 end
 
 function create_highlight_name(color_value)
-	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-]+", "")
+	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/]+", "")
 end
 
 function M.create_window(row, col, bg_color, row_offset)
