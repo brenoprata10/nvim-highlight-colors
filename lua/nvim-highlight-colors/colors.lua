@@ -25,13 +25,13 @@ function M.get_color_value(color, row_offset)
 		local var_name = string.match(color, M.var_regex)
 		local var_name_regex = string.gsub(var_name, "%-", "%%-")
 		local var_position = buffer_utils.get_positions_by_regex(
-		{
-			var_name_regex .. ":%s*" .. M.hex_regex,
-			var_name_regex .. ":%s*" .. M.rgb_regex
-		},
-		0,
-		vim.fn.line('$'),
-		row_offset
+			{
+				var_name_regex .. ":%s*" .. M.hex_regex,
+				var_name_regex .. ":%s*" .. M.rgb_regex
+			},
+			0,
+			vim.fn.line('$'),
+			row_offset
 		)
 		if (#var_position > 0) then
 			local hex_color = string.match(var_position[1].value, M.hex_regex)
@@ -44,7 +44,7 @@ function M.get_color_value(color, row_offset)
 end
 
 function M.convert_rgb_to_hex(r, g, b)
-	return string.format("#%02X%02X%02X", r, g, b)
+ 	return string.format("#%02X%02X%02X", r, g, b)
 end
 
 function M.is_short_hex_color(color)
@@ -62,7 +62,7 @@ end
 function M.convert_short_hex_to_hex(color)
 	if (M.is_short_hex_color(color)) then
 		local new_color = "#"
-		for char in color:gmatch "." do
+		for char in color:gmatch"." do
 			if (char ~= '#') then
 				new_color = new_color .. char:rep(2)
 			end
