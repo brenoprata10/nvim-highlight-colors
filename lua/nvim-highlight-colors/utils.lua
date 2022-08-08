@@ -9,13 +9,13 @@ end
 
 function M.get_win_visible_rows(winid)
 	return vim.api.nvim_win_call(
-	winid,
-	function()
-		return {
-			vim.fn.line('w0'),
-			vim.fn.line('w$')
-		}
-	end
+		winid,
+		function()
+			return {
+				vim.fn.line('w0'),
+				vim.fn.line('w$')
+			}
+		end
 	)
 end
 
