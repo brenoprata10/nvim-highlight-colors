@@ -47,6 +47,20 @@ function M.convert_rgb_to_hex(r, g, b)
  	return string.format("#%02X%02X%02X", r, g, b)
 end
 
+function M.convert_hex_to_rgb(hex)
+	if M.is_short_hex_color(hex) then
+		hex = M.convert_short_hex_to_hex(hex)
+	end
+
+	hex = hex:gsub("#", "")
+
+	local r = tonumber("0x" .. hex:sub(1, 2))
+	local g = tonumber("0x" .. hex:sub(3, 4))
+	local b = tonumber("0x" .. hex:sub(5, 6))
+
+	return r, g, b
+end
+
 function M.is_short_hex_color(color)
 	return string.len(color) == 4
 end
@@ -83,28 +97,29 @@ function M.get_rgb_values(color)
 end
 
 function M.get_foreground_color_from_hex_color(color)
-	local color_score = 0
-	local color_threshhold = 40
+	local rgb_table = { M.convert_hex_to_rgb(color) }
 
-	for value in string.gmatch(color, ".") do
-		if type(value) == "number" then
-			color_score = color_score + value
-		elseif string.lower(value) == 'a' then
-			color_score = color_score + 10
-		elseif string.lower(value) == 'b' then
-			color_score = color_score + 11
-		elseif string.lower(value) == 'c' then
-			color_score = color_score + 12
-		elseif string.lower(value) == 'd' then
-			color_score = color_score + 13
-		elseif string.lower(value) == 'e' then
-			color_score = color_score + 14
-		elseif string.lower(value) == 'f' then
-			color_score = color_score + 15
-		end
+	-- hex color is invalid
+	if #rgb_table < 3 then
+		return nil
 	end
 
-	return color_score >= color_threshhold and "#000000" or "#ffffff"
+	-- see: https://stackoverflow.com/a/3943023/16807083
+	rgb_table = vim.tbl_map(function(value)
+		value = value / 255
+
+		if value <= 0.04045 then
+			value = value / 12.92
+		else
+			value = ((value + 0.055) / 1.055) ^ 2.4
+		end
+
+		return value
+	end, rgb_table)
+
+	local luminance = (0.2126 * rgb_table[1]) + (0.7152 * rgb_table[2]) + (0.0722 * rgb_table[3])
+
+	return luminance > 0.179 and "#000000" or "#ffffff"
 end
 
 return M
