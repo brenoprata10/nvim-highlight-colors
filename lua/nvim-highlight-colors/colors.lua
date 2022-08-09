@@ -58,7 +58,7 @@ function M.convert_hex_to_rgb(hex)
 	local g = tonumber("0x" .. hex:sub(3, 4))
 	local b = tonumber("0x" .. hex:sub(5, 6))
 
-	return r, g, b
+	return r ~= nil and g ~= nil and b ~= nil and {r, g, b} or nil
 end
 
 function M.is_short_hex_color(color)
@@ -97,25 +97,25 @@ function M.get_rgb_values(color)
 end
 
 function M.get_foreground_color_from_hex_color(color)
-	local rgb_table = { M.convert_hex_to_rgb(color) }
+	local rgb_table = M.convert_hex_to_rgb(color)
 
-	-- hex color is invalid
-	if #rgb_table < 3 then
+	if rgb_table == nil or #rgb_table < 3 then
 		return nil
 	end
 
 	-- see: https://stackoverflow.com/a/3943023/16807083
-	rgb_table = vim.tbl_map(function(value)
-		value = value / 255
+	rgb_table = vim.tbl_map(
+		function(value)
+			value = value / 255
 
-		if value <= 0.04045 then
-			value = value / 12.92
-		else
-			value = ((value + 0.055) / 1.055) ^ 2.4
-		end
+			if value <= 0.04045 then
+				return value / 12.92
+			end
 
-		return value
-	end, rgb_table)
+			return ((value + 0.055) / 1.055) ^ 2.4
+		end,
+		rgb_table
+	)
 
 	local luminance = (0.2126 * rgb_table[1]) + (0.7152 * rgb_table[2]) + (0.0722 * rgb_table[3])
 
