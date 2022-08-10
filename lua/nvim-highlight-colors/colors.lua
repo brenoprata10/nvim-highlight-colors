@@ -14,6 +14,10 @@ function M.get_color_value(color, row_offset)
 		return M.convert_short_hex_to_hex(color)
 	end
 
+	if (M.is_alpha_layer_hex(color)) then
+		return string.sub(color, 1, 7)
+	end
+
 	if (M.is_rgb_color(color)) then
 		local rgb_table = M.get_rgb_values(color)
 		if (#rgb_table >= 3) then
@@ -63,6 +67,10 @@ end
 
 function M.is_short_hex_color(color)
 	return string.len(color) == 4
+end
+
+function M.is_alpha_layer_hex(color)
+	return string.match(color, M.hex_regex) ~= nil and string.len(color) == 9
 end
 
 function M.is_rgb_color(color)

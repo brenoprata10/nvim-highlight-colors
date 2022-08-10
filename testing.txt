@@ -4,6 +4,7 @@ let s:xterm_8colors = {
 
   rgb(250,20,200)
   rgb(12 222 231 / 0.2)
+   #FFFFFF88
 
   'black':          '#000000',
   'darkblue':       '#00008B',
