@@ -1,6 +1,4 @@
-local M = {}
-
-M.colors = {
+return {
 	lightsalmon = '#FFA07A',
 	salmon = '#FA8072',
 	darksalmon = '#E9967A',
@@ -141,5 +139,3 @@ M.colors = {
   	brown = '#A52A2A',
   	maroon = '#800000'
 }
-
-return M

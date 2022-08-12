@@ -1,6 +1,6 @@
 local utils = require("nvim-highlight-colors.utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
-local colors= require("nvim-highlight-colors.colors")
+local colors = require("nvim-highlight-colors.colors")
 local ns_id = vim.api.nvim_create_namespace("nvim-highlight-colors")
 
 local render_options = {
@@ -59,17 +59,17 @@ function close_not_visible_windows(min_row, max_row)
 end
 
 function show_visible_windows(min_row, max_row)
-	local positions = buffer_utils.get_positions_by_regex(
-		{
-			colors.hex_regex,
-			colors.rgb_regex,
-			colors.hsl_regex,
-			colors.var_usage_regex,
-		},
-		min_row - 1,
-		max_row,
-		row_offset
-	)
+	local patterns = {
+		colors.hex_regex,
+		colors.rgb_regex,
+		colors.hsl_regex,
+		colors.var_usage_regex,
+	}
+	for _, css_color_pattern in pairs(colors.get_css_named_color_patterns()) do
+		table.insert(patterns, css_color_pattern)
+	end
+
+	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset)
 
 	for _, data in pairs(positions) do
 		if options.render == render_options.foreground or options.render == render_options.background then

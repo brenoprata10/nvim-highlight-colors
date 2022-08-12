@@ -1,4 +1,5 @@
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
+local css_named_colors = require("nvim-highlight-colors.named-colors.css_named_colors")
 
 local M = {}
 
@@ -30,6 +31,11 @@ function M.get_color_value(color, row_offset)
 		local hsl_table = M.get_hsl_values(color)
 		local rgb_table = M.convert_hsl_to_rgb(hsl_table[1], hsl_table[2], hsl_table[3])
 		return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
+	end
+
+	if (M.is_css_named_color(color)) then
+		local color_name = string.match(color, "%a+")
+		return css_named_colors[color_name]
 	end
 
 	if (M.is_var_color(color)) then
@@ -81,7 +87,7 @@ function M.convert_hex_to_rgb(hex)
 end
 
 function M.is_short_hex_color(color)
-	return string.len(color) == 4
+	return string.match(color, M.hex_regex) and string.len(color) == 4
 end
 
 function M.is_alpha_layer_hex(color)
@@ -98,6 +104,16 @@ end
 
 function M.is_var_color(color)
 	return string.match(color, M.var_usage_regex)
+end
+
+function M.is_css_named_color(color)
+	local css_named_patterns = M.get_css_named_color_patterns()
+	for _, pattern in pairs(css_named_patterns) do
+		if string.match(color, pattern) then
+			return true
+		end
+	end
+	return false
 end
 
 function M.convert_short_hex_to_hex(color)
@@ -130,6 +146,18 @@ function M.get_hsl_values(color)
 	end
 
 	return hsl_table
+end
+
+function M.get_css_named_color_patterns()
+	local patterns = {}
+	for color_name in pairs(css_named_colors) do
+		table.insert(
+			patterns,
+			buffer_utils.color_usage_regex .. color_name
+		)
+	end
+
+	return patterns
 end
 
 function M.get_foreground_color_from_hex_color(color)
