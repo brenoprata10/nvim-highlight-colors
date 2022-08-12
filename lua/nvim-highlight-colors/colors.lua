@@ -1,11 +1,10 @@
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
-local table_utils  = require("nvim-highlight-colors.table_utils")
 
 local M = {}
 
 M.rgb_regex = "rgba?[(]+" .. string.rep("%s*%d+%s*", 3, "[,%s]") .. "[,%s/]?%s*%d*%.?%d*%s*[)]+"
 M.hex_regex = "#[%a%d]+[%a%d]+[%a%d]+"
-M.hsl_regex = "hsl[(]+" .. string.rep("%s*%d+%%?%s*", 3, "[,%s]") .. "[%s,/]?%s*%d*%.?%d*%%?%s*[)]+"
+M.hsl_regex = "hsl[(]+" .. string.rep("%s*%d?%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "[,%s]") .. "[%s,/]?%s*%d*%.?%d*%%?%s*[)]+"
 
 M.var_regex = "%-%-[%d%a-_]+"
 M.var_declaration_regex = M.var_regex .. ":%s*" .. M.hex_regex
@@ -25,6 +24,12 @@ function M.get_color_value(color, row_offset)
 		if (#rgb_table >= 3) then
 			return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 		end
+	end
+
+	if (M.is_hsl_color(color)) then
+		local hsl_table = M.get_hsl_values(color)
+		local rgb_table = M.convert_hsl_to_rgb(hsl_table[1], hsl_table[2], hsl_table[3])
+		return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 	end
 
 	if (M.is_var_color(color)) then
@@ -79,6 +84,10 @@ function M.is_rgb_color(color)
 	return string.match(color, M.rgb_regex)
 end
 
+function M.is_hsl_color(color)
+	return string.match(color, M.hsl_regex)
+end
+
 function M.is_var_color(color)
 	return string.match(color, M.var_usage_regex)
 end
@@ -106,6 +115,15 @@ function M.get_rgb_values(color)
 	return rgb_table
 end
 
+function M.get_hsl_values(color)
+	local hsl_table = {}
+	for color_number in string.gmatch(color, "%d?%.?%d+") do
+		table.insert(hsl_table, color_number)
+	end
+
+	return hsl_table
+end
+
 function M.get_foreground_color_from_hex_color(color)
 	local rgb_table = M.convert_hex_to_rgb(color)
 
@@ -131,5 +149,38 @@ function M.get_foreground_color_from_hex_color(color)
 
 	return luminance > 0.179 and "#000000" or "#ffffff"
 end
+
+-- Function retrieved from this stackoverflow post:
+-- https://stackoverflow.com/questions/68317097/how-to-properly-convert-hsl-colors-to-rgb-colors-in-lua
+function M.convert_hsl_to_rgb(h, s, l)
+    h = h / 360
+    s = s / 100
+    l = l / 100
+
+    local r, g, b;
+
+    if s == 0 then
+        r, g, b = l, l, l; -- achromatic
+    else
+        local function hue2rgb(p, q, t)
+            if t < 0 then t = t + 1 end
+            if t > 1 then t = t - 1 end
+            if t < 1 / 6 then return p + (q - p) * 6 * t end
+            if t < 1 / 2 then return q end
+            if t < 2 / 3 then return p + (q - p) * (2 / 3 - t) * 6 end
+            return p;
+        end
+
+        local q = l < 0.5 and l * (1 + s) or l + s - l * s;
+        local p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+    end
+
+    if not a then a = 1 end
+    return {r * 255, g * 255, b * 255, a * 255}
+end
+
 
 return M
