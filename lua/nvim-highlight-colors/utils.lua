@@ -20,7 +20,7 @@ function M.get_win_visible_rows(winid)
 end
 
 function create_highlight_name(color_value)
-	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%]+", "")
+	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:]+", "")
 end
 
 function M.create_window(row, col, bg_color, row_offset)
@@ -57,14 +57,14 @@ function M.create_highlight(ns_id, row, start_column, end_column, color, should_
 
 	if should_colorize_foreground then
 		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
-            fg = color_value
-        })
+            		fg = color_value
+        	})
 	else
 		local foreground_color = colors.get_foreground_color_from_hex_color(color_value)
 		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
-            fg = foreground_color,
-            bg = color_value
-        })
+            		fg = foreground_color,
+            		bg = color_value
+        	})
 	end
 	vim.api.nvim_buf_add_highlight(
 		0,
