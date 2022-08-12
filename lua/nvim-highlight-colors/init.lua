@@ -63,7 +63,8 @@ function show_visible_windows(min_row, max_row)
 		{
 			colors.hex_regex,
 			colors.rgb_regex,
-			colors.var_usage_regex
+			colors.hsl_regex,
+			colors.var_usage_regex,
 		},
 		min_row - 1,
 		max_row,
