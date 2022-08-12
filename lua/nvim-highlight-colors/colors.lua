@@ -34,8 +34,7 @@ function M.get_color_value(color, row_offset)
 	end
 
 	if (M.is_css_named_color(color)) then
-		local color_name = string.match(color, "%a+")
-		return css_named_colors[color_name]
+		return M.get_css_named_color_value(color)
 	end
 
 	if (M.is_var_color(color)) then
