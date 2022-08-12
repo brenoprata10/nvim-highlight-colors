@@ -38,7 +38,8 @@ function M.get_color_value(color, row_offset)
 		local var_position = buffer_utils.get_positions_by_regex(
 			{
 				var_name_regex .. ":%s*" .. M.hex_regex,
-				var_name_regex .. ":%s*" .. M.rgb_regex
+				var_name_regex .. ":%s*" .. M.rgb_regex,
+				var_name_regex .. ":%s*" .. M.hsl_regex
 			},
 			0,
 			vim.fn.line('$'),
@@ -47,7 +48,14 @@ function M.get_color_value(color, row_offset)
 		if (#var_position > 0) then
 			local hex_color = string.match(var_position[1].value, M.hex_regex)
 			local rgb_color = string.match(var_position[1].value, M.rgb_regex)
-			return hex_color and M.get_color_value(hex_color) or M.get_color_value(rgb_color)
+			local hsl_color = string.match(var_position[1].value, M.hsl_regex)
+			if hex_color then
+				return M.get_color_value(hex_color)
+			elseif rgb_color then
+				return M.get_color_value(rgb_color)
+			else
+				return M.get_color_value(hsl_color)
+			end
 		end
 	end
 
