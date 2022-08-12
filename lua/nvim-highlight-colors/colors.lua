@@ -39,30 +39,7 @@ function M.get_color_value(color, row_offset)
 	end
 
 	if (M.is_var_color(color)) then
-		local var_name = string.match(color, M.var_regex)
-		local var_name_regex = string.gsub(var_name, "%-", "%%-")
-		local var_position = buffer_utils.get_positions_by_regex(
-			{
-				var_name_regex .. ":%s*" .. M.hex_regex,
-				var_name_regex .. ":%s*" .. M.rgb_regex,
-				var_name_regex .. ":%s*" .. M.hsl_regex
-			},
-			0,
-			vim.fn.line('$'),
-			row_offset
-		)
-		if (#var_position > 0) then
-			local hex_color = string.match(var_position[1].value, M.hex_regex)
-			local rgb_color = string.match(var_position[1].value, M.rgb_regex)
-			local hsl_color = string.match(var_position[1].value, M.hsl_regex)
-			if hex_color then
-				return M.get_color_value(hex_color)
-			elseif rgb_color then
-				return M.get_color_value(rgb_color)
-			else
-				return M.get_color_value(hsl_color)
-			end
-		end
+		return M.get_css_var_color(color, row_offset)
 	end
 
 	return color
@@ -148,6 +125,11 @@ function M.get_hsl_values(color)
 	return hsl_table
 end
 
+function M.get_css_named_color_value(color)
+	local color_name = string.match(color, "%a+")
+	return css_named_colors[color_name]
+end
+
 function M.get_css_named_color_patterns()
 	local patterns = {}
 	for color_name in pairs(css_named_colors) do
@@ -158,6 +140,39 @@ function M.get_css_named_color_patterns()
 	end
 
 	return patterns
+end
+
+function M.get_css_var_color(color, row_offset)
+	local var_name = string.match(color, M.var_regex)
+	local var_name_regex = string.gsub(var_name, "%-", "%%-")
+	local value_patterns = {M.hex_regex, M.rgb_regex, M.hsl_regex}
+	local var_patterns = {}
+
+	for _, pattern in pairs(value_patterns) do
+		table.insert(var_patterns, var_name_regex .. ":%s*" .. pattern)
+	end
+	for _, css_color_pattern in pairs(M.get_css_named_color_patterns()) do
+		table.insert(var_patterns, css_color_pattern)
+	end
+
+	local var_position = buffer_utils.get_positions_by_regex(var_patterns, 0, vim.fn.line('$'), row_offset)
+
+	if (#var_position > 0) then
+		local hex_color = string.match(var_position[1].value, M.hex_regex)
+		local rgb_color = string.match(var_position[1].value, M.rgb_regex)
+		local hsl_color = string.match(var_position[1].value, M.hsl_regex)
+		if hex_color then
+			return M.get_color_value(hex_color)
+		elseif rgb_color then
+			return M.get_color_value(rgb_color)
+		elseif hsl_color then
+			return M.get_color_value(hsl_color)
+		else
+			return M.get_css_named_color_value(var_position[1].value)
+		end
+	end
+
+	return color
 end
 
 function M.get_foreground_color_from_hex_color(color)
