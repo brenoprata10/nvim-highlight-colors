@@ -1,6 +1,7 @@
 local utils = require("nvim-highlight-colors.utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
-local colors = require("nvim-highlight-colors.colors")
+local colors = require("nvim-highlight-colors.color.utils")
+local color_patterns = require("nvim-highlight-colors.color.patterns")
 local ns_id = vim.api.nvim_create_namespace("nvim-highlight-colors")
 
 local render_options = {
@@ -61,10 +62,10 @@ end
 
 function show_visible_windows(min_row, max_row)
 	local patterns = {
-		colors.hex_regex,
-		colors.rgb_regex,
-		colors.hsl_regex,
-		colors.var_usage_regex,
+		color_patterns.hex_regex,
+		color_patterns.rgb_regex,
+		color_patterns.hsl_regex,
+		color_patterns.var_usage_regex,
 	}
 	for _, css_color_pattern in pairs(colors.get_css_named_color_patterns()) do
 		table.insert(patterns, css_color_pattern)

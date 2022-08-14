@@ -1,4 +1,4 @@
-local colors = require("nvim-highlight-colors.colors")
+local colors = require("nvim-highlight-colors.color.utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 
 local M = {}
