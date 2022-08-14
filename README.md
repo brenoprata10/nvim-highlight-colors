@@ -8,6 +8,7 @@ Highlight colors with neovim
 - Super fast no matter the amount of colors
 - See the colors change as you edit them
 - CSS variables support
+- Tailwind CSS support
 
 ## Installation
 Add this to your init.vim
@@ -45,13 +46,19 @@ lua require("nvim-highlight-colors").toggle()
 | Property |      Options      | Description
 |----------|:-------------:|:----------:|
 | render |  first_column(default), foreground, background | Changes how the colors will be rendered |
+| enable_tailwind |  boolean(defaults to `false`) | Adds highlight to tailwind colors |
 
 Here is how you might use the options:
 ```
 lua require("nvim-highlight-colors").setup {
-	render = 'background' -- or 'foreground' or 'first_column'
+	render = 'background', -- or 'foreground' or 'first_column'
+	enable_tailwind = false
 }
 ```
+## Screenshots
+Tailwind CSS support:
+
+![Screenshot from 2022-08-14 16-49-35](https://user-images.githubusercontent.com/26099427/184542562-855fcdd4-c08d-4805-b756-8cbbf442382f.png)
 
 ## TODO
 - [X] Add RGB support
