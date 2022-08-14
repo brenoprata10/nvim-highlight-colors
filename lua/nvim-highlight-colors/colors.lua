@@ -1,5 +1,6 @@
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local css_named_colors = require("nvim-highlight-colors.named-colors.css_named_colors")
+local tailwind_named_colors = require("nvim-highlight-colors.named-colors.tailwind_named_colors")
 
 local M = {}
 
@@ -10,6 +11,8 @@ M.hsl_regex = "hsla?[(]+" .. string.rep("%s*%d?%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "
 M.var_regex = "%-%-[%d%a-_]+"
 M.var_declaration_regex = M.var_regex .. ":%s*" .. M.hex_regex
 M.var_usage_regex = "var%(" .. M.var_regex .. "%)"
+
+M.tailwind_prefix = "%a+"
 
 function M.get_color_value(color, row_offset)
 	if (M.is_short_hex_color(color)) then
@@ -33,8 +36,12 @@ function M.get_color_value(color, row_offset)
 		return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 	end
 
-	if (M.is_css_named_color(color)) then
+	if (M.is_named_color(M.get_css_named_color_patterns(), color)) then
 		return M.get_css_named_color_value(color)
+	end
+
+	if (M.is_named_color(M.get_tailwind_named_color_patterns(), color)) then
+		return M.get_tailwind_named_color_value(color)
 	end
 
 	if (M.is_var_color(color)) then
@@ -82,9 +89,8 @@ function M.is_var_color(color)
 	return string.match(color, M.var_usage_regex)
 end
 
-function M.is_css_named_color(color)
-	local css_named_patterns = M.get_css_named_color_patterns()
-	for _, pattern in pairs(css_named_patterns) do
+function M.is_named_color(named_color_patterns, color)
+	for _, pattern in pairs(named_color_patterns) do
 		if string.match(color, pattern) then
 			return true
 		end
@@ -127,6 +133,30 @@ end
 function M.get_css_named_color_value(color)
 	local color_name = string.match(color, "%a+")
 	return css_named_colors[color_name]
+end
+
+function M.get_tailwind_named_color_value(color)
+	local tailwind_color_name = color
+	local _, end_index = string.find(tailwind_color_name, M.tailwind_prefix .. "%-")
+	if end_index then
+		tailwind_color_name = string.sub(tailwind_color_name, end_index + 1, string.len(tailwind_color_name))
+	end
+	local tailwind_color = tailwind_named_colors[tailwind_color_name]
+	if tailwind_color == nil then
+		return nil
+	end
+	local rgb_table = M.get_rgb_values(tailwind_color)
+	if (#rgb_table >= 3) then
+		return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
+	end
+end
+
+function M.get_tailwind_named_color_patterns()
+	local patterns = {}
+	table.insert(patterns, M.tailwind_prefix .. "%-%a+%-%d+")
+
+	return patterns
+
 end
 
 function M.get_css_named_color_patterns()
