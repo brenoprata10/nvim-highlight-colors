@@ -12,6 +12,7 @@ let s:xterm_8colors = {
   hsl(0 80% 50% / 25%);
 
   background-color: gold;
+  shadow-gray-500
 
   'black':          '#000000',
   'darkblue':       '#00008B',

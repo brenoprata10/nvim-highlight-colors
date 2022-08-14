@@ -54,6 +54,9 @@ end
 function M.create_highlight(ns_id, row, start_column, end_column, color, should_colorize_foreground)
 	local highlight_group = create_highlight_name(color)
 	local color_value = colors.get_color_value(color, 2)
+	if color_value == nil then
+		return
+	end
 
 	if should_colorize_foreground then
 		pcall(vim.api.nvim_set_hl, 0, highlight_group, {

@@ -12,8 +12,7 @@ M.var_regex = "%-%-[%d%a-_]+"
 M.var_declaration_regex = M.var_regex .. ":%s*" .. M.hex_regex
 M.var_usage_regex = "var%(" .. M.var_regex .. "%)"
 
---M.tailwind_prefix_table = {"decoration", "text", "bg", "border", "divide", "outline", "ring", "ring-offset", "shadow"}
-M.tailwind_prefix_table = {"%a+"}
+M.tailwind_prefix = "%a+"
 
 function M.get_color_value(color, row_offset)
 	if (M.is_short_hex_color(color)) then
@@ -138,13 +137,14 @@ end
 
 function M.get_tailwind_named_color_value(color)
 	local tailwind_color_name = color
-	for _, prefix in pairs(M.tailwind_prefix_table) do
-		local _, end_index = string.find(tailwind_color_name, prefix .. "%-")
-		if end_index then
-			tailwind_color_name = string.sub(tailwind_color_name, end_index + 1, string.len(tailwind_color_name))
-		end
+	local _, end_index = string.find(tailwind_color_name, M.tailwind_prefix .. "%-")
+	if end_index then
+		tailwind_color_name = string.sub(tailwind_color_name, end_index + 1, string.len(tailwind_color_name))
 	end
 	local tailwind_color = tailwind_named_colors[tailwind_color_name]
+	if tailwind_color == nil then
+		return nil
+	end
 	local rgb_table = M.get_rgb_values(tailwind_color)
 	if (#rgb_table >= 3) then
 		return M.convert_rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
@@ -153,11 +153,7 @@ end
 
 function M.get_tailwind_named_color_patterns()
 	local patterns = {}
-	for color_name in pairs(tailwind_named_colors) do
-		for _, prefix in pairs(M.tailwind_prefix_table) do
-			table.insert(patterns, prefix .. "%-" .. string.gsub(color_name, "%-", "%%-"))
-		end
-	end
+	table.insert(patterns, M.tailwind_prefix .. "%-%a+%-%d+")
 
 	return patterns
 
