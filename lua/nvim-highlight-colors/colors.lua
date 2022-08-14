@@ -161,12 +161,10 @@ end
 
 function M.get_css_named_color_patterns()
 	local patterns = {}
-	for color_name in pairs(css_named_colors) do
-		table.insert(
-			patterns,
-			buffer_utils.color_usage_regex .. color_name
-		)
-	end
+	table.insert(
+		patterns,
+		buffer_utils.color_usage_regex .. "%a+"
+	)
 
 	return patterns
 end
