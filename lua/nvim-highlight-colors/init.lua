@@ -68,6 +68,9 @@ function show_visible_windows(min_row, max_row)
 	for _, css_color_pattern in pairs(colors.get_css_named_color_patterns()) do
 		table.insert(patterns, css_color_pattern)
 	end
+	for _, tailwind_color_pattern in pairs(colors.get_tailwind_named_color_patterns()) do
+		table.insert(patterns, tailwind_color_pattern)
+	end
 
 	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset)
 
