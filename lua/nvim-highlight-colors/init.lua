@@ -14,7 +14,8 @@ local row_offset = 2
 local windows = {}
 local is_loaded = false
 local options = {
-	render = render_options.first_column
+	render = render_options.first_column,
+	enable_tailwind = false
 }
 
 function is_window_already_created(row, value)
@@ -68,8 +69,11 @@ function show_visible_windows(min_row, max_row)
 	for _, css_color_pattern in pairs(colors.get_css_named_color_patterns()) do
 		table.insert(patterns, css_color_pattern)
 	end
-	for _, tailwind_color_pattern in pairs(colors.get_tailwind_named_color_patterns()) do
-		table.insert(patterns, tailwind_color_pattern)
+
+	if options.enable_tailwind then
+		for _, tailwind_color_pattern in pairs(colors.get_tailwind_named_color_patterns()) do
+			table.insert(patterns, tailwind_color_pattern)
+		end
 	end
 
 	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset)
@@ -126,6 +130,7 @@ function setup(user_options)
 	load_on_start_up = true
 	if (user_options ~= nil and user_options ~= {}) then
 		options.render = user_options.render ~= nil and user_options.render or options.render
+		options.enable_tailwind = user_options.enable_tailwind ~= nil and user_options.enable_tailwind or options.enable_tailwind
 	end
 end
 
