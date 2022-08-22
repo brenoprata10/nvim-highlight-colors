@@ -19,7 +19,7 @@ local options = {
 	enable_tailwind = false
 }
 
-function is_window_already_created(row, value)
+local function is_window_already_created(row, value)
 	for _, windows_data in ipairs(windows) do
 		if windows_data.row == row and value == windows_data.color then
 			return true
@@ -29,7 +29,7 @@ function is_window_already_created(row, value)
 	return false
 end
 
-function close_windows()
+local function close_windows()
 	local ids = {}
 	for _, window_data in ipairs(windows) do
 		table.insert(ids, window_data.win_id)
@@ -38,11 +38,11 @@ function close_windows()
 	windows = {}
 end
 
-function clear_highlights()
+local function clear_highlights()
 	vim.api.nvim_buf_clear_namespace(0, ns_id, 0, utils.get_last_row_index())
 end
 
-function close_not_visible_windows(min_row, max_row)
+local function close_not_visible_windows(min_row, max_row)
 	local windows_to_remove = {}
 	local new_windows_table = {}
 	for _, window_data in ipairs(windows) do
@@ -60,7 +60,7 @@ function close_not_visible_windows(min_row, max_row)
 	windows = new_windows_table
 end
 
-function show_visible_windows(min_row, max_row)
+local function show_visible_windows(min_row, max_row)
 	local patterns = {
 		color_patterns.hex_regex,
 		color_patterns.rgb_regex,
@@ -102,7 +102,7 @@ function show_visible_windows(min_row, max_row)
 	end
 end
 
-function update_windows_visibility()
+local function update_windows_visibility()
 	local visible_rows = utils.get_win_visible_rows(0)
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
@@ -111,7 +111,7 @@ function update_windows_visibility()
 	close_not_visible_windows(min_row, max_row)
 end
 
-function turn_on()
+local function turn_on()
 	clear_highlights()
 	close_windows()
 	local visible_rows = utils.get_win_visible_rows(0)
@@ -121,13 +121,13 @@ function turn_on()
 	is_loaded = true
 end
 
-function turn_off()
+local function turn_off()
 	close_windows()
 	clear_highlights()
 	is_loaded = false
 end
 
-function setup(user_options)
+local function setup(user_options)
 	load_on_start_up = true
 	if (user_options ~= nil and user_options ~= {}) then
 		options.render = user_options.render ~= nil and user_options.render or options.render
@@ -135,7 +135,7 @@ function setup(user_options)
 	end
 end
 
-function toggle()
+local function toggle()
 	if is_loaded then
 		turn_off()
 	else

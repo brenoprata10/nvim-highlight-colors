@@ -19,7 +19,7 @@ function M.get_win_visible_rows(winid)
 	)
 end
 
-function create_highlight_name(color_value)
+local function create_highlight_name(color_value)
 	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:]+", "")
 end
 
