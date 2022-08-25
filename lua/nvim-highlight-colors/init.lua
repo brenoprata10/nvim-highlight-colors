@@ -143,7 +143,7 @@ local function toggle()
 	end
 end
 
-vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
+vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP"}, {
 	callback = turn_on,
 })
 
