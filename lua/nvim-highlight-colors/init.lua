@@ -77,7 +77,7 @@ function show_visible_windows(min_row, max_row)
 		end
 	end
 
-	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset)
+	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset, options.render)
 
 	for _, data in pairs(positions) do
 		if options.render == render_options.foreground or options.render == render_options.background then

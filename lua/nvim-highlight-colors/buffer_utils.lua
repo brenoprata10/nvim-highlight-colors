@@ -8,7 +8,7 @@ function M.get_buffer_contents(min_row, max_row)
 	return vim.api.nvim_buf_get_lines(0, min_row, max_row, false)
 end
 
-function M.get_positions_by_regex(patterns, min_row, max_row, row_offset)
+function M.get_positions_by_regex(patterns, min_row, max_row, row_offset, render)
 	local positions = {}
 	local content = M.get_buffer_contents(min_row, max_row)
 
@@ -28,8 +28,9 @@ function M.get_positions_by_regex(patterns, min_row, max_row, row_offset)
 				local pattern_without_usage_regex = M.remove_color_usage_pattern(match)
 				local start_column = vim.fn.match(value, pattern_without_usage_regex, column_offset)
 				local end_column = vim.fn.matchend(value, pattern_without_usage_regex, column_offset)
+				local starting_row = render == 'first_column' and 0 or -1
 
-				if (row >= 0) then
+				if (row >= starting_row) then
 					table.insert(positions, {
 						value = match,
 						row = row,
