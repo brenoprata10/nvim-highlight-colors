@@ -148,7 +148,12 @@ vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "Vim
 })
 
 vim.api.nvim_create_autocmd({"WinScrolled"}, {
-	callback = update_windows_visibility,
+	callback = function()
+		if not is_loaded then
+			return
+		end
+		update_windows_visibility()
+	end
 })
 
 vim.api.nvim_create_autocmd({"BufEnter"}, {
