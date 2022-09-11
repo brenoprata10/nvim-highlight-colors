@@ -144,7 +144,12 @@ function toggle()
 end
 
 vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
-	callback = turn_on,
+	callback = function ()
+		if not is_loaded then
+			return
+		end
+		turn_on()
+	end,
 })
 
 vim.api.nvim_create_autocmd({"WinScrolled"}, {
