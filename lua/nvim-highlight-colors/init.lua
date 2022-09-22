@@ -15,7 +15,7 @@ local row_offset = 2
 local windows = {}
 local is_loaded = false
 local options = {
-	render = render_options.first_column,
+	render = render_options.background,
 	enable_tailwind = false
 }
 
