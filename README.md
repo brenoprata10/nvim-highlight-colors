@@ -45,7 +45,7 @@ lua require("nvim-highlight-colors").toggle()
 ## Customization
 | Property |      Options      | Description
 |----------|:-------------:|:----------:|
-| render |  first_column(default), foreground, background | Changes how the colors will be rendered |
+| render |  background(default), first_column, foreground | Changes how the colors will be rendered |
 | enable_tailwind |  boolean(defaults to `false`) | Adds highlight to tailwind colors |
 
 Here is how you might use the options:
