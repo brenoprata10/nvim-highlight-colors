@@ -16,6 +16,7 @@ local windows = {}
 local is_loaded = false
 local options = {
 	render = render_options.background,
+	enable_named_colors = true,
 	enable_tailwind = false
 }
 
@@ -67,8 +68,11 @@ function show_visible_windows(min_row, max_row)
 		color_patterns.hsl_regex,
 		color_patterns.var_usage_regex,
 	}
-	for _, css_color_pattern in pairs(colors.get_css_named_color_patterns()) do
-		table.insert(patterns, css_color_pattern)
+
+	if options.enable_named_colors then
+		for _, css_color_pattern in pairs(colors.get_css_named_color_patterns()) do
+			table.insert(patterns, css_color_pattern)
+		end
 	end
 
 	if options.enable_tailwind then
@@ -130,8 +134,11 @@ end
 function setup(user_options)
 	load_on_start_up = true
 	if (user_options ~= nil and user_options ~= {}) then
-		options.render = user_options.render ~= nil and user_options.render or options.render
-		options.enable_tailwind = user_options.enable_tailwind ~= nil and user_options.enable_tailwind or options.enable_tailwind
+		for key, _ in pairs(options) do
+			if user_options[key] ~= nil then
+				options[key] = user_options[key]
+			end
+		end
 	end
 end
 
