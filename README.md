@@ -61,13 +61,3 @@ lua require("nvim-highlight-colors").setup {
 Tailwind CSS support:
 
 ![Screenshot from 2022-08-14 16-49-35](https://user-images.githubusercontent.com/26099427/184542562-855fcdd4-c08d-4805-b756-8cbbf442382f.png)
-
-## TODO
-- [X] Add RGB support
-- [X] Add RGBA support
-- [X] Multicolor per line support (for 'foreground' and 'background' render mode)
-- [X] Detect variables in css files and evaluate their value
-- [X] Create `Toggle` option for better usability
-- [X] Add option config to colorize whole background of colors(much like `colorizer` plugin)
-- [ ] Detect SCSS variable in scss files and evaluate their value
-- [ ] Detect Stylus variable in styl files and evaluate their value
