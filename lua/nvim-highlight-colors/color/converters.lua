@@ -31,6 +31,8 @@ function M.short_hex_to_hex(color)
 	return new_color
 end
 
+local a
+
 -- Function retrieved from this stackoverflow post:
 -- https://stackoverflow.com/questions/68317097/how-to-properly-convert-hsl-colors-to-rgb-colors-in-lua
 function M.hsl_to_rgb(h, s, l)

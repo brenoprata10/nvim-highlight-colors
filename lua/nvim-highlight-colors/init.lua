@@ -20,7 +20,9 @@ local options = {
 	enable_tailwind = false
 }
 
-function is_window_already_created(row, value)
+local M = {}
+
+function M.is_window_already_created(row, value)
 	for _, windows_data in ipairs(windows) do
 		if windows_data.row == row and value == windows_data.color then
 			return true
@@ -30,7 +32,7 @@ function is_window_already_created(row, value)
 	return false
 end
 
-function close_windows()
+function M.close_windows()
 	local ids = {}
 	for _, window_data in ipairs(windows) do
 		table.insert(ids, window_data.win_id)
@@ -39,11 +41,11 @@ function close_windows()
 	windows = {}
 end
 
-function clear_highlights()
+function M.clear_highlights()
 	vim.api.nvim_buf_clear_namespace(0, ns_id, 0, utils.get_last_row_index())
 end
 
-function close_not_visible_windows(min_row, max_row)
+function M.close_not_visible_windows(min_row, max_row)
 	local windows_to_remove = {}
 	local new_windows_table = {}
 	for _, window_data in ipairs(windows) do
@@ -61,7 +63,7 @@ function close_not_visible_windows(min_row, max_row)
 	windows = new_windows_table
 end
 
-function show_visible_windows(min_row, max_row)
+function M.show_visible_windows(min_row, max_row)
 	local patterns = {
 		color_patterns.hex_regex,
 		color_patterns.rgb_regex,
@@ -93,7 +95,7 @@ function show_visible_windows(min_row, max_row)
 				data.value,
 				options.render == render_options.foreground
 			)
-		elseif is_window_already_created(data.row, data.value) == false then
+		elseif M.is_window_already_created(data.row, data.value) == false then
 			table.insert(
 				windows,
 				{
@@ -106,32 +108,32 @@ function show_visible_windows(min_row, max_row)
 	end
 end
 
-function update_windows_visibility()
+function M.update_windows_visibility()
 	local visible_rows = utils.get_win_visible_rows(0)
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
 
-	show_visible_windows(min_row, max_row)
-	close_not_visible_windows(min_row, max_row)
+	M.show_visible_windows(min_row, max_row)
+	M.close_not_visible_windows(min_row, max_row)
 end
 
-function turn_on()
-	clear_highlights()
-	close_windows()
+function M.turn_on()
+	M.clear_highlights()
+	M.close_windows()
 	local visible_rows = utils.get_win_visible_rows(0)
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
-	show_visible_windows(min_row, max_row)
+	M.show_visible_windows(min_row, max_row)
 	is_loaded = true
 end
 
-function turn_off()
-	close_windows()
-	clear_highlights()
+function M.turn_off()
+	M.close_windows()
+	M.clear_highlights()
 	is_loaded = false
 end
 
-function setup(user_options)
+function M.setup(user_options)
 	load_on_start_up = true
 	if (user_options ~= nil and user_options ~= {}) then
 		for key, _ in pairs(options) do
@@ -142,11 +144,11 @@ function setup(user_options)
 	end
 end
 
-function toggle()
+function M.toggle()
 	if is_loaded then
-		turn_off()
+		M.turn_off()
 	else
-		turn_on()
+		M.turn_on()
 	end
 end
 
@@ -155,7 +157,7 @@ vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "Vim
 		if not is_loaded then
 			return
 		end
-		turn_on()
+		M.turn_on()
 	end,
 })
 
@@ -164,23 +166,21 @@ vim.api.nvim_create_autocmd({"WinScrolled"}, {
 		if not is_loaded then
 			return
 		end
-		update_windows_visibility()
+		M.update_windows_visibility()
 	end
 })
 
 vim.api.nvim_create_autocmd({"BufEnter"}, {
 	callback = function ()
 		if load_on_start_up == true then
-			turn_on()
+			M.turn_on()
 		end
 	end,
 })
 
-local M = {}
-
-M.turnOff = turn_off
-M.turnOn = turn_on
-M.setup = setup
-M.toggle = toggle
-
-return M
+return {
+	turnOff = M.turn_off,
+	turnOn = M.turn_on,
+	setup = M.setup,
+	toggle = M.toggle,
+}
