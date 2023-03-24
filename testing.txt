@@ -6,6 +6,8 @@ let s:xterm_8colors = {
   rgb(12 222 231 / 0.2)
   #FFFFFF88
 
+  0x78a9ff
+
   hsl(50 80% 40%);
   hsl(150deg 30% 60%);
   hsl(0.3turn 60% 45% / .7);

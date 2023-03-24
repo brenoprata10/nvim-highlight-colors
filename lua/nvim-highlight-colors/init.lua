@@ -66,6 +66,7 @@ end
 function M.show_visible_windows(min_row, max_row)
 	local patterns = {
 		color_patterns.hex_regex,
+		color_patterns.hex_0x_regex,
 		color_patterns.rgb_regex,
 		color_patterns.hsl_regex,
 		color_patterns.var_usage_regex,

@@ -2,6 +2,7 @@ local M = {}
 
 M.rgb_regex = "rgba?[(]+" .. string.rep("%s*%d+%s*", 3, "[,%s]") .. "[,%s/]?%s*%d*%.?%d*%s*[)]+"
 M.hex_regex = "#[%a%d]+[%a%d]+[%a%d]+"
+M.hex_0x_regex = "0x[%a%d]+[%a%d]+[%a%d]+"
 M.hsl_regex = "hsla?[(]+" .. string.rep("%s*%d?%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "[,%s]") .. "[%s,/]?%s*%d*%.?%d*%%?%s*[)]+"
 
 M.var_regex = "%-%-[%d%a-_]+"

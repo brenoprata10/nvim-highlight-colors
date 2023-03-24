@@ -40,7 +40,7 @@ function M.get_color_value(color, row_offset)
 		return M.get_css_var_color(color, row_offset)
 	end
 
-	return color
+	return color:gsub("0x", "#")
 end
 
 function M.get_rgb_values(color)
