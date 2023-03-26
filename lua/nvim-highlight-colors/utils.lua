@@ -23,7 +23,7 @@ local function create_highlight_name(color_value)
 	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:]+", "")
 end
 
-function M.create_window(row, col, bg_color, row_offset)
+function M.create_window(row, col, bg_color, row_offset, custom_colors)
 	local highlight_color_name = create_highlight_name(bg_color)
 	local buf = vim.api.nvim_create_buf(false, true)
 	local window = vim.api.nvim_open_win(buf, false, {
@@ -37,7 +37,7 @@ function M.create_window(row, col, bg_color, row_offset)
 		style= "minimal"
 	})
 	pcall(vim.api.nvim_set_hl, 0, highlight_color_name, {
-        bg = colors.get_color_value(bg_color, row_offset)
+        bg = colors.get_color_value(bg_color, row_offset, custom_colors)
     })
 	vim.api.nvim_win_set_option(
 		window,
@@ -51,9 +51,9 @@ function M.create_window(row, col, bg_color, row_offset)
 	return window
 end
 
-function M.create_highlight(ns_id, row, start_column, end_column, color, should_colorize_foreground)
+function M.create_highlight(ns_id, row, start_column, end_column, color, should_colorize_foreground, custom_colors)
 	local highlight_group = create_highlight_name(color)
-	local color_value = colors.get_color_value(color, 2)
+	local color_value = colors.get_color_value(color, 2, custom_colors)
 	if color_value == nil then
 		return
 	end

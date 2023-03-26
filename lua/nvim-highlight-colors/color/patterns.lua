@@ -31,6 +31,16 @@ function M.is_var_color(color)
 	return string.match(color, M.var_usage_regex)
 end
 
+function M.is_custom_color(color, custom_colors)
+	for _, custom_color in pairs(custom_colors) do
+		if color == custom_color.label:gsub("%%", "") then
+			return true
+		end
+	end
+
+	return false
+end
+
 function M.is_named_color(named_color_patterns, color)
 	for _, pattern in pairs(named_color_patterns) do
 		if string.match(color, pattern) then

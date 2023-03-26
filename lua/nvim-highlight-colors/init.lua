@@ -17,7 +17,8 @@ local is_loaded = false
 local options = {
 	render = render_options.background,
 	enable_named_colors = true,
-	enable_tailwind = false
+	enable_tailwind = false,
+	custom_colors = nil,
 }
 
 local M = {}
@@ -84,6 +85,12 @@ function M.show_visible_windows(min_row, max_row)
 		end
 	end
 
+	if (options.custom_colors ~= nil) then
+		for _, custom_color in pairs(options.custom_colors) do 
+			table.insert(patterns, custom_color.label)
+		end
+	end
+
 	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset, options.render)
 
 	for _, data in pairs(positions) do
@@ -94,13 +101,14 @@ function M.show_visible_windows(min_row, max_row)
 				data.start_column,
 				data.end_column,
 				data.value,
-				options.render == render_options.foreground
+				options.render == render_options.foreground,
+				options.custom_colors
 			)
 		elseif M.is_window_already_created(data.row, data.value) == false then
 			table.insert(
 				windows,
 				{
-					win_id = utils.create_window(data.row, 0, data.value, row_offset),
+					win_id = utils.create_window(data.row, 0, data.value, row_offset, options.custom_colors),
 					row = data.row,
 					color = data.value
 				}
@@ -137,7 +145,7 @@ end
 function M.setup(user_options)
 	load_on_start_up = true
 	if (user_options ~= nil and user_options ~= {}) then
-		for key, _ in pairs(options) do
+		for key, _ in pairs(user_options) do
 			if user_options[key] ~= nil then
 				options[key] = user_options[key]
 			end
