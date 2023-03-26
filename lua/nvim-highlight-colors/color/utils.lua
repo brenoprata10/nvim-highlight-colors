@@ -6,7 +6,7 @@ local patterns = require("nvim-highlight-colors.color.patterns")
 
 local M = {}
 
-function M.get_color_value(color, row_offset)
+function M.get_color_value(color, row_offset, custom_colors)
 	if (patterns.is_short_hex_color(color)) then
 		return converters.short_hex_to_hex(color)
 	end
@@ -38,6 +38,10 @@ function M.get_color_value(color, row_offset)
 
 	if (patterns.is_var_color(color)) then
 		return M.get_css_var_color(color, row_offset)
+	end
+
+	if (custom_colors ~= nil and patterns.is_custom_color(color, custom_colors)) then
+		return M.get_custom_color(color, custom_colors)
 	end
 
 	return color:gsub("0x", "#")
@@ -98,6 +102,16 @@ function M.get_css_named_color_patterns()
 	)
 
 	return css_pattern
+end
+
+function M.get_custom_color(color, custom_colors)
+	for _, custom_color in pairs(custom_colors) do
+		if color == custom_color.label:gsub("%%", "") then
+			return M.get_color_value(custom_color.color)
+		end
+	end
+
+	return nil
 end
 
 function M.get_css_var_color(color, row_offset)
