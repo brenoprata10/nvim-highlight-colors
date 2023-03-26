@@ -48,16 +48,29 @@ lua require("nvim-highlight-colors").toggle()
 | render |  background(default), first_column, foreground | Changes how the colors will be rendered |
 | enable_named_colors |  boolean(defaults to `true`) | Adds highlight to css color names |
 | enable_tailwind |  boolean(defaults to `false`) | Adds highlight to tailwind colors |
+| custom_colors | `Array<{label: string, color: string}>` | Adds custom colors based on declared label |
 
 Here is how you might use the options:
 ```
 lua require("nvim-highlight-colors").setup {
 	render = 'background', -- or 'foreground' or 'first_column'
 	enable_named_colors = true,
-	enable_tailwind = false
+	enable_tailwind = false,
+	custom_colors = {
+		-- label property will be used as a pattern initially(string.gmatch), therefore you need to escape the special characters by yourself with % 
+		{label = '%-%-theme%-font%-color', color = '#fff'},
+		{label = '%-%-theme%-background%-color', color = '#23222f'},
+		{label = '%-%-theme%-primary%-color', color = '#0f1219'},
+		{label = '%-%-theme%-secondary%-color', color = '#5a5d64'},
+		{label = '%-%-theme%-contrast%-color', color = '#fff'},
+		{label = '%-%-theme%-accent%-color', color = '#55678e'},
+	}
 }
 ```
-## Screenshots
+Custom colors support:
+
+![image](https://user-images.githubusercontent.com/26099427/227793884-ebabe163-0e19-4be6-8bf6-e4a904de5e6d.png)
+
 Tailwind CSS support:
 
 ![Screenshot from 2022-08-14 16-49-35](https://user-images.githubusercontent.com/26099427/184542562-855fcdd4-c08d-4805-b756-8cbbf442382f.png)
