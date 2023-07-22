@@ -2,7 +2,7 @@ local table_utils = require "nvim-highlight-colors.table_utils"
 
 local M = {}
 
-M.color_usage_regex = "[:=]+%s*"
+M.color_usage_regex = "[:=]+%s*[\"']?"
 
 function M.get_buffer_contents(min_row, max_row)
 	return vim.api.nvim_buf_get_lines(0, min_row, max_row, false)
