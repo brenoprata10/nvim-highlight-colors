@@ -10,7 +10,6 @@ local render_options = {
 	foreground = "foreground"
 }
 
-local load_on_start_up = false
 local row_offset = 2
 local windows = {}
 local is_loaded = false
@@ -143,7 +142,7 @@ function M.turn_off()
 end
 
 function M.setup(user_options)
-	load_on_start_up = true
+	is_loaded = true
 	if (user_options ~= nil and user_options ~= {}) then
 		for key, _ in pairs(user_options) do
 			if user_options[key] ~= nil then
@@ -163,25 +162,23 @@ end
 
 vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
 	callback = function ()
-		if not is_loaded then
-			return
+		if is_loaded then
+			M.turn_on()
 		end
-		M.turn_on()
 	end,
 })
 
 vim.api.nvim_create_autocmd({"WinScrolled"}, {
 	callback = function()
-		if not is_loaded then
-			return
+		if is_loaded then
+			M.update_windows_visibility()
 		end
-		M.update_windows_visibility()
 	end
 })
 
 vim.api.nvim_create_autocmd({"BufEnter"}, {
 	callback = function ()
-		if load_on_start_up == true then
+		if is_loaded then
 			M.turn_on()
 		end
 	end,
