@@ -7,7 +7,7 @@ local ns_id = vim.api.nvim_create_namespace("nvim-highlight-colors")
 local render_options = {
 	first_column = "first_column",
 	background = "background",
-	foreground = "foreground"
+	foreground = "foreground",
 }
 
 local row_offset = 2
@@ -84,8 +84,8 @@ function M.show_visible_windows(min_row, max_row)
 		end
 	end
 
-	if (options.custom_colors ~= nil) then
-		for _, custom_color in pairs(options.custom_colors) do 
+	if options.custom_colors ~= nil then
+		for _, custom_color in pairs(options.custom_colors) do
 			table.insert(patterns, custom_color.label)
 		end
 	end
@@ -104,14 +104,11 @@ function M.show_visible_windows(min_row, max_row)
 				options.custom_colors
 			)
 		elseif M.is_window_already_created(data.row, data.value) == false then
-			table.insert(
-				windows,
-				{
-					win_id = utils.create_window(data.row, 0, data.value, row_offset, options.custom_colors),
-					row = data.row,
-					color = data.value
-				}
-			)
+			table.insert(windows, {
+				win_id = utils.create_window(data.row, 0, data.value, row_offset, options.custom_colors),
+				row = data.row,
+				color = data.value,
+			})
 		end
 	end
 end
@@ -143,13 +140,14 @@ end
 
 function M.setup(user_options)
 	is_loaded = true
-	if (user_options ~= nil and user_options ~= {}) then
+	if user_options ~= nil and #user_options > 0 then
 		for key, _ in pairs(user_options) do
 			if user_options[key] ~= nil then
 				options[key] = user_options[key]
 			end
 		end
 	end
+	M.turn_on()
 end
 
 function M.toggle()
@@ -160,24 +158,24 @@ function M.toggle()
 	end
 end
 
-vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
-	callback = function ()
+vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP", "VimResized" }, {
+	callback = function()
 		if is_loaded then
 			M.turn_on()
 		end
 	end,
 })
 
-vim.api.nvim_create_autocmd({"WinScrolled"}, {
+vim.api.nvim_create_autocmd({ "WinScrolled" }, {
 	callback = function()
 		if is_loaded then
 			M.update_windows_visibility()
 		end
-	end
+	end,
 })
 
-vim.api.nvim_create_autocmd({"BufEnter"}, {
-	callback = function ()
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
+	callback = function()
 		if is_loaded then
 			M.turn_on()
 		end
