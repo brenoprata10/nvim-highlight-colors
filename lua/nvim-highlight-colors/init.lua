@@ -184,6 +184,25 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
 	end,
 })
 
+vim.api.nvim_create_user_command("ColorHighlight",
+function(opts)
+	local arg = string.lower(opts.fargs[1])
+	if arg == "on" then
+		M.turnOn()
+	elseif arg == "off" then
+		M.turnOff()
+	elseif arg == "toggle" then
+		M.toggle()
+	end
+end,
+{
+	nargs = 1,
+	complete = function()
+		return { "On", "Off", "Toggle" }
+	end,
+	desc = "Config color highlight"
+})
+
 return {
 	turnOff = M.turn_off,
 	turnOn = M.turn_on,
