@@ -28,12 +28,12 @@ require('nvim-highlight-colors').setup {}
 ```
 
 ## Commands
-There are only two available command for now:
+There are only three available commands for now:
 | Command   |      Description      |
 |----------|:-------------:|
-| HighlightColorsOn |  Turns on highlight feature |
-| HighlightColorsOff |    Turns off highlight feature   |
-| HighlightColorsToggle |    Toggles highlight feature   |
+| HighlightColors On |  Turns on highlight feature |
+| HighlightColors Off |  Turns off highlight feature   |
+| HighlightColors Toggle |  Toggles highlight feature   |
 
 You might also use:
 ```

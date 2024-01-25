@@ -4,6 +4,13 @@ local colors = require("nvim-highlight-colors.color.utils")
 local color_patterns = require("nvim-highlight-colors.color.patterns")
 local ns_id = vim.api.nvim_create_namespace("nvim-highlight-colors")
 
+if vim.g.loaded_nvim_highlight_colors ~= nil then
+	return {}
+end
+vim.g.loaded_nvim_highlight_colors = 1
+local lua_rocks_deps_loc = vim.fn.expand("<sfile>:h:r") .. "/../lua/example-plugin/deps"
+package.path = package.path .. lua_rocks_deps_loc .. "/lua-?/init.lua"
+
 local render_options = {
 	first_column = "first_column",
 	background = "background",
@@ -183,6 +190,28 @@ vim.api.nvim_create_autocmd({"BufEnter"}, {
 		end
 	end,
 })
+
+vim.api.nvim_create_user_command("HighlightColors",
+	function(opts)
+		local arg = string.lower(opts.fargs[1])
+		if arg == "on" then
+			M.turn_on()
+		elseif arg == "off" then
+			M.turn_off()
+		elseif arg == "toggle" then
+			M.toggle()
+		end
+	end,
+	{
+		nargs = 1,
+		complete = function()
+			return { "On", "Off", "Toggle" }
+		end,
+		desc = "Config color highlight"
+	}
+)
+
+utils.deprecate()
 
 return {
 	turnOff = M.turn_off,

@@ -3,6 +3,10 @@ local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 
 local M = {}
 
+local deprecated = {
+	cmd = {"HighlightColorsOn", "HighlightColorsOff", "HighlightColorsToggle"}
+}
+
 function M.get_last_row_index()
 	return vim.fn.line('$')
 end
@@ -84,6 +88,16 @@ function M.close_windows (windows)
 		if vim.api.nvim_win_is_valid(data) then
 			vim.api.nvim_win_close(data, false)
 		end
+	end
+end
+
+function M.deprecate()
+	for _, cmd in ipairs(deprecated.cmd) do
+		vim.api.nvim_create_user_command(cmd,
+			function()
+				print("The command \'" .. cmd .. "\' has been deprecated! Please use the new syntax: HighlightColors On/Off/Toggle")
+			end,
+			{ nargs = 0, desc = "Deprecated command" .. cmd })
 	end
 end
 
