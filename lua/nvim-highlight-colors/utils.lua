@@ -95,7 +95,7 @@ function M.deprecate()
 	for _, cmd in ipairs(deprecated.cmd) do
 		vim.api.nvim_create_user_command(cmd,
 			function()
-				print("The command \'" .. cmd .. "\' has been deprecated!")
+				print("The command \'" .. cmd .. "\' has been deprecated! Please use the new syntax: HighlightColors On/Off/Toggle")
 			end,
 			{ nargs = 0, desc = "Deprecated command" .. cmd })
 	end
