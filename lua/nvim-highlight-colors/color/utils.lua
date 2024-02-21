@@ -90,6 +90,7 @@ end
 function M.get_tailwind_named_color_patterns()
 	local tailwind_pattern = {}
 	table.insert(tailwind_pattern, patterns.tailwind_prefix .. "%-%a+[%-%d+]*")
+	print(patterns.tailwind_prefix .. "%-%a+[%-%d+]*")
 
 	return tailwind_pattern
 end

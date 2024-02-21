@@ -83,7 +83,7 @@ function M.create_highlight(ns_id, row, start_column, end_column, color, should_
 	)
 end
 
-function M.close_windows (windows)
+function M.close_windows(windows)
 	for _, data in pairs(windows) do
 		if vim.api.nvim_win_is_valid(data) then
 			vim.api.nvim_win_close(data, false)
