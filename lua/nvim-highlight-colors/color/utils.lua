@@ -28,11 +28,11 @@ function M.get_color_value(color, row_offset, custom_colors)
 		return converters.rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 	end
 
-	if (patterns.is_named_color(M.get_css_named_color_patterns(), color)) then
+	if (patterns.is_named_color({M.get_css_named_color_pattern()}, color)) then
 		return M.get_css_named_color_value(color)
 	end
 
-	if (patterns.is_named_color(M.get_tailwind_named_color_patterns(), color)) then
+	if (patterns.is_named_color({M.get_tailwind_named_color_pattern()}, color)) then
 		return M.get_tailwind_named_color_value(color)
 	end
 
@@ -87,22 +87,12 @@ function M.get_tailwind_named_color_value(color)
 	end
 end
 
-function M.get_tailwind_named_color_patterns()
-	local tailwind_pattern = {}
-	table.insert(tailwind_pattern, patterns.tailwind_prefix .. "%-%a+[%-%d+]*")
-	print(patterns.tailwind_prefix .. "%-%a+[%-%d+]*")
-
-	return tailwind_pattern
+function M.get_tailwind_named_color_pattern()
+	return patterns.tailwind_prefix .. "%-%a+[%-%d+]*"
 end
 
-function M.get_css_named_color_patterns()
-	local css_pattern = {}
-	table.insert(
-		css_pattern,
-		buffer_utils.color_usage_regex .. "%a+"
-	)
-
-	return css_pattern
+function M.get_css_named_color_pattern()
+	return buffer_utils.color_usage_regex .. "%a+"
 end
 
 function M.get_custom_color(color, custom_colors)

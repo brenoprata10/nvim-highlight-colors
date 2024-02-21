@@ -8,8 +8,6 @@ if vim.g.loaded_nvim_highlight_colors ~= nil then
 	return {}
 end
 vim.g.loaded_nvim_highlight_colors = 1
-local lua_rocks_deps_loc = vim.fn.expand("<sfile>:h:r") .. "/../lua/example-plugin/deps"
-package.path = package.path .. lua_rocks_deps_loc .. "/lua-?/init.lua"
 
 local render_options = {
 	background = "background",
@@ -48,16 +46,11 @@ function M.highlight_colors(min_row, max_row)
 	}
 
 	if options.enable_named_colors then
-		for _, css_color_pattern in pairs(colors.get_css_named_color_patterns()) do
-                       table.insert(patterns, css_color_pattern)
-               end
+	       table.insert(patterns, colors.get_css_named_color_pattern())
 	end
 
 	if options.enable_tailwind then
-		for _, tailwind_color_pattern in pairs(colors.get_tailwind_named_color_patterns()) do
-			print(tailwind_color_pattern)
-                       table.insert(patterns, tailwind_color_pattern)
-               end
+	       table.insert(patterns, colors.get_tailwind_named_color_pattern())
 	end
 
 	if (options.custom_colors ~= nil) then
@@ -66,7 +59,7 @@ function M.highlight_colors(min_row, max_row)
 		end
 	end
 
-	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset, options.render)
+	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset)
 
 	for _, data in pairs(positions) do
 		utils.create_highlight(
