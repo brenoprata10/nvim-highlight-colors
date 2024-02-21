@@ -2,6 +2,8 @@
 " xterm-8 colors "{{{2
 let s:xterm_8colors = {
 
+#fff #fff
+
 var(--theme-font-color);
 
   rgb(250,20,200)

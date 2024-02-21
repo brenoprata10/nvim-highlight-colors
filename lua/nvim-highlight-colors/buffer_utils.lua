@@ -16,6 +16,17 @@ function M.get_positions_by_regex(patterns, min_row, max_row, row_offset)
 		for key, value in pairs(content) do
 			for match in string.gmatch(value, pattern) do
 				local row = key + min_row - row_offset
+				-- Handles repeated colors in the same row: e.g. `#fff #fff`
+				-- This code will search if the color that is going to be added is already present in the same row in `positions` table
+				-- If the color already exists in the same row, it will set `column_offset` to the end_column of the previous color
+				-- With this logic we can control the offset of the regex when calling `vim.fn.match` 
+				-- Real case scenario:
+				--   1. Detects and adds the first color to `positions` table
+				--   2. Detects the second color in the same row
+				--   3. Sets column_offset based on the '↓' column
+				--         ↓ 
+				--      #fff #fff
+				--   4. Runs vim.fn.match with the column_offset on it. Avoids highlighting the same color again and leaving the second color without highlight
 				local repeated_colors_in_row = table_utils.filter(
 					positions,
 					function(position)
@@ -29,12 +40,12 @@ function M.get_positions_by_regex(patterns, min_row, max_row, row_offset)
 				local start_column = vim.fn.match(value, pattern_without_usage_regex, column_offset)
 				local end_column = vim.fn.matchend(value, pattern_without_usage_regex, column_offset)
 
-					table.insert(positions, {
-						value = match,
-						row = row,
-						start_column = start_column,
-						end_column = end_column
-					})
+				table.insert(positions, {
+					value = match,
+					row = row,
+					start_column = start_column,
+					end_column = end_column
+				})
 			end
 		end
 	end
