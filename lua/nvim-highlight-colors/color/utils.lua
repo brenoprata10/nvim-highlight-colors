@@ -114,7 +114,7 @@ function M.get_css_var_color(color, row_offset)
 	for _, pattern in pairs(value_patterns) do
 		table.insert(var_patterns, var_name_regex .. ":%s*" .. pattern)
 	end
-	for _, css_color_pattern in pairs(M.get_css_named_color_patterns()) do
+	for _, css_color_pattern in pairs({M.get_css_named_color_pattern()}) do
 		table.insert(var_patterns, css_color_pattern)
 	end
 
