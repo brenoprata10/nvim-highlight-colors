@@ -45,7 +45,7 @@ lua require("nvim-highlight-colors").toggle()
 ## Customization
 | Property |      Options      | Description
 |----------|:-------------:|:----------:|
-| render |  background(default), first_column, foreground | Changes how the colors will be rendered |
+| render |  background(default), foreground | Changes how the colors will be rendered |
 | enable_named_colors |  boolean(defaults to `true`) | Adds highlight to css color names |
 | enable_tailwind |  boolean(defaults to `false`) | Adds highlight to tailwind colors |
 | custom_colors | `Array<{label: string, color: string}>` | Adds custom colors based on declared label |
@@ -53,7 +53,7 @@ lua require("nvim-highlight-colors").toggle()
 Here is how you might use the options:
 ```
 lua require("nvim-highlight-colors").setup {
-	render = 'background', -- or 'foreground' or 'first_column'
+	render = 'background', -- or 'foreground'
 	enable_named_colors = true,
 	enable_tailwind = false,
 	custom_colors = {
