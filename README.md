@@ -1,7 +1,7 @@
 # nvim-highlight-colors
 Highlight colors with neovim
 
-![image](https://user-images.githubusercontent.com/26099427/179988116-ff24d0a7-084d-403f-bca8-63dd7bb08fed.png)
+![image](https://github.com/brenoprata10/nvim-highlight-colors/assets/26099427/aaf21ccb-df27-4b2f-a245-4048b11c1c7c)
 
 ## Features
 - Displays colors based on their HEX/rgb/hsl value
