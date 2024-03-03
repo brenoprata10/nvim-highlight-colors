@@ -9,11 +9,7 @@ if vim.g.loaded_nvim_highlight_colors ~= nil then
 end
 vim.g.loaded_nvim_highlight_colors = 1
 
-local render_options = {
-	background = "background",
-	foreground = "foreground"
-}
-
+local render_options = utils.render_options
 local row_offset = 2
 local is_loaded = false
 local options = {
@@ -68,7 +64,7 @@ function M.highlight_colors(min_row, max_row)
 			data.start_column,
 			data.end_column,
 			data.value,
-			options.render == render_options.foreground,
+			options.render,
 			options.custom_colors
 		)
 	end
@@ -90,6 +86,13 @@ end
 
 function M.clear_highlights()
 	vim.api.nvim_buf_clear_namespace(0, ns_id, 0, utils.get_last_row_index())
+	local virtual_texts = vim.api.nvim_buf_get_extmarks(0, ns_id, 0, -1, {})
+
+	if #virtual_texts then
+		for _, virtual_text in ipairs(virtual_texts) do
+			vim.api.nvim_buf_del_extmark(0, ns_id, virtual_text)
+		end
+	end
 end
 
 function M.toggle()
@@ -111,11 +114,7 @@ vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "Vim
 vim.api.nvim_create_autocmd({"WinScrolled"}, {
 	callback = function()
 		if is_loaded then
-			local visible_rows = utils.get_win_visible_rows(0)
-			local min_row = visible_rows[1]
-			local max_row = visible_rows[2]
-
-			M.highlight_colors(min_row, max_row)
+			M.turn_on()
 		end
 	end
 })
