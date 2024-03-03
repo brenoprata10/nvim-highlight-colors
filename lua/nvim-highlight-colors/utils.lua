@@ -1,6 +1,12 @@
 local colors = require("nvim-highlight-colors.color.utils")
 
-local M = {}
+local M = {
+	render_options = {
+		background = "background",
+		foreground = "foreground",
+		virtual = 'virtual'
+	}
+}
 
 local deprecated = {
 	cmd = {"HighlightColorsOn", "HighlightColorsOff", "HighlightColorsToggle"}
@@ -26,23 +32,37 @@ local function create_highlight_name(color_value)
 	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:\"']+", "")
 end
 
-function M.create_highlight(ns_id, row, start_column, end_column, color, should_colorize_foreground, custom_colors)
+function M.create_highlight(ns_id, row, start_column, end_column, color, render_option, custom_colors)
 	local highlight_group = create_highlight_name(color)
 	local color_value = colors.get_color_value(color, 2, custom_colors)
 	if color_value == nil then
 		return
 	end
 
-	if should_colorize_foreground then
-		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
-            		fg = color_value
-        	})
-	else
+	if render_option == M.render_options.background then
 		local foreground_color = colors.get_foreground_color_from_hex_color(color_value)
 		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
             		fg = foreground_color,
             		bg = color_value
         	})
+	else
+		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
+            		fg = color_value
+        	})
+	end
+
+	if render_option == M.render_options.virtual then
+		vim.api.nvim_buf_set_extmark(
+			0,
+			ns_id,
+			row + 1,
+			start_column,
+			{
+				virt_text = {{'■', vim.api.nvim_get_hl_id_by_name(highlight_group)}},
+				--virt_text_pos = 'inline'
+			}
+		)
+		return
 	end
 	vim.api.nvim_buf_add_highlight(
 		0,

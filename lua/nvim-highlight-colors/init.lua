@@ -9,11 +9,7 @@ if vim.g.loaded_nvim_highlight_colors ~= nil then
 end
 vim.g.loaded_nvim_highlight_colors = 1
 
-local render_options = {
-	background = "background",
-	foreground = "foreground"
-}
-
+local render_options = utils.render_options
 local row_offset = 2
 local is_loaded = false
 local options = {
@@ -68,7 +64,7 @@ function M.highlight_colors(min_row, max_row)
 			data.start_column,
 			data.end_column,
 			data.value,
-			options.render == render_options.foreground,
+			options.render,
 			options.custom_colors
 		)
 	end
