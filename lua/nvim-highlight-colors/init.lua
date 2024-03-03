@@ -1,4 +1,5 @@
 local utils = require("nvim-highlight-colors.utils")
+local table_utils = require("nvim-highlight-colors.table_utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors = require("nvim-highlight-colors.color.utils")
 local color_patterns = require("nvim-highlight-colors.color.patterns")
@@ -90,7 +91,9 @@ function M.clear_highlights()
 
 	if #virtual_texts then
 		for _, virtual_text in ipairs(virtual_texts) do
-			vim.api.nvim_buf_del_extmark(0, ns_id, virtual_text)
+			if (tonumber(virtual_text) ~= nil) then
+				vim.api.nvim_buf_del_extmark(0, ns_id, virtual_text)
+			end
 		end
 	end
 end
