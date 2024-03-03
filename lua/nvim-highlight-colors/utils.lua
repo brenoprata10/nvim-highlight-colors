@@ -35,6 +35,7 @@ end
 function M.create_highlight(ns_id, row, start_column, end_column, color, render_option, custom_colors)
 	local highlight_group = create_highlight_name(color)
 	local color_value = colors.get_color_value(color, 2, custom_colors)
+
 	if color_value == nil then
 		return
 	end

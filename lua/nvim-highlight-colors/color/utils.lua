@@ -33,7 +33,10 @@ function M.get_color_value(color, row_offset, custom_colors)
 	end
 
 	if (patterns.is_named_color({M.get_tailwind_named_color_pattern()}, color)) then
-		return M.get_tailwind_named_color_value(color)
+		local tailwind_color = M.get_tailwind_named_color_value(color)
+		if (tailwind_color ~= nil) then
+			return tailwind_color
+		end
 	end
 
 	if (patterns.is_var_color(color)) then
