@@ -56,10 +56,9 @@ function M.create_highlight(ns_id, row, start_column, end_column, color, render_
 			0,
 			ns_id,
 			row + 1,
-			start_column,
+			start_column - 1,
 			{
 				virt_text = {{'■', vim.api.nvim_get_hl_id_by_name(highlight_group)}},
-				--virt_text_pos = 'inline'
 			}
 		)
 		return
