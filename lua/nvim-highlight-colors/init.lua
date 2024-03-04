@@ -57,9 +57,9 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 	end
 
 	local positions = buffer_utils.get_positions_by_regex(
-		patterns, 
+		patterns,
 		min_row - 1,
-		max_row, 
+		max_row,
 		active_buffer_id,
 		row_offset
 	)
@@ -90,7 +90,7 @@ function M.turn_on(active_buffer_id)
 end
 
 function M.turn_off()
-	M.clear_highlights()
+	M.clear_highlights(0)
 	is_loaded = false
 end
 
@@ -112,7 +112,7 @@ function M.toggle()
 	if is_loaded then
 		M.turn_off()
 	else
-		M.turn_on()
+		M.turn_on(0)
 	end
 end
 
@@ -138,7 +138,7 @@ vim.api.nvim_create_user_command("HighlightColors",
 	function(opts)
 		local arg = string.lower(opts.fargs[1])
 		if arg == "on" then
-			M.turn_on()
+			M.turn_on(0)
 		elseif arg == "off" then
 			M.turn_off()
 		elseif arg == "toggle" then

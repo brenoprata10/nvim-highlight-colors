@@ -40,7 +40,6 @@ function M.get_color_value(color, row_offset, custom_colors)
 	end
 
 	if (patterns.is_var_color(color)) then
-		print(color)
 		return M.get_css_var_color(color, row_offset)
 	end
 
