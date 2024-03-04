@@ -16,7 +16,7 @@ function M.is_short_hex_color(color)
 end
 
 function M.is_hex_color(color)
-	return string.match(color, M.hex_regex)
+	return string.match(color, M.hex_regex) and string.len(color) == 7
 end
 
 function M.is_alpha_layer_hex(color)
