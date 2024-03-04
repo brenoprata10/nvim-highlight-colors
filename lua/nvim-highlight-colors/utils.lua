@@ -16,9 +16,9 @@ function M.get_last_row_index()
 	return vim.fn.line('$')
 end
 
-function M.get_win_visible_rows(winid)
+function M.get_visible_rows_by_buffer_id(buffer_id)
 	return vim.api.nvim_win_call(
-		winid,
+		vim.fn.bufwinid(buffer_id),
 		function()
 			return {
 				vim.fn.line('w0'),
@@ -32,7 +32,7 @@ local function create_highlight_name(color_value)
 	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:\"']+", "")
 end
 
-function M.create_highlight(ns_id, row, start_column, end_column, color, render_option, custom_colors)
+function M.create_highlight(activeBufferId, ns_id, row, start_column, end_column, color, render_option, custom_colors)
 	local highlight_group = create_highlight_name(color)
 	local color_value = colors.get_color_value(color, 2, custom_colors)
 
@@ -54,7 +54,7 @@ function M.create_highlight(ns_id, row, start_column, end_column, color, render_
 
 	if render_option == M.render_options.virtual then
 		vim.api.nvim_buf_set_extmark(
-			0,
+			activeBufferId,
 			ns_id,
 			row + 1,
 			start_column - 1,
@@ -65,7 +65,7 @@ function M.create_highlight(ns_id, row, start_column, end_column, color, render_
 		return
 	end
 	vim.api.nvim_buf_add_highlight(
-		0,
+		activeBufferId,
 		ns_id,
 		highlight_group,
 		row + 1,

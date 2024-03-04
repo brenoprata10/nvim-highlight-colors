@@ -4,13 +4,13 @@ local M = {}
 
 M.color_usage_regex = "[:=]+%s*[\"']?"
 
-function M.get_buffer_contents(min_row, max_row)
-	return vim.api.nvim_buf_get_lines(0, min_row, max_row, false)
+function M.get_buffer_contents(min_row, max_row, active_buffer_id)
+	return vim.api.nvim_buf_get_lines(active_buffer_id, min_row, max_row, false)
 end
 
-function M.get_positions_by_regex(patterns, min_row, max_row, row_offset)
+function M.get_positions_by_regex(patterns, min_row, max_row, active_buffer_id, row_offset)
 	local positions = {}
-	local content = M.get_buffer_contents(min_row, max_row)
+	local content = M.get_buffer_contents(min_row, max_row, active_buffer_id)
 
 	for _, pattern in pairs(patterns) do
 		for key, value in pairs(content) do

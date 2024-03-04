@@ -33,7 +33,7 @@ function M.setup(user_options)
 	end
 end
 
-function M.highlight_colors(min_row, max_row)
+function M.highlight_colors(min_row, max_row, active_buffer_id)
 	local patterns = {
 		color_patterns.hex_regex,
 		color_patterns.hex_0x_regex,
@@ -56,10 +56,17 @@ function M.highlight_colors(min_row, max_row)
 		end
 	end
 
-	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, row_offset)
+	local positions = buffer_utils.get_positions_by_regex(
+		patterns, 
+		min_row - 1,
+		max_row, 
+		active_buffer_id,
+		row_offset
+	)
 
 	for _, data in pairs(positions) do
 		utils.create_highlight(
+			active_buffer_id,
 			ns_id,
 			data.row,
 			data.start_column,
@@ -71,12 +78,14 @@ function M.highlight_colors(min_row, max_row)
 	end
 end
 
-function M.turn_on()
-	M.clear_highlights()
-	local visible_rows = utils.get_win_visible_rows(0)
+function M.turn_on(active_buffer_id)
+	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
+
+	M.clear_highlights(buffer_id)
+	local visible_rows = utils.get_visible_rows_by_buffer_id(buffer_id)
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
-	M.highlight_colors(min_row, max_row)
+	M.highlight_colors(min_row, max_row, active_buffer_id)
 	is_loaded = true
 end
 
@@ -85,14 +94,15 @@ function M.turn_off()
 	is_loaded = false
 end
 
-function M.clear_highlights()
-	vim.api.nvim_buf_clear_namespace(0, ns_id, 0, utils.get_last_row_index())
-	local virtual_texts = vim.api.nvim_buf_get_extmarks(0, ns_id, 0, -1, {})
+function M.clear_highlights(active_buffer_id)
+	vim.api.nvim_buf_clear_namespace(active_buffer_id, ns_id, 0, utils.get_last_row_index())
+	local virtual_texts = vim.api.nvim_buf_get_extmarks(active_buffer_id, ns_id, 0, -1, {})
 
 	if #virtual_texts then
-		for _, virtual_text in ipairs(virtual_texts) do
-			if (tonumber(virtual_text) ~= nil) then
-				vim.api.nvim_buf_del_extmark(0, ns_id, virtual_text)
+		for _, virtual_text in pairs(virtual_texts) do
+			local extmart_id = virtual_text[1]
+			if (tonumber(extmart_id) ~= nil) then
+				vim.api.nvim_buf_del_extmark(active_buffer_id, ns_id, extmart_id)
 			end
 		end
 	end
@@ -106,28 +116,22 @@ function M.toggle()
 	end
 end
 
+function M.handle_autocmd_callback(props)
+	if is_loaded then
+		M.turn_on(props.buf)
+	end
+end
+
 vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
-	callback = function ()
-		if is_loaded then
-			M.turn_on()
-		end
-	end,
+	callback = M.handle_autocmd_callback,
 })
 
 vim.api.nvim_create_autocmd({"WinScrolled"}, {
-	callback = function()
-		if is_loaded then
-			M.turn_on()
-		end
-	end
+	callback = M.handle_autocmd_callback,
 })
 
 vim.api.nvim_create_autocmd({"BufEnter"}, {
-	callback = function ()
-		if is_loaded then
-			M.turn_on()
-		end
-	end,
+	callback = M.handle_autocmd_callback,
 })
 
 vim.api.nvim_create_user_command("HighlightColors",
