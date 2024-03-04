@@ -78,7 +78,7 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 	end
 end
 
-function M.turn_on(active_buffer_id)
+function M.refresh_highlights(active_buffer_id)
 	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
 
 	M.clear_highlights(buffer_id)
@@ -86,11 +86,25 @@ function M.turn_on(active_buffer_id)
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
 	M.highlight_colors(min_row, max_row, buffer_id)
+end
+
+function M.turn_on()
+	local buffers = vim.fn.getbufinfo({ buflisted = true })
+
+	for _, buffer in ipairs(buffers) do
+		M.refresh_highlights(buffer.bufnr)
+	end
+
 	is_loaded = true
 end
 
 function M.turn_off()
-	M.clear_highlights()
+	local buffers = vim.fn.getbufinfo({ buflisted = true })
+
+	for _, buffer in ipairs(buffers) do
+		M.clear_highlights(buffer.bufnr)
+	end
+
 	is_loaded = false
 end
 
@@ -104,7 +118,7 @@ function M.clear_highlights(active_buffer_id)
 		for _, virtual_text in pairs(virtual_texts) do
 			local extmart_id = virtual_text[1]
 			if (tonumber(extmart_id) ~= nil) then
-				vim.api.nvim_buf_del_extmark(active_buffer_id, ns_id, extmart_id)
+				vim.api.nvim_buf_del_extmark(buffer_id, ns_id, extmart_id)
 			end
 		end
 	end
@@ -114,14 +128,13 @@ function M.toggle()
 	if is_loaded then
 		M.turn_off()
 	else
-		local active_buffer_id = vim.fn.bufnr()
-		M.turn_on(active_buffer_id)
+		M.turn_on()
 	end
 end
 
 function M.handle_autocmd_callback(props)
 	if is_loaded then
-		M.turn_on(props.buf)
+		M.refresh_highlights(props.buf)
 	end
 end
 
