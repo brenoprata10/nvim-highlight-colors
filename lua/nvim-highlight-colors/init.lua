@@ -114,7 +114,8 @@ function M.toggle()
 	if is_loaded then
 		M.turn_off()
 	else
-		M.turn_on()
+		local active_buffer_id = vim.fn.bufnr()
+		M.turn_on(active_buffer_id)
 	end
 end
 
