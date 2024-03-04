@@ -40,6 +40,7 @@ function M.get_color_value(color, row_offset, custom_colors)
 	end
 
 	if (patterns.is_var_color(color)) then
+		print(color)
 		return M.get_css_var_color(color, row_offset)
 	end
 
@@ -127,7 +128,7 @@ function M.get_css_var_color(color, row_offset)
 		table.insert(var_patterns, css_color_pattern)
 	end
 
-	local var_position = buffer_utils.get_positions_by_regex(var_patterns, 0, vim.fn.line('$'), row_offset)
+	local var_position = buffer_utils.get_positions_by_regex(var_patterns, 0, vim.fn.line('$'), 0, row_offset)
 
 	if (#var_position > 0) then
 		local hex_color = string.match(var_position[1].value, patterns.hex_regex)
