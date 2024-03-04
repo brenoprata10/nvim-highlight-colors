@@ -15,6 +15,10 @@ function M.is_short_hex_color(color)
 	return string.match(color, M.hex_regex) and string.len(color) == 4
 end
 
+function M.is_hex_color(color)
+	return string.match(color, M.hex_regex)
+end
+
 function M.is_alpha_layer_hex(color)
 	return string.match(color, M.hex_regex) ~= nil and string.len(color) == 9
 end

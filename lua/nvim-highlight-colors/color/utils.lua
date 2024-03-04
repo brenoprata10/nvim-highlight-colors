@@ -47,7 +47,13 @@ function M.get_color_value(color, row_offset, custom_colors)
 		return M.get_custom_color(color, custom_colors)
 	end
 
-	return color:gsub("0x", "#")
+	local hex_color = color:gsub("0x", "#")
+
+	if (patterns.is_hex_color(hex_color)) then
+		return hex_color
+	end
+
+	return nil
 end
 
 function M.get_rgb_values(color)
