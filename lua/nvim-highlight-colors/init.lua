@@ -85,18 +85,20 @@ function M.turn_on(active_buffer_id)
 	local visible_rows = utils.get_visible_rows_by_buffer_id(buffer_id)
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
-	M.highlight_colors(min_row, max_row, active_buffer_id)
+	M.highlight_colors(min_row, max_row, buffer_id)
 	is_loaded = true
 end
 
 function M.turn_off()
-	M.clear_highlights(0)
+	M.clear_highlights()
 	is_loaded = false
 end
 
 function M.clear_highlights(active_buffer_id)
-	vim.api.nvim_buf_clear_namespace(active_buffer_id, ns_id, 0, utils.get_last_row_index())
-	local virtual_texts = vim.api.nvim_buf_get_extmarks(active_buffer_id, ns_id, 0, -1, {})
+	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
+
+	vim.api.nvim_buf_clear_namespace(buffer_id, ns_id, 0, utils.get_last_row_index())
+	local virtual_texts = vim.api.nvim_buf_get_extmarks(buffer_id, ns_id, 0, -1, {})
 
 	if #virtual_texts then
 		for _, virtual_text in pairs(virtual_texts) do
@@ -112,7 +114,7 @@ function M.toggle()
 	if is_loaded then
 		M.turn_off()
 	else
-		M.turn_on(0)
+		M.turn_on()
 	end
 end
 
@@ -138,7 +140,7 @@ vim.api.nvim_create_user_command("HighlightColors",
 	function(opts)
 		local arg = string.lower(opts.fargs[1])
 		if arg == "on" then
-			M.turn_on(0)
+			M.turn_on()
 		elseif arg == "off" then
 			M.turn_off()
 		elseif arg == "toggle" then
