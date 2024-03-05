@@ -1,5 +1,7 @@
 local M = {}
 
+-- Extracted from StackOverflow. Only used for debugging purposes
+--
 function M.print(node)
     local cache, stack, output = {},{},{}
     local depth = 1
