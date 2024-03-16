@@ -18,6 +18,7 @@ local options = {
 	enable_named_colors = true,
 	enable_tailwind = false,
 	custom_colors = nil,
+	virtual_symbol = "■",
 }
 
 local M = {}
@@ -73,7 +74,8 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			data.end_column,
 			data.value,
 			options.render,
-			options.custom_colors
+			options.custom_colors,
+			options.virtual_symbol
 		)
 	end
 end
