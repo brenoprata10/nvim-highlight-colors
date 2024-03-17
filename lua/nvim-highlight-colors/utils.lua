@@ -34,7 +34,7 @@ local function create_highlight_name(color_value)
 	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:\"']+", "")
 end
 
-function M.create_highlight(activeBufferId, ns_id, row, start_column, end_column, color, render_option, custom_colors)
+function M.create_highlight(activeBufferId, ns_id, row, start_column, end_column, color, render_option, custom_colors, virtual_symbol)
 	local highlight_group = create_highlight_name(color)
 	local color_value = colors.get_color_value(color, 2, custom_colors)
 
@@ -61,7 +61,7 @@ function M.create_highlight(activeBufferId, ns_id, row, start_column, end_column
 			row + 1,
 			start_column - 1,
 			{
-				virt_text = {{'■', vim.api.nvim_get_hl_id_by_name(highlight_group)}},
+				virt_text = {{virtual_symbol, vim.api.nvim_get_hl_id_by_name(highlight_group)}},
 			}
 		)
 		return
