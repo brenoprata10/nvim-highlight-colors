@@ -46,14 +46,16 @@ lua require("nvim-highlight-colors").toggle()
 | Property |      Options      | Description
 |----------|:-------------:|:----------:|
 | render |  background(default), foreground, virtual | Changes how the colors will be rendered |
+| virtual_symbol |  string (defaults to `■`) | Changes the symbol used to render the colors in virtual mode |
 | enable_named_colors |  boolean(defaults to `true`) | Adds highlight to css color names |
 | enable_tailwind |  boolean(defaults to `false`) | Adds highlight to tailwind colors |
 | custom_colors | `Array<{label: string, color: string}>` | Adds custom colors based on declared label |
 
 Here is how you might use the options:
-```
-lua require("nvim-highlight-colors").setup {
+```lua
+require("nvim-highlight-colors").setup {
 	render = 'background', -- or 'foreground' or 'virtual'
+	virtual_symbol = '■',
 	enable_named_colors = true,
 	enable_tailwind = false,
 	custom_colors = {
@@ -74,3 +76,8 @@ Custom colors support:
 Tailwind CSS support:
 
 ![Screenshot from 2022-08-14 16-49-35](https://user-images.githubusercontent.com/26099427/184542562-855fcdd4-c08d-4805-b756-8cbbf442382f.png)
+
+Virtual text support:
+
+![Screenshot of nvim-highlight-colors rendering colors via virtual text](https://github.com/brenoprata10/nvim-highlight-colors/assets/1474821/1534a62b-7214-4344-8316-a687c6f9d709)
+
