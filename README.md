@@ -2,7 +2,7 @@
 
 > Highlight colors within Neovim
 
-![image](https://github.com/brenoprata10/nvim-highlight-colors/assets/26099427/53a342a8-af88-4a18-961b-73f2a2cd4b2a)
+<img width="640" src="https://github.com/mvllow/nvim-highlight-colors/assets/1474821/d99a800c-0ea9-44f9-bc1c-986236adf44a" alt="Background highlights for hex, rgb, hsl, named colors, and CSS variables" />
 
 ## Features
 
@@ -54,17 +54,21 @@ require("nvim-highlight-colors").setup {
 }
 ```
 
-### Tailwind CSS
+### Render modes
 
-![Screenshot from 2022-08-14 16-49-35](https://user-images.githubusercontent.com/26099427/184542562-855fcdd4-c08d-4805-b756-8cbbf442382f.png)
+> Examples shown use `enable_tailwind = true`
 
-### Custom colors
+**Background**
 
-![image](https://user-images.githubusercontent.com/26099427/227793884-ebabe163-0e19-4be6-8bf6-e4a904de5e6d.png)
+<img width="640" src="https://github.com/mvllow/nvim-highlight-colors/assets/1474821/bf8c0d2d-552c-485a-aeba-b3d281c8c333" alt="Background highlights for named colors, CSS variables, and Tailwind CSS colors" />
 
-### Virtual text
+**Foreground**
 
-![Screenshot of nvim-highlight-colors rendering colors via virtual text](https://github.com/brenoprata10/nvim-highlight-colors/assets/1474821/1534a62b-7214-4344-8316-a687c6f9d709)
+<img width="640" src="https://github.com/mvllow/nvim-highlight-colors/assets/1474821/4e2e9c7d-552b-4558-ab79-4fe37738f869" alt="Foreground highlights for named colors, CSS variables, and Tailwind CSS colors" />
+
+**Virtual text**
+
+<img width="640" src="https://github.com/mvllow/nvim-highlight-colors/assets/1474821/536b16e4-04ad-4ede-95f5-c1855386c294" alt="Virtual text highlights for named colors, CSS variables, and Tailwind CSS colors" />
 
 ## Commands
 
