@@ -48,26 +48,8 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 		table.insert(patterns, colors.get_css_named_color_pattern())
 	end
 
-	if options.custom_colors ~= nil then
-		for _, custom_color in pairs(options.custom_colors) do
-			table.insert(patterns, custom_color.label)
-		end
-	end
-
-	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, active_buffer_id, row_offset)
-
-	for _, data in pairs(positions) do
-		utils.create_highlight(
-			active_buffer_id,
-			ns_id,
-			data.row,
-			data.start_column,
-			data.end_column,
-			data.value,
-			options.render,
-			options.custom_colors,
-			options.virtual_symbol
-		)
+	if options.enable_tailwind then
+		table.insert(patterns, colors.get_tailwind_named_color_pattern())
 	end
 
 	if options.enable_document_color then
@@ -95,8 +77,26 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 		end)
 	end
 
-	if options.enable_tailwind then
-		table.insert(patterns, colors.get_tailwind_named_color_pattern())
+	if options.custom_colors ~= nil then
+		for _, custom_color in pairs(options.custom_colors) do
+			table.insert(patterns, custom_color.label)
+		end
+	end
+
+	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, active_buffer_id, row_offset)
+
+	for _, data in pairs(positions) do
+		utils.create_highlight(
+			active_buffer_id,
+			ns_id,
+			data.row,
+			data.start_column,
+			data.end_column,
+			data.value,
+			options.render,
+			options.custom_colors,
+			options.virtual_symbol
+		)
 	end
 end
 
