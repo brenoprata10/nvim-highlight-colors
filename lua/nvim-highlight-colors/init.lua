@@ -48,10 +48,6 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 		table.insert(patterns, colors.get_css_named_color_pattern())
 	end
 
-	if options.enable_tailwind then
-		table.insert(patterns, colors.get_tailwind_named_color_pattern())
-	end
-
 	if options.custom_colors ~= nil then
 		for _, custom_color in pairs(options.custom_colors) do
 			table.insert(patterns, custom_color.label)
@@ -97,6 +93,10 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 				end
 			end
 		end)
+	end
+
+	if options.enable_tailwind then
+		table.insert(patterns, colors.get_tailwind_named_color_pattern())
 	end
 end
 
