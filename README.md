@@ -44,6 +44,9 @@ require("nvim-highlight-colors").setup {
 	---Highlight tailwind colors, e.g. 'bg-blue-500'
 	enable_tailwind = false,
 
+    ---Highlight custom tailwind colors, e.g. 'bg-your-color-200'
+    enable_document_color = false, -- / true
+
 	---Set custom colors
 	---Label must be properly escaped with '%' to adhere to `string.gmatch`
 	--- :help string.gmatch
