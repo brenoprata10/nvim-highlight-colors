@@ -19,13 +19,14 @@ local options = {
 	enable_tailwind = false,
 	custom_colors = nil,
 	virtual_symbol = "■",
+	enable_document_color = false,
 }
 
 local M = {}
 
 function M.setup(user_options)
 	is_loaded = true
-	if (user_options ~= nil and user_options ~= {}) then
+	if user_options ~= nil and user_options ~= {} then
 		for key, _ in pairs(user_options) do
 			if user_options[key] ~= nil then
 				options[key] = user_options[key]
@@ -44,26 +45,20 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 	}
 
 	if options.enable_named_colors then
-	       table.insert(patterns, colors.get_css_named_color_pattern())
+		table.insert(patterns, colors.get_css_named_color_pattern())
 	end
 
 	if options.enable_tailwind then
-	       table.insert(patterns, colors.get_tailwind_named_color_pattern())
+		table.insert(patterns, colors.get_tailwind_named_color_pattern())
 	end
 
-	if (options.custom_colors ~= nil) then
+	if options.custom_colors ~= nil then
 		for _, custom_color in pairs(options.custom_colors) do
 			table.insert(patterns, custom_color.label)
 		end
 	end
 
-	local positions = buffer_utils.get_positions_by_regex(
-		patterns,
-		min_row - 1,
-		max_row,
-		active_buffer_id,
-		row_offset
-	)
+	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, active_buffer_id, row_offset)
 
 	for _, data in pairs(positions) do
 		utils.create_highlight(
@@ -77,6 +72,31 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			options.custom_colors,
 			options.virtual_symbol
 		)
+	end
+
+	if options.enable_document_color then
+		local param = { textDocument = vim.lsp.util.make_text_document_params() }
+		vim.lsp.buf_request_all(active_buffer_id, "textDocument/documentColor", param, function(resps)
+			for _, resp in pairs(resps) do
+				if resp.error == nil and resp.result then
+					for _, color in pairs(resp.result) do
+						local r, g, b, a =
+							color.color.red or 0, color.color.green or 0, color.color.blue or 0, color.color.alpha or 0
+
+						utils.create_highlight(
+							active_buffer_id,
+							ns_id,
+							color.range.start.line - 1,
+							color.range.start.character,
+							color.range["end"].character,
+							string.format("#%02x%02x%02x", r * a * 255, g * a * 255, b * a * 255),
+							options.render,
+							options.custom_colors
+						)
+					end
+				end
+			end
+		end)
 	end
 end
 
@@ -119,7 +139,7 @@ function M.clear_highlights(active_buffer_id)
 	if #virtual_texts then
 		for _, virtual_text in pairs(virtual_texts) do
 			local extmart_id = virtual_text[1]
-			if (tonumber(extmart_id) ~= nil) then
+			if tonumber(extmart_id) ~= nil then
 				vim.api.nvim_buf_del_extmark(buffer_id, ns_id, extmart_id)
 			end
 		end
@@ -140,37 +160,34 @@ function M.handle_autocmd_callback(props)
 	end
 end
 
-vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
+vim.api.nvim_create_autocmd({ "TextChanged", "TextChangedI", "TextChangedP", "VimResized" }, {
 	callback = M.handle_autocmd_callback,
 })
 
-vim.api.nvim_create_autocmd({"WinScrolled"}, {
+vim.api.nvim_create_autocmd({ "WinScrolled" }, {
 	callback = M.handle_autocmd_callback,
 })
 
-vim.api.nvim_create_autocmd({"BufEnter"}, {
+vim.api.nvim_create_autocmd({ "BufEnter" }, {
 	callback = M.handle_autocmd_callback,
 })
 
-vim.api.nvim_create_user_command("HighlightColors",
-	function(opts)
-		local arg = string.lower(opts.fargs[1])
-		if arg == "on" then
-			M.turn_on()
-		elseif arg == "off" then
-			M.turn_off()
-		elseif arg == "toggle" then
-			M.toggle()
-		end
+vim.api.nvim_create_user_command("HighlightColors", function(opts)
+	local arg = string.lower(opts.fargs[1])
+	if arg == "on" then
+		M.turn_on()
+	elseif arg == "off" then
+		M.turn_off()
+	elseif arg == "toggle" then
+		M.toggle()
+	end
+end, {
+	nargs = 1,
+	complete = function()
+		return { "On", "Off", "Toggle" }
 	end,
-	{
-		nargs = 1,
-		complete = function()
-			return { "On", "Off", "Toggle" }
-		end,
-		desc = "Config color highlight"
-	}
-)
+	desc = "Config color highlight",
+})
 
 utils.deprecate()
 
