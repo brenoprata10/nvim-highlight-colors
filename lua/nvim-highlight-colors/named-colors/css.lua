@@ -82,6 +82,7 @@ return {
 	fuchsia = '#FF00FF',
 	magenta = '#FF00FF',
 	mediumorchid = '#BA55D3',
+	rebeccapurple = '#663399',
 	mediumpurple = '#9370DB',
 	blueviolet = '#8A2BE2',
 	darkviolet = '#9400D3',
