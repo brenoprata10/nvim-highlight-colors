@@ -62,6 +62,7 @@ function M.create_highlight(activeBufferId, ns_id, row, start_column, end_column
 			start_column - 1,
 			{
 				virt_text = {{virtual_symbol, vim.api.nvim_get_hl_id_by_name(highlight_group)}},
+				hl_mode = "combine",
 			}
 		)
 		return
