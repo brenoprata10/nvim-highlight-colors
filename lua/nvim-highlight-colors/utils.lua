@@ -66,15 +66,19 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 		if (is_already_highlighted) then
 			return
 		end
-		vim.api.nvim_buf_set_extmark(
-			active_buffer_id,
-			ns_id,
-			start_extmark_row,
-			start_extmark_column,
-			{
-				virt_text = {{virtual_symbol, vim.api.nvim_get_hl_id_by_name(highlight_group)}},
-				hl_mode = "combine",
-			}
+		pcall(
+			function() 
+				vim.api.nvim_buf_set_extmark(
+					active_buffer_id,
+					ns_id,
+					start_extmark_row,
+					start_extmark_column,
+					{
+						virt_text = {{virtual_symbol, vim.api.nvim_get_hl_id_by_name(highlight_group)}},
+						hl_mode = "combine",
+					}
+				)
+			end
 		)
 		return
 	end
