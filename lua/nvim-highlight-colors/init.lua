@@ -1,5 +1,4 @@
 local utils = require("nvim-highlight-colors.utils")
-local table_utils = require("nvim-highlight-colors.table_utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors = require("nvim-highlight-colors.color.utils")
 local color_patterns = require("nvim-highlight-colors.color.patterns")
@@ -78,6 +77,8 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			options.virtual_symbol
 		)
 	end
+
+	utils.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 end
 
 function M.refresh_highlights(active_buffer_id)
@@ -140,7 +141,7 @@ function M.handle_autocmd_callback(props)
 	end
 end
 
-vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized"}, {
+vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized", "LspAttach"}, {
 	callback = M.handle_autocmd_callback,
 })
 
@@ -171,8 +172,6 @@ vim.api.nvim_create_user_command("HighlightColors",
 		desc = "Config color highlight"
 	}
 )
-
-utils.deprecate()
 
 return {
 	turnOff = M.turn_off,
