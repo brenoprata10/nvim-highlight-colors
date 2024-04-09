@@ -67,7 +67,7 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 			return
 		end
 		pcall(
-			function() 
+			function()
 				vim.api.nvim_buf_set_extmark(
 					active_buffer_id,
 					ns_id,
@@ -102,10 +102,10 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 				param,
 				function(_, response)
 					M.highlight_lsp_document_color(
-						response, 
-						active_buffer_id, 
-						ns_id, 
-						positions, 
+						response,
+						active_buffer_id,
+						ns_id,
+						positions,
 						options
 					)
 				end,

@@ -92,7 +92,7 @@ function M.refresh_highlights(active_buffer_id)
 end
 
 function M.turn_on()
-	local buffers = vim.fn.getbufinfo({ buflisted = true })
+	local buffers = vim.fn.getbufinfo()
 
 	for _, buffer in ipairs(buffers) do
 		M.refresh_highlights(buffer.bufnr)
@@ -102,7 +102,7 @@ function M.turn_on()
 end
 
 function M.turn_off()
-	local buffers = vim.fn.getbufinfo({ buflisted = true })
+	local buffers = vim.fn.getbufinfo()
 
 	for _, buffer in ipairs(buffers) do
 		M.clear_highlights(buffer.bufnr)
@@ -135,21 +135,21 @@ function M.toggle()
 	end
 end
 
-function M.handle_autocmd_callback(props)
+function M.handle_autocmd_callback()
 	if is_loaded then
-		M.refresh_highlights(props.buf)
+		M.turn_on()
 	end
 end
 
-vim.api.nvim_create_autocmd({"TextChanged", "TextChangedI", "TextChangedP", "VimResized", "LspAttach"}, {
-	callback = M.handle_autocmd_callback,
-})
-
-vim.api.nvim_create_autocmd({"WinScrolled"}, {
-	callback = M.handle_autocmd_callback,
-})
-
-vim.api.nvim_create_autocmd({"BufEnter"}, {
+vim.api.nvim_create_autocmd({
+	"TextChanged",
+	"TextChangedI",
+	"TextChangedP",
+	"VimResized",
+	"LspAttach",
+	"WinScrolled",
+	"BufEnter",
+}, {
 	callback = M.handle_autocmd_callback,
 })
 
