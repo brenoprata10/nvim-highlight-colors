@@ -124,7 +124,7 @@ function M.get_css_var_color(color, row_offset)
 		table.insert(var_patterns, var_name_regex .. ":%s*" .. pattern)
 	end
 	for _, css_color_pattern in pairs({M.get_css_named_color_pattern()}) do
-		table.insert(var_patterns, css_color_pattern)
+		table.insert(var_patterns, var_name_regex .. css_color_pattern)
 	end
 
 	local var_position = buffer_utils.get_positions_by_regex(var_patterns, 0, vim.fn.line('$'), 0, row_offset)
@@ -140,7 +140,9 @@ function M.get_css_var_color(color, row_offset)
 		elseif hsl_color then
 			return M.get_color_value(hsl_color)
 		else
-			return M.get_css_named_color_value(var_position[1].value)
+			return M.get_css_named_color_value(
+				string.gsub(var_position[1].value, var_name_regex, "")
+			)
 		end
 	end
 
