@@ -8,6 +8,7 @@
 
 - Realtime color highlighting
 - Supports hex, rgb, hsl, CSS variables, and Tailwind CSS
+- LSP support! For any LSP that supports `textDocument/documentColor` like tailwindcss(https://github.com/tailwindlabs/tailwindcss-intellisense)
 - Multiple rendering modes: background, foreground, and virtual text
 
 ## Usage
