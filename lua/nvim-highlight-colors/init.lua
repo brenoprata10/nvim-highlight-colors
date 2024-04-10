@@ -92,7 +92,7 @@ function M.refresh_highlights(active_buffer_id)
 end
 
 function M.turn_on()
-	local buffers = vim.fn.getbufinfo()
+	local buffers = vim.fn.getbufinfo({ buflisted = true })
 
 	for _, buffer in ipairs(buffers) do
 		M.refresh_highlights(buffer.bufnr)
@@ -102,7 +102,7 @@ function M.turn_on()
 end
 
 function M.turn_off()
-	local buffers = vim.fn.getbufinfo()
+	local buffers = vim.fn.getbufinfo({ buflisted = true })
 
 	for _, buffer in ipairs(buffers) do
 		M.clear_highlights(buffer.bufnr)
@@ -135,9 +135,9 @@ function M.toggle()
 	end
 end
 
-function M.handle_autocmd_callback()
+function M.handle_autocmd_callback(props)
 	if is_loaded then
-		M.turn_on()
+		M.refresh_highlights(props.buf)
 	end
 end
 
