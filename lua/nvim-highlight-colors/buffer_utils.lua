@@ -18,15 +18,17 @@ function M.get_positions_by_regex(patterns, min_row, max_row, active_buffer_id, 
 				local row = key + min_row - row_offset
 				local column_offset = M.get_column_offset(positions, match, row)
 				local pattern_without_usage_regex = M.remove_color_usage_pattern(match)
-				local start_column = vim.fn.match(value, pattern_without_usage_regex, column_offset)
-				local end_column = vim.fn.matchend(value, pattern_without_usage_regex, column_offset)
+				local valid_start, start_column = pcall(vim.fn.match, value, pattern_without_usage_regex, column_offset)
+				local valid_end, end_column = pcall(vim.fn.matchend, value, pattern_without_usage_regex, column_offset)
 
-				table.insert(positions, {
-					value = match,
-					row = row,
-					start_column = start_column,
-					end_column = end_column
-				})
+				if valid_start and valid_end then
+					table.insert(positions, {
+						value = match,
+						row = row,
+						start_column = start_column,
+						end_column = end_column,
+					})
+				end
 			end
 		end
 	end
