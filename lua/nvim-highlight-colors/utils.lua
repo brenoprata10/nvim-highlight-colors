@@ -94,7 +94,8 @@ end
 
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
-	local clients = vim.lsp.get_active_clients()
+	local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
+	local clients = get_clients()
 	for _, client in pairs(clients) do
 		if client.server_capabilities.colorProvider then
 			client.request(
