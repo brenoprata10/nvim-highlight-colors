@@ -69,14 +69,17 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 		pcall(
 			function()
 				local nvim_version = vim.version()
+				local virt_text_pos = nvim_version.major == 0 and nvim_version.minor < 10 and 'eol' or 'inline'
+				local is_virt_text_eol = virt_text_pos == 'eol'
 				vim.api.nvim_buf_set_extmark(
 					active_buffer_id,
 					ns_id,
 					start_extmark_row,
-					start_extmark_column,
+					is_virt_text_eol and start_extmark_column or start_extmark_column + 1,
 					{
-						virt_text_pos = nvim_version.major == 0 and nvim_version.minor < 10 and 'eol' or 'inline',
-						virt_text = {{virtual_symbol, vim.api.nvim_get_hl_id_by_name(highlight_group)}},
+
+						virt_text_pos = virt_text_pos,
+						virt_text = {{is_virt_text_eol and virtual_symbol or virtual_symbol .. ' ', vim.api.nvim_get_hl_id_by_name(highlight_group)}},
 						hl_mode = "combine",
 					}
 				)
