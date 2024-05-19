@@ -87,13 +87,17 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 		)
 		return
 	end
-	vim.api.nvim_buf_add_highlight(
-		active_buffer_id,
-		ns_id,
-		highlight_group,
-		row + 1,
-		start_column,
-		end_column
+	pcall(
+		function()
+			vim.api.nvim_buf_add_highlight(
+				active_buffer_id,
+				ns_id,
+				highlight_group,
+				row + 1,
+				start_column,
+				end_column
+			)
+		end
 	)
 end
 
