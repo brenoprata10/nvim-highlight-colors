@@ -17,7 +17,7 @@ local options = {
 	enable_named_colors = true,
 	enable_tailwind = false,
 	custom_colors = nil,
-	virtual_symbol = "■",
+	virtual_symbol = "■ ",
 }
 
 local M = {}

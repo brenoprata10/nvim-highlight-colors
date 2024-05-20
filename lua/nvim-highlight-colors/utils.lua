@@ -79,7 +79,7 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 					{
 
 						virt_text_pos = virt_text_pos,
-						virt_text = {{is_virt_text_eol and virtual_symbol or virtual_symbol .. ' ', vim.api.nvim_get_hl_id_by_name(highlight_group)}},
+						virt_text = {{virtual_symbol, vim.api.nvim_get_hl_id_by_name(highlight_group)}},
 						hl_mode = "combine",
 					}
 				)
