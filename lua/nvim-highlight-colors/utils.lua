@@ -56,18 +56,19 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 		local start_extmark_column = start_column - 1
 		local end_extmark_column = end_column - 1
 
-		local is_already_highlighted = #vim.api.nvim_buf_get_extmarks(
-			active_buffer_id,
-			ns_id,
-			{start_extmark_row, start_extmark_column},
-			{start_extmark_row, end_extmark_column},
-			{}
-		) > 0
-		if (is_already_highlighted) then
-			return
-		end
 		pcall(
 			function()
+				local is_already_highlighted = #vim.api.nvim_buf_get_extmarks(
+					active_buffer_id,
+					ns_id,
+					{start_extmark_row, start_extmark_column},
+					{start_extmark_row, end_extmark_column},
+					{}
+				) > 0
+				if (is_already_highlighted) then
+					return
+				end
+
 				local nvim_version = vim.version()
 				local virt_text_pos = nvim_version.major == 0 and nvim_version.minor < 10 and 'eol' or 'inline'
 				local is_virt_text_eol = virt_text_pos == 'eol'
