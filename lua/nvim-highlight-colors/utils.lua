@@ -36,7 +36,7 @@ end
 ---@param active_buffer_id number
 ---@param ns_id number
 ---@param data {row: number, start_column: number, end_column: number, value: string}
----@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol'}
 ---
 ---For `options.custom_colors`, a table with the following structure is expected:
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
@@ -80,7 +80,8 @@ function M.create_highlight(active_buffer_id, ns_id, data, options)
 				end
 
 				local nvim_version = vim.version()
-				local virt_text_pos = nvim_version.major == 0 and nvim_version.minor < 10 and 'eol' or 'inline'
+				-- Safe guard for older neovim versions
+				local virt_text_pos = nvim_version.major == 0 and nvim_version.minor < 10 and 'eol' or options.virtual_symbol_position
 				local is_virt_text_eol = virt_text_pos == 'eol'
 				vim.api.nvim_buf_set_extmark(
 					active_buffer_id,
