@@ -115,4 +115,13 @@ function M.filter(table_param, fun)
 	return results
 end
 
+function M.merge(table_param, incoming_table)
+	local result = vim.deepcopy(table_param)
+	for index, value in pairs(incoming_table or {}) do
+		result[index] = value
+	end
+
+	return result
+end
+
 return M

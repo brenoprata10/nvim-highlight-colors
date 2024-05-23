@@ -76,7 +76,14 @@ require("nvim-highlight-colors").setup {
 	custom_colors = {
 		{ label = '%-%-theme%-primary%-color', color = '#0f1219' },
 		{ label = '%-%-theme%-secondary%-color', color = '#5a5d64' },
-	}
+	},
+
+    ---Highlight filetypes
+    ---Accepts filetypes as strings, or as named tables with custom options
+    ---e.g. `{ 'js', html = { enable_tailwind = true }, 'css' }`
+    filetypes = {
+        'all',
+    },
 }
 ```
 

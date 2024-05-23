@@ -1,8 +1,10 @@
 local utils = require("nvim-highlight-colors.utils")
+local table_utils = require("nvim-highlight-colors.table_utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors = require("nvim-highlight-colors.color.utils")
 local color_patterns = require("nvim-highlight-colors.color.patterns")
 local ns_id = vim.api.nvim_create_namespace("nvim-highlight-colors")
+local augroup = vim.api.nvim_create_augroup("nvim-highlight-colors.group", {})
 
 if vim.g.loaded_nvim_highlight_colors ~= nil then
 	return {}
@@ -25,18 +27,51 @@ local options = {
 	virtual_symbol_prefix = "",
 	virtual_symbol_suffix = " ",
 	virtual_symbol_position = "inline",
+	filetypes = { "all" },
 }
+local filetype_options = {}
+local last_filetype = ""
 
 local M = {}
 
 function M.setup(user_options)
 	is_loaded = true
-	if (user_options ~= nil and user_options ~= {}) then
-		for key, _ in pairs(user_options) do
-			if user_options[key] ~= nil then
-				options[key] = user_options[key]
-			end
+	options = table_utils.merge(options, user_options)
+
+	for key, value in pairs(options.filetypes) do
+		local filetype
+		if type(value) == "string" then
+			filetype = value
+			filetype_options[filetype] = table_utils.merge(options, {})
+		elseif type(value) == "table" and type(key) == "string" then
+			filetype = key
+			filetype_options[filetype] = table_utils.merge(options, value)
+		else
+			error(string.format("Invalid type '%s' found in filetypes '%s'. Only strings and named tables are allowed.", type(value), key))
 		end
+
+		local pattern
+		if filetype == "all" then
+			pattern = "*"
+		else
+			pattern = "*." .. filetype
+		end
+
+		vim.api.nvim_create_autocmd({
+			"TextChanged",
+			"TextChangedI",
+			"TextChangedP",
+			"VimResized",
+			"LspAttach",
+			"WinScrolled",
+			"BufEnter",
+		}, {
+			group = augroup,
+			pattern = pattern,
+			callback = function(props)
+				M.handle_autocmd_callback(props, filetype)
+			end,
+		})
 	end
 end
 
@@ -161,23 +196,15 @@ function M.toggle()
 	end
 end
 
-function M.handle_autocmd_callback(props)
+function M.handle_autocmd_callback(props, filetype)
 	if is_loaded then
+		if filetype ~= last_filetype then
+			options = filetype_options[filetype]
+			last_filetype = filetype
+		end
 		M.refresh_highlights(props.buf)
 	end
 end
-
-vim.api.nvim_create_autocmd({
-	"TextChanged",
-	"TextChangedI",
-	"TextChangedP",
-	"VimResized",
-	"LspAttach",
-	"WinScrolled",
-	"BufEnter",
-}, {
-	callback = M.handle_autocmd_callback,
-})
 
 vim.api.nvim_create_user_command("HighlightColors",
 	function(opts)
