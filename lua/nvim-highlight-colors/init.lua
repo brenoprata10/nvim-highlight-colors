@@ -1,5 +1,4 @@
 local utils = require("nvim-highlight-colors.utils")
-local table_utils = require("nvim-highlight-colors.table_utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors = require("nvim-highlight-colors.color.utils")
 local color_patterns = require("nvim-highlight-colors.color.patterns")
@@ -15,10 +14,10 @@ local row_offset = 2
 local is_loaded = false
 local options = {
 	render = render_options.background,
-	enable_hex_colors = true,
-	enable_rgb_colors = true,
-	enable_hsl_colors = true,
-	enable_var_usage_colors = true,
+	enable_hex = true,
+	enable_rgb = true,
+	enable_hsl = true,
+	enable_var_usage = true,
 	enable_named_colors = true,
 	enable_tailwind = false,
 	custom_colors = nil,
@@ -45,22 +44,22 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 
 	local patterns_config = {
 		HEX = {
-			is_enabled = options.enable_hex_colors,
+			is_enabled = options.enable_hex,
 			patterns = {
 				color_patterns.hex_regex,
 				color_patterns.hex_0x_regex
 			},
 		},
 		RGB = {
-			is_enabled = options.enable_rgb_colors,
+			is_enabled = options.enable_rgb,
 			patterns = { color_patterns.rgb_regex },
 		},
 		HSL = {
-			is_enabled = options.enable_hsl_colors,
+			is_enabled = options.enable_hsl,
 			patterns = { color_patterns.hsl_regex },
 		},
 		VAR_USAGE = {
-			is_enabled = options.enable_var_usage_colors,
+			is_enabled = options.enable_var_usage,
 			patterns = { color_patterns.var_usage_regex }
 		},
 		NAMED_COLORS = {
