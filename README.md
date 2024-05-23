@@ -43,9 +43,9 @@ require("nvim-highlight-colors").setup {
 	virtual_symbol_suffix = ' ',
 
 	---Set virtual symbol position()
-    ---@usage 'inline'|'eol'
-    ---inline mimics VS Code style
-    ---eol stands for `end of column`
+ 	---@usage 'inline'|'eol'
+ 	---inline mimics VS Code style
+ 	---eol stands for `end of column`
 	virtual_symbol_position = 'inline',
 
 	---Highlight named colors, e.g. 'green'
