@@ -31,15 +31,25 @@ local function create_highlight_name(color_value)
 	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:\"']+", "")
 end
 
-function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_column, color, render_option, custom_colors, virtual_symbol)
-	local highlight_group = create_highlight_name(color)
-	local color_value = colors.get_color_value(color, 2, custom_colors)
+
+---Creates the highlight based on the received params
+---@param active_buffer_id number
+---@param ns_id number
+---@param data {row: number, start_column: number, end_column: number, value: string}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string}
+---
+---For `options.custom_colors`, a table with the following structure is expected:
+---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
+---* `color`: A string representing the actual color value in a valid format (e.g., '#0f1219').
+function M.create_highlight(active_buffer_id, ns_id, data, options)
+	local highlight_group = create_highlight_name(data.value)
+	local color_value = colors.get_color_value(data.value, 2, options.custom_colors)
 
 	if color_value == nil then
 		return
 	end
 
-	if render_option == M.render_options.background then
+	if options.render == M.render_options.background then
 		local foreground_color = colors.get_foreground_color_from_hex_color(color_value)
 		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
             		fg = foreground_color,
@@ -51,10 +61,10 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
         	})
 	end
 
-	if render_option == M.render_options.virtual then
-		local start_extmark_row = row + 1
-		local start_extmark_column = start_column - 1
-		local end_extmark_column = end_column - 1
+	if options.render == M.render_options.virtual then
+		local start_extmark_row = data.row + 1
+		local start_extmark_column = data.start_column - 1
+		local end_extmark_column = data.end_column - 1
 
 		pcall(
 			function()
@@ -80,7 +90,10 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 					{
 
 						virt_text_pos = virt_text_pos,
-						virt_text = {{is_virt_text_eol and virtual_symbol or virtual_symbol .. ' ', vim.api.nvim_get_hl_id_by_name(highlight_group)}},
+						virt_text = {{
+							options.virtual_symbol .. options.virtual_symbol_suffix,
+							vim.api.nvim_get_hl_id_by_name(highlight_group)
+						}},
 						hl_mode = "combine",
 					}
 				)
@@ -94,9 +107,9 @@ function M.create_highlight(active_buffer_id, ns_id, row, start_column, end_colu
 				active_buffer_id,
 				ns_id,
 				highlight_group,
-				row + 1,
-				start_column,
-				end_column
+				data.row + 1,
+				data.start_column,
+				data.end_column
 			)
 		end
 	)
@@ -134,7 +147,7 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 	for _, match in pairs(response) do
 		local r, g, b, a =
 			match.color.red or 0, match.color.green or 0, match.color.blue or 0, match.color.alpha or 0
-		local color = string.format("#%02x%02x%02x", r * a * 255, g * a * 255, b * a * 255)
+		local value = string.format("#%02x%02x%02x", r * a * 255, g * a * 255, b * a * 255)
 		local range = match.range
 		local start_column = range.start.character
 		local end_column = range["end"].character
@@ -152,13 +165,13 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 			M.create_highlight(
 				active_buffer_id,
 				ns_id,
-				row,
-				start_column,
-				end_column,
-				color,
-				options.render,
-				options.custom_colors,
-				options.virtual_symbol
+				{
+					row = row,
+					start_column = start_column,
+					end_column = end_column,
+					value = value
+				},
+				options
 			)
 		end
 	end
