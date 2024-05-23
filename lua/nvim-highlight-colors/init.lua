@@ -22,6 +22,7 @@ local options = {
 	enable_tailwind = false,
 	custom_colors = nil,
 	virtual_symbol = "■",
+	virtual_symbol_prefix = "",
 	virtual_symbol_suffix = " ",
 	virtual_symbol_position = "inline",
 }

@@ -36,7 +36,7 @@ end
 ---@param active_buffer_id number
 ---@param ns_id number
 ---@param data {row: number, start_column: number, end_column: number, value: string}
----@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol'}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow'}
 ---
 ---For `options.custom_colors`, a table with the following structure is expected:
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
@@ -62,43 +62,13 @@ function M.create_highlight(active_buffer_id, ns_id, data, options)
 	end
 
 	if options.render == M.render_options.virtual then
-		local start_extmark_row = data.row + 1
-		local start_extmark_column = data.start_column - 1
-		local end_extmark_column = data.end_column - 1
-
 		pcall(
-			function()
-				local is_already_highlighted = #vim.api.nvim_buf_get_extmarks(
-					active_buffer_id,
-					ns_id,
-					{start_extmark_row, start_extmark_column},
-					{start_extmark_row, end_extmark_column},
-					{}
-				) > 0
-				if (is_already_highlighted) then
-					return
-				end
-
-				local nvim_version = vim.version()
-				-- Safe guard for older neovim versions
-				local virt_text_pos = nvim_version.major == 0 and nvim_version.minor < 10 and 'eol' or options.virtual_symbol_position
-				local is_virt_text_eol = virt_text_pos == 'eol'
-				vim.api.nvim_buf_set_extmark(
-					active_buffer_id,
-					ns_id,
-					start_extmark_row,
-					is_virt_text_eol and start_extmark_column or start_extmark_column + 1,
-					{
-
-						virt_text_pos = virt_text_pos,
-						virt_text = {{
-							options.virtual_symbol .. options.virtual_symbol_suffix,
-							vim.api.nvim_get_hl_id_by_name(highlight_group)
-						}},
-						hl_mode = "combine",
-					}
-				)
-			end
+			M.highlight_extmarks,
+			active_buffer_id,
+			ns_id,
+			data,
+			highlight_group,
+			options
 		)
 		return
 	end
@@ -114,6 +84,67 @@ function M.create_highlight(active_buffer_id, ns_id, data, options)
 			)
 		end
 	)
+end
+
+function M.highlight_extmarks(active_buffer_id, ns_id, data, highlight_group, options)
+	local start_extmark_row = data.row + 1
+	local start_extmark_column = data.start_column - 1
+	local end_extmark_column = data.end_column - 1
+	local is_already_highlighted = #vim.api.nvim_buf_get_extmarks(
+		active_buffer_id,
+		ns_id,
+		{start_extmark_row, start_extmark_column},
+		{start_extmark_row, end_extmark_column},
+		{}
+	) > 0
+	if (is_already_highlighted) then
+		return
+	end
+
+	local virtual_text_position = M.get_virtual_text_position(options)
+	local virtual_text_column = M.get_virtual_text_column(
+		virtual_text_position,
+		start_extmark_column,
+		data.end_column
+	)
+	vim.api.nvim_buf_set_extmark(
+		active_buffer_id,
+		ns_id,
+		start_extmark_row,
+		virtual_text_column,
+		{
+
+			virt_text_pos = virtual_text_position == 'eow' and 'inline' or virtual_text_position,
+			virt_text = {{
+				options.virtual_symbol_prefix .. options.virtual_symbol .. options.virtual_symbol_suffix,
+				vim.api.nvim_get_hl_id_by_name(highlight_group)
+			}},
+			hl_mode = "combine",
+		}
+	)
+end
+
+function M.get_virtual_text_position(options)
+	local nvim_version = vim.version()
+
+	-- Safe guard for older neovim versions
+	if nvim_version.major == 0 and nvim_version.minor < 10 then
+		return 'eol'
+	end
+
+	return options.virtual_symbol_position
+end
+
+function M.get_virtual_text_column(virtual_text_position, start_extmark_column, end_extmark_column)
+	if virtual_text_position == 'eol' then
+		return start_extmark_column
+	end
+
+	if virtual_text_position == 'eow' then
+		return end_extmark_column
+	end
+
+	return start_extmark_column + 1
 end
 
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
