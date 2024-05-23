@@ -14,6 +14,10 @@ local row_offset = 2
 local is_loaded = false
 local options = {
 	render = render_options.background,
+	enable_hex = true,
+	enable_rgb = true,
+	enable_hsl = true,
+	enable_var_usage = true,
 	enable_named_colors = true,
 	enable_tailwind = false,
 	custom_colors = nil,
@@ -36,20 +40,44 @@ function M.setup(user_options)
 end
 
 function M.highlight_colors(min_row, max_row, active_buffer_id)
-	local patterns = {
-		color_patterns.hex_regex,
-		color_patterns.hex_0x_regex,
-		color_patterns.rgb_regex,
-		color_patterns.hsl_regex,
-		color_patterns.var_usage_regex,
+	local patterns = {}
+
+	local patterns_config = {
+		HEX = {
+			is_enabled = options.enable_hex,
+			patterns = {
+				color_patterns.hex_regex,
+				color_patterns.hex_0x_regex
+			},
+		},
+		RGB = {
+			is_enabled = options.enable_rgb,
+			patterns = { color_patterns.rgb_regex },
+		},
+		HSL = {
+			is_enabled = options.enable_hsl,
+			patterns = { color_patterns.hsl_regex },
+		},
+		VAR_USAGE = {
+			is_enabled = options.enable_var_usage,
+			patterns = { color_patterns.var_usage_regex }
+		},
+		NAMED_COLORS = {
+			is_enabled = options.enable_named_colors,
+			patterns = { colors.get_css_named_color_pattern() }
+		},
+		TAILWIND = {
+			is_enabled = options.enable_tailwind,
+			patterns = { colors.get_tailwind_named_color_pattern() }
+		}
 	}
 
-	if options.enable_named_colors then
-	       table.insert(patterns, colors.get_css_named_color_pattern())
-	end
-
-	if options.enable_tailwind then
-	       table.insert(patterns, colors.get_tailwind_named_color_pattern())
+	for _, config in pairs(patterns_config) do
+		if config.is_enabled then
+			for _, pattern in pairs(config.patterns) do
+				table.insert(patterns, pattern)
+			end
+		end
 	end
 
 	if (options.custom_colors ~= nil) then
