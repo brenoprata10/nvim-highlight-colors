@@ -188,6 +188,7 @@ vim.api.nvim_create_autocmd({
 	"TextChangedI",
 	"TextChangedP",
 	"LspAttach",
+	"BufEnter",
 }, {
 	callback = M.handle_change_autocmd_callback,
 })
@@ -195,7 +196,6 @@ vim.api.nvim_create_autocmd({
 vim.api.nvim_create_autocmd({
 	"VimResized",
 	"WinScrolled",
-	"BufEnter",
 }, {
 	callback = M.handle_autocmd_callback,
 })
