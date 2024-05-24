@@ -138,19 +138,23 @@ function M.turn_off()
 end
 
 function M.clear_highlights(active_buffer_id)
-	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
+	pcall(
+		function ()
+			local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
 
-	vim.api.nvim_buf_clear_namespace(buffer_id, ns_id, 0, utils.get_last_row_index())
-	local virtual_texts = vim.api.nvim_buf_get_extmarks(buffer_id, ns_id, 0, -1, {})
+			vim.api.nvim_buf_clear_namespace(buffer_id, ns_id, 0, utils.get_last_row_index())
+			local virtual_texts = vim.api.nvim_buf_get_extmarks(buffer_id, ns_id, 0, -1, {})
 
-	if #virtual_texts then
-		for _, virtual_text in pairs(virtual_texts) do
-			local extmart_id = virtual_text[1]
-			if (tonumber(extmart_id) ~= nil) then
-				vim.api.nvim_buf_del_extmark(buffer_id, ns_id, extmart_id)
+			if #virtual_texts then
+				for _, virtual_text in pairs(virtual_texts) do
+					local extmart_id = virtual_text[1]
+					if (tonumber(extmart_id) ~= nil) then
+						vim.api.nvim_buf_del_extmark(buffer_id, ns_id, extmart_id)
+					end
+				end
 			end
 		end
-	end
+	)
 end
 
 function M.toggle()
