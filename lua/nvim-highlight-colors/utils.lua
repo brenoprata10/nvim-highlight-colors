@@ -90,16 +90,35 @@ function M.highlight_extmarks(active_buffer_id, ns_id, data, highlight_group, op
 	local start_extmark_row = data.row + 1
 	local start_extmark_column = data.start_column - 1
 	local end_extmark_column = data.end_column - 1
-	local is_already_highlighted = #vim.api.nvim_buf_get_extmarks(
+	local already_highlighted_extmark = vim.api.nvim_buf_get_extmarks(
 		active_buffer_id,
 		ns_id,
 		{start_extmark_row, start_extmark_column},
 		{start_extmark_row, end_extmark_column},
-		{}
+		{details = true}
+	)
+	local is_already_highlighted = #table_utils.filter(
+		already_highlighted_extmark,
+		function (extmark)
+			local extmark_data = vim.deepcopy(extmark[4])
+			local extmark_highlight_group = extmark_data.virt_text[1][2]
+			return extmark_highlight_group == highlight_group
+		end
 	) > 0
 	if (is_already_highlighted) then
 		return
 	end
+
+	-- Delete currently shown extmarks in this same position
+	for _, extmark in pairs(already_highlighted_extmark) do
+		pcall(
+			vim.api.nvim_buf_del_extmark,
+			active_buffer_id,
+			ns_id,
+			extmark[1]
+		)
+	end
+
 
 	local virtual_text_position = M.get_virtual_text_position(options)
 	local virtual_text_column = M.get_virtual_text_column(
