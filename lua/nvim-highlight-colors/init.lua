@@ -68,7 +68,7 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			patterns = { colors.get_css_named_color_pattern() }
 		},
 		TAILWIND = {
-			is_enabled = options.enable_tailwind,
+			is_enabled = options.enable_tailwind and not utils.has_tailwind_css_lsp(),
 			patterns = { colors.get_tailwind_named_color_pattern() }
 		}
 	}
@@ -107,10 +107,12 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 	utils.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 end
 
-function M.refresh_highlights(active_buffer_id)
+function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
 
-	M.clear_highlights(buffer_id)
+	if should_clear_highlights then
+		M.clear_highlights(buffer_id)
+	end
 	local visible_rows = utils.get_visible_rows_by_buffer_id(buffer_id)
 	local min_row = visible_rows[1]
 	local max_row = visible_rows[2]
@@ -165,9 +167,15 @@ function M.toggle()
 	end
 end
 
+function M.handle_change_autocmd_callback(props)
+	if is_loaded then
+		M.refresh_highlights(props.buf, true)
+	end
+end
+
 function M.handle_autocmd_callback(props)
 	if is_loaded then
-		M.refresh_highlights(props.buf)
+		M.refresh_highlights(props.buf, false)
 	end
 end
 
@@ -175,8 +183,13 @@ vim.api.nvim_create_autocmd({
 	"TextChanged",
 	"TextChangedI",
 	"TextChangedP",
-	"VimResized",
 	"LspAttach",
+}, {
+	callback = M.handle_change_autocmd_callback,
+})
+
+vim.api.nvim_create_autocmd({
+	"VimResized",
 	"WinScrolled",
 	"BufEnter",
 }, {

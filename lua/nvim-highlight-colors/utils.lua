@@ -168,8 +168,7 @@ end
 
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
-	local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
-	local clients = get_clients()
+	local clients = M.get_lsp_clients()
 	for _, client in pairs(clients) do
 		if client.server_capabilities.colorProvider then
 			client.request(
@@ -227,6 +226,23 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 			)
 		end
 	end
+end
+
+function M.has_tailwind_css_lsp()
+	local clients = M.get_lsp_clients()
+	table_utils.print({clients})
+	for _, client in pairs(clients) do
+		if client.name == 'tailwindcss' then
+			return true
+		end
+	end
+
+	return false
+end
+
+function M.get_lsp_clients()
+	local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
+	return get_clients()
 end
 
 return M
