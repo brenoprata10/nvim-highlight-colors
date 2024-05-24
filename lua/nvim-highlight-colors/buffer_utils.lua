@@ -5,6 +5,9 @@ local M = {}
 M.color_usage_regex = "[:=]+%s*[\"']?"
 
 function M.get_buffer_contents(min_row, max_row, active_buffer_id)
+	if not vim.api.nvim_buf_is_valid(active_buffer_id) then
+		return {''}
+	end
 	return vim.api.nvim_buf_get_lines(active_buffer_id, min_row, max_row, false)
 end
 
