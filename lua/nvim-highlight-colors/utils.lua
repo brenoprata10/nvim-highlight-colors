@@ -230,7 +230,6 @@ end
 
 function M.has_tailwind_css_lsp()
 	local clients = M.get_lsp_clients()
-	table_utils.print({clients})
 	for _, client in pairs(clients) do
 		if client.name == 'tailwindcss' then
 			return true
