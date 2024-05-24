@@ -9,7 +9,7 @@ M.var_regex = "%-%-[%d%a-_]+"
 M.var_declaration_regex = M.var_regex .. ":%s*" .. M.hex_regex
 M.var_usage_regex = "var%(" .. M.var_regex .. "%)"
 
-M.tailwind_prefix = "%a+"
+M.tailwind_prefix = "!?%a+"
 
 function M.is_short_hex_color(color)
 	return string.match(color, M.hex_regex) and string.len(color) == 4

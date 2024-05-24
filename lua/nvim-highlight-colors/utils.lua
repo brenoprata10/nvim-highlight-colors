@@ -28,7 +28,7 @@ function M.get_visible_rows_by_buffer_id(buffer_id)
 end
 
 local function create_highlight_name(color_value)
-	return string.gsub(color_value, "#", ""):gsub("[(),%s%.-/%%=:\"']+", "")
+	return string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"']+", "")
 end
 
 
@@ -188,8 +188,9 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 			positions,
 			function(position)
 				return position.start_column == start_column
-				and position.end_column == end_column
-				and position.row == row
+					and position.end_column == end_column
+					and position.row == row
+					and position.value == value
 			end
 		) > 0
 
