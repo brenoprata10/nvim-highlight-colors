@@ -6,8 +6,8 @@ local patterns = require("nvim-highlight-colors.color.patterns")
 
 local M = {}
 
-function M.get_color_value(color, row_offset, custom_colors)
-	if (patterns.is_short_hex_color(color)) then
+function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
+	if (enable_short_hex and patterns.is_short_hex_color(color)) then
 		return converters.short_hex_to_hex(color)
 	end
 

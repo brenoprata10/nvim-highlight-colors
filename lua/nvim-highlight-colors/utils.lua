@@ -36,14 +36,14 @@ end
 ---@param active_buffer_id number
 ---@param ns_id number
 ---@param data {row: number, start_column: number, end_column: number, value: string}
----@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow'}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: bool}
 ---
 ---For `options.custom_colors`, a table with the following structure is expected:
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
 ---* `color`: A string representing the actual color value in a valid format (e.g., '#0f1219').
 function M.create_highlight(active_buffer_id, ns_id, data, options)
 	local highlight_group = create_highlight_name(data.value)
-	local color_value = colors.get_color_value(data.value, 2, options.custom_colors)
+	local color_value = colors.get_color_value(data.value, 2, options.custom_colors, options.enable_short_hex)
 
 	if color_value == nil then
 		return

@@ -19,6 +19,7 @@ local options = {
 	enable_hsl = true,
 	enable_var_usage = true,
 	enable_named_colors = true,
+	enable_short_hex = true,
 	enable_tailwind = false,
 	custom_colors = nil,
 	virtual_symbol = "■",
