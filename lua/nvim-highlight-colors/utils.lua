@@ -28,7 +28,7 @@ function M.get_visible_rows_by_buffer_id(buffer_id)
 end
 
 local function create_highlight_name(color_value)
-	return string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"']+", "")
+	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"']+", "")
 end
 
 
