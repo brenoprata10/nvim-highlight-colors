@@ -111,11 +111,11 @@ end
 function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
 
-    if not vim.api.nvim_buf_is_valid(active_buffer_id)
-        or vim.tbl_contains(options.exclude, vim.bo[buffer_id].filetype)
-        or vim.bo[buffer_id].buftype == "terminal" then
-		return
-	end
+ 	if not vim.api.nvim_buf_is_valid(active_buffer_id)
+ 		or vim.tbl_contains(options.exclude, vim.bo[buffer_id].filetype)
+ 		or vim.bo[buffer_id].buftype == "terminal" then
+ 		return
+ 	end
 
 	if should_clear_highlights then
 		M.clear_highlights(buffer_id)
