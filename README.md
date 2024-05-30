@@ -78,8 +78,8 @@ require("nvim-highlight-colors").setup {
 		{ label = '%-%-theme%-secondary%-color', color = '#5a5d64' },
 	}
 
-    -- Exclude filetypes from highlighting
-    exclude = {}
+ 	-- Exclude filetypes from highlighting
+  	exclude = {}
 }
 ```
 
