@@ -79,14 +79,11 @@ require("nvim-highlight-colors").setup {
 	custom_colors = {
 		{ label = '%-%-theme%-primary%-color', color = '#0f1219' },
 		{ label = '%-%-theme%-secondary%-color', color = '#5a5d64' },
-	}
+	},
 
- 	-- Exclude filetypes or buftypes from highlighting
- 	-- Note: terminal buffers are always excluded due to instability
-  	exclude = {
-  		filetypes = {},
-  		buftypes = {},
-  	}
+ 	-- Exclude filetypes or buftypes from highlighting e.g. 'exclude_buftypes = {'text'}'
+    exclude_filetypes = {},
+    exclude_buftypes = {}
 }
 ```
 

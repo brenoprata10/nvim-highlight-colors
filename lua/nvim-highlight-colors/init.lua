@@ -26,10 +26,8 @@ local options = {
 	virtual_symbol_prefix = "",
 	virtual_symbol_suffix = " ",
 	virtual_symbol_position = "inline",
-	exclude = {
-		filetypes = {},
-		buftypes = {},
-	}
+	exclude_filetypes = {},
+	exclude_buftypes = {}
 }
 
 local M = {}
@@ -117,9 +115,9 @@ function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 
  	if not vim.api.nvim_buf_is_valid(active_buffer_id)
  		or vim.bo[buffer_id].buftype == "terminal"
- 		or vim.tbl_contains(options.exclude.filetypes, vim.bo[buffer_id].filetype)
- 		or vim.tbl_contains(options.exclude.buftypes, vim.bo[buffer_id].buftype)
-  then
+ 		or vim.tbl_contains(options.exclude_filetypes, vim.bo[buffer_id].filetype)
+ 		or vim.tbl_contains(options.exclude_buftypes, vim.bo[buffer_id].buftype)
+  	then
  		return
  	end
 
