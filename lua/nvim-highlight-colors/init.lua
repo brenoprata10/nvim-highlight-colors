@@ -119,6 +119,7 @@ function M.refresh_highlights(active_buffer_id, should_clear_highlights)
  		or vim.bo[buffer_id].buftype == "terminal"
  		or vim.tbl_contains(options.exclude.filetypes, vim.bo[buffer_id].filetype)
  		or vim.tbl_contains(options.exclude.buftypes, vim.bo[buffer_id].buftype)
+  then
  		return
  	end
 
