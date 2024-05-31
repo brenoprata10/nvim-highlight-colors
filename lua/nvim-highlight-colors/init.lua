@@ -36,12 +36,8 @@ local M = {}
 
 function M.setup(user_options)
 	is_loaded = true
-	if (user_options ~= nil and user_options ~= {}) then
-		for key, _ in pairs(user_options) do
-			if user_options[key] ~= nil then
-				options[key] = user_options[key]
-			end
-		end
+	if user_options ~= nil and not vim.tbl_isempty(user_options) then
+		options = vim.tbl_deep_extend("force", options, user_options)
 	end
 end
 
