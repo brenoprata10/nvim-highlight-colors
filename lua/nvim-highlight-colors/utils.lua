@@ -31,12 +31,14 @@ local function create_highlight_name(color_value)
 	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"']+", "")
 end
 
+local LSP_CACHE = {}
+
 
 ---Creates the highlight based on the received params
 ---@param active_buffer_id number
 ---@param ns_id number
 ---@param data {row: number, start_column: number, end_column: number, value: string}
----@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: bool}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 ---
 ---For `options.custom_colors`, a table with the following structure is expected:
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
@@ -167,19 +169,25 @@ end
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
 	local clients = M.get_lsp_clients()
+	M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
+
 	for _, client in pairs(clients) do
+		if not LSP_CACHE[client.name] then
+			LSP_CACHE[client.name] = {}
+		end
 		if client.server_capabilities.colorProvider then
 			client.request(
 				"textDocument/documentColor",
 				param,
 				function(_, response)
-					M.highlight_lsp_document_color(
+					local results = M.highlight_lsp_document_color(
 						response,
 						active_buffer_id,
 						ns_id,
 						positions,
 						options
 					)
+					LSP_CACHE[client.name]['documentColor'] = results
 				end,
 				active_buffer_id
 			)
@@ -187,7 +195,25 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	end
 end
 
+function M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
+	for _, request_type in pairs(LSP_CACHE) do
+		if request_type then
+			for _, result_table in pairs(request_type) do
+				for _, result in pairs(result_table) do
+					M.create_highlight(
+						active_buffer_id,
+						ns_id,
+						result,
+						options
+					)
+				end
+			end
+		end
+	end
+end
+
 function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, positions, options)
+	local results = {}
 	if response == nil then
 		return
 	end
@@ -209,21 +235,25 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 					and position.value == value
 			end
 		) > 0
+		local result = {
+			row = row,
+			start_column = start_column,
+			end_column = end_column,
+			value = value
+		}
 
 		if (not is_already_highlighted) then
 			M.create_highlight(
 				active_buffer_id,
 				ns_id,
-				{
-					row = row,
-					start_column = start_column,
-					end_column = end_column,
-					value = value
-				},
+				result,
 				options
 			)
 		end
+		table.insert(results, result)
 	end
+
+	return results
 end
 
 function M.has_tailwind_css_lsp()
