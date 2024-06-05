@@ -169,7 +169,7 @@ end
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
 	local clients = M.get_lsp_clients()
-	M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
+	--M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
 
 	for _, client in pairs(clients) do
 		if not LSP_CACHE[client.name] then
