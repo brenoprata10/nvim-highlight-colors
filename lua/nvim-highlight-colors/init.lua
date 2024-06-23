@@ -192,9 +192,7 @@ function M.handle_autocmd_callback(props)
 end
 
 vim.api.nvim_create_autocmd({
-	"TextChanged",
-	"TextChangedI",
-	"TextChangedP",
+	"InsertLeave",
 	"LspAttach",
 	"BufEnter",
 }, {
