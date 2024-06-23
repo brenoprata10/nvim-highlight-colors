@@ -173,8 +173,10 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
 
 	for _, client in pairs(clients) do
-		if not LSP_CACHE[client.name] then
-			LSP_CACHE[client.name] = {}
+		if not LSP_CACHE[active_buffer_id] or not LSP_CACHE[active_buffer_id][client.name] then
+			LSP_CACHE[active_buffer_id] = {
+				[client.name] = {}
+			}
 		end
 		if client.server_capabilities.colorProvider then
 			client.request(
@@ -188,7 +190,7 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 						positions,
 						options
 					)
-					LSP_CACHE[client.name]['documentColor'] = results
+					LSP_CACHE[active_buffer_id][client.name]['documentColor'] = results
 				end,
 				active_buffer_id
 			)
@@ -197,7 +199,11 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 end
 
 function M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
-	for _, request_type in pairs(LSP_CACHE) do
+	if LSP_CACHE[active_buffer_id] == nil then
+		return
+	end
+
+	for _, request_type in pairs(LSP_CACHE[active_buffer_id]) do
 		if request_type then
 			for _, result_table in pairs(request_type) do
 				for _, result in pairs(result_table) do
