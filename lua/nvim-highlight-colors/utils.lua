@@ -1,4 +1,5 @@
 local colors = require("nvim-highlight-colors.color.utils")
+local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local table_utils = require("nvim-highlight-colors.table_utils")
 
 local M = {
@@ -169,7 +170,7 @@ end
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
 	local clients = M.get_lsp_clients()
-	--M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
+	M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
 
 	for _, client in pairs(clients) do
 		if not LSP_CACHE[client.name] then
@@ -200,12 +201,19 @@ function M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
 		if request_type then
 			for _, result_table in pairs(request_type) do
 				for _, result in pairs(result_table) do
-					M.create_highlight(
-						active_buffer_id,
-						ns_id,
-						result,
-						options
-					)
+					local line_content = buffer_utils.get_buffer_contents(result.row + 1,result.row + 2, active_buffer_id)
+					local current_result_content = line_content[1] ~= nil 
+						and string.sub(line_content[1], result.start_column, result.end_column)
+						or ''
+					local is_valid = current_result_content == result.content
+					if is_valid then
+						M.create_highlight(
+							active_buffer_id,
+							ns_id,
+							result,
+							options
+						)
+					end
 				end
 			end
 		end
@@ -235,11 +243,15 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 					and position.value == value
 			end
 		) > 0
+
+		local line_content = buffer_utils.get_buffer_contents(row + 1, row + 2, active_buffer_id)
+		local content = line_content[1] ~= nil and string.sub(line_content[1], start_column, end_column) or ''
 		local result = {
 			row = row,
 			start_column = start_column,
 			end_column = end_column,
-			value = value
+			value = value,
+			content = content,
 		}
 
 		if (not is_already_highlighted) then
