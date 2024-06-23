@@ -190,7 +190,9 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 						positions,
 						options
 					)
-					LSP_CACHE[active_buffer_id][client.name]['documentColor'] = results
+					if LSP_CACHE[active_buffer_id] and LSP_CACHE[active_buffer_id][client.name] then
+						LSP_CACHE[active_buffer_id][client.name]['documentColor'] = results
+					end
 				end,
 				active_buffer_id
 			)
