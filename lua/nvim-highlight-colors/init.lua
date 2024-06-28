@@ -1,5 +1,4 @@
 local utils = require("nvim-highlight-colors.utils")
-local table_utils = require("nvim-highlight-colors.table_utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors = require("nvim-highlight-colors.color.utils")
 local color_patterns = require("nvim-highlight-colors.color.patterns")
@@ -33,6 +32,8 @@ local options = {
 
 local M = {}
 
+---Plugin entry point
+---@param user_options table Check 'options' variable above
 function M.setup(user_options)
 	is_loaded = true
 	if (user_options ~= nil and user_options ~= {}) then
@@ -44,6 +45,10 @@ function M.setup(user_options)
 	end
 end
 
+---Highlight visible colors within specified buffer id
+---@param min_row number 
+---@param max_row number 
+---@param active_buffer_id number 
 function M.highlight_colors(min_row, max_row, active_buffer_id)
 	local patterns = {}
 
@@ -111,6 +116,10 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 	utils.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 end
 
+
+---Refreshes current highlights within the specified buffer
+---@param active_buffer_id number
+---@param should_clear_highlights boolean Indicates whether the current highlights should be deleted before rendering
 function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
 
@@ -131,26 +140,8 @@ function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 	M.highlight_colors(min_row, max_row, buffer_id)
 end
 
-function M.turn_on()
-	local buffers = vim.fn.getbufinfo({ buflisted = true })
-
-	for _, buffer in ipairs(buffers) do
-		M.refresh_highlights(buffer.bufnr)
-	end
-
-	is_loaded = true
-end
-
-function M.turn_off()
-	local buffers = vim.fn.getbufinfo({ buflisted = true })
-
-	for _, buffer in ipairs(buffers) do
-		M.clear_highlights(buffer.bufnr)
-	end
-
-	is_loaded = false
-end
-
+---Deletes highlights for the specified buffer
+---@param active_buffer_id number
 function M.clear_highlights(active_buffer_id)
 	pcall(
 		function ()
@@ -171,6 +162,29 @@ function M.clear_highlights(active_buffer_id)
 	)
 end
 
+---Callback to manually show the highlights
+function M.turn_on()
+	local buffers = vim.fn.getbufinfo({ buflisted = true })
+
+	for _, buffer in ipairs(buffers) do
+		M.refresh_highlights(buffer.bufnr, false)
+	end
+
+	is_loaded = true
+end
+
+---Callback to manually hide the highlights
+function M.turn_off()
+	local buffers = vim.fn.getbufinfo({ buflisted = true })
+
+	for _, buffer in ipairs(buffers) do
+		M.clear_highlights(buffer.bufnr)
+	end
+
+	is_loaded = false
+end
+
+---Callback to manually toggle the highlights
 function M.toggle()
 	if is_loaded then
 		M.turn_off()
@@ -179,12 +193,16 @@ function M.toggle()
 	end
 end
 
+---Autocmd callback to handle changes that require a complete redraw of the highlights (clear current highlights + highlight again)
+---@param props {buf: number}
 function M.handle_change_autocmd_callback(props)
 	if is_loaded then
 		M.refresh_highlights(props.buf, true)
 	end
 end
 
+---Autocmd callback to handle changes that do not require a full redraw of the highlights
+---@param props {buf: number}
 function M.handle_autocmd_callback(props)
 	if is_loaded then
 		M.refresh_highlights(props.buf, false)

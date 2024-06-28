@@ -4,6 +4,11 @@ local M = {}
 
 M.color_usage_regex = "[:=]+%s*[\"']?"
 
+---Returns the text content of the specified buffer within received range
+---@param min_row number
+---@param max_row number
+---@param active_buffer_id number
+---@return string[]
 function M.get_buffer_contents(min_row, max_row, active_buffer_id)
 	if not vim.api.nvim_buf_is_valid(active_buffer_id) then
 		return {''}
@@ -11,6 +16,12 @@ function M.get_buffer_contents(min_row, max_row, active_buffer_id)
 	return vim.api.nvim_buf_get_lines(active_buffer_id, min_row, max_row, false)
 end
 
+---Returns the color matches based on the received lua patterns
+---@param min_row number
+---@param max_row number
+---@param active_buffer_id number
+---@param row_offset number
+---@return {row: number, start_column: number, end_column: number, value: string}[]
 function M.get_positions_by_regex(patterns, min_row, max_row, active_buffer_id, row_offset)
 	local positions = {}
 	local content = M.get_buffer_contents(min_row, max_row, active_buffer_id)
@@ -51,6 +62,10 @@ end
 --         ↓ 
 --      #fff #fff
 --   4. Runs vim.fn.match with the column_offset on it. Avoids highlighting the same color again and leaving the second color without highlight
+---@param positions {row: number, start_column: number, end_column: number, value: string}[]
+---@param match string
+---@param row number
+---@return number | nil
 function M.get_column_offset(positions, match, row)
 	local repeated_colors_in_row = table_utils.filter(
 		positions,
@@ -62,6 +77,14 @@ function M.get_column_offset(positions, match, row)
 	return last_repeated_color and last_repeated_color.end_column or nil
 end
 
+---Removes useless data from the colors string in case of named colors
+---
+---Named colors have a safe guard to prevent false positives, therefore the named colors pattern is configured to only work when a color usage is detected 
+---e.g 'background = blue' will get highlighted while 'blue is great' will not.
+---
+---The issue with this logic is that the `match` value for said color would be `= blue`, which is not what we want. This function transforms this string to just `blue`
+---@param match string
+---@return string
 function M.remove_color_usage_pattern(match)
 	local _, end_index = string.find(match, M.color_usage_regex)
 	return end_index
