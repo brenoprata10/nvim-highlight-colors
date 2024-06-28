@@ -10,10 +10,15 @@ local M = {
 	}
 }
 
+---Returns the last row index of the current buffer
+---@return number
 function M.get_last_row_index()
 	return vim.fn.line('$')
 end
 
+---Returns a range of visible rows of the specified buffer
+---@param buffer_id number
+---@return table {first_line_index, last_line_index}
 function M.get_visible_rows_by_buffer_id(buffer_id)
 	local window_id = vim.fn.bufwinid(buffer_id)
 
@@ -28,18 +33,18 @@ function M.get_visible_rows_by_buffer_id(buffer_id)
 	)
 end
 
+---Returns a highlight name that can be used as a group highlight
+---@param color_value string
+---@return string
 local function create_highlight_name(color_value)
 	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"']+", "")
 end
-
-local LSP_CACHE = {}
-
 
 ---Creates the highlight based on the received params
 ---@param active_buffer_id number
 ---@param ns_id number
 ---@param data {row: number, start_column: number, end_column: number, value: string}
----@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 ---
 ---For `options.custom_colors`, a table with the following structure is expected:
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
@@ -89,6 +94,12 @@ function M.create_highlight(active_buffer_id, ns_id, data, options)
 	)
 end
 
+---Highlights extmarks 
+---@param active_buffer_id number
+---@param ns_id number
+---@param data {row: number, start_column: number, end_column: number, value: string}
+---@param highlight_group string
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_extmarks(active_buffer_id, ns_id, data, highlight_group, options)
 	local start_extmark_row = data.row + 1
 	local start_extmark_column = data.start_column - 1
@@ -144,6 +155,9 @@ function M.highlight_extmarks(active_buffer_id, ns_id, data, highlight_group, op
 	)
 end
 
+---Returns the virtual text(extmark) position based on the user preferences
+---@param options {virtual_symbol_position: 'inline' | 'eol' | 'eow'}
+---@return 'inline' | 'eol' | 'eow'
 function M.get_virtual_text_position(options)
 	local nvim_version = vim.version()
 
@@ -155,6 +169,11 @@ function M.get_virtual_text_position(options)
 	return options.virtual_symbol_position
 end
 
+---Returns the virtual text(extmark) column index position based on the user preferences
+---@param virtual_text_position 'inline' | 'eol' | 'eow'
+---@param start_extmark_column number
+---@param end_extmark_column number
+---@return number
 function M.get_virtual_text_column(virtual_text_position, start_extmark_column, end_extmark_column)
 	if virtual_text_position == 'eol' then
 		return start_extmark_column
@@ -167,32 +186,28 @@ function M.get_virtual_text_column(virtual_text_position, start_extmark_column, 
 	return start_extmark_column + 1
 end
 
+---Highlights colors based on connected LSPs
+---@param active_buffer_id number
+---@param ns_id number
+---@param positions table Table array of {row: number, start_column: number, end_column: number, value: string}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
 	local clients = M.get_lsp_clients()
-	--M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
 
 	for _, client in pairs(clients) do
-		if not LSP_CACHE[active_buffer_id] or not LSP_CACHE[active_buffer_id][client.name] then
-			LSP_CACHE[active_buffer_id] = {
-				[client.name] = {}
-			}
-		end
 		if client.server_capabilities.colorProvider then
 			client.request(
 				"textDocument/documentColor",
 				param,
 				function(_, response)
-					local results = M.highlight_lsp_document_color(
+					M.highlight_lsp_document_color(
 						response,
 						active_buffer_id,
 						ns_id,
 						positions,
 						options
 					)
-					if LSP_CACHE[active_buffer_id] and LSP_CACHE[active_buffer_id][client.name] then
-						LSP_CACHE[active_buffer_id][client.name]['documentColor'] = results
-					end
 				end,
 				active_buffer_id
 			)
@@ -200,34 +215,12 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	end
 end
 
-function M.highlight_cached_lsp_colors(active_buffer_id, ns_id, options)
-	if LSP_CACHE[active_buffer_id] == nil then
-		return
-	end
-
-	for _, request_type in pairs(LSP_CACHE[active_buffer_id]) do
-		if request_type then
-			for _, result_table in pairs(request_type) do
-				for _, result in pairs(result_table) do
-					local line_content = buffer_utils.get_buffer_contents(result.row + 1,result.row + 2, active_buffer_id)
-					local current_result_content = line_content[1] ~= nil
-						and string.sub(line_content[1], result.start_column, result.end_column)
-						or ''
-					local is_valid = current_result_content == result.content
-					if is_valid then
-						M.create_highlight(
-							active_buffer_id,
-							ns_id,
-							result,
-							options
-						)
-					end
-				end
-			end
-		end
-	end
-end
-
+---Highlights colors for request 'textDocument/documentColor'
+---@param response table Table array of {color: {red: number, green: number, blue: number, alpha: number}, range: {start: {character: number}, end: {character: number}}
+---@param active_buffer_id number
+---@param ns_id number
+---@param positions table Table array of {row: number, start_column: number, end_column: number, value: string}
+---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, positions, options)
 	local results = {}
 	if response == nil then
@@ -252,14 +245,11 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 			end
 		) > 0
 
-		local line_content = buffer_utils.get_buffer_contents(row + 1, row + 2, active_buffer_id)
-		local content = line_content[1] ~= nil and string.sub(line_content[1], start_column, end_column) or ''
 		local result = {
 			row = row,
 			start_column = start_column,
 			end_column = end_column,
 			value = value,
-			content = content,
 		}
 
 		if (not is_already_highlighted) then
@@ -276,6 +266,8 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 	return results
 end
 
+---Returns a boolean indicating if tailwindcss LSP is connected
+---@return number
 function M.has_tailwind_css_lsp()
 	local clients = M.get_lsp_clients()
 	for _, client in pairs(clients) do
@@ -287,6 +279,8 @@ function M.has_tailwind_css_lsp()
 	return false
 end
 
+---Get active LSP clients
+---@return vim.lsp.Client[]
 function M.get_lsp_clients()
 	local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
 	return get_clients()

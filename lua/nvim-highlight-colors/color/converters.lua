@@ -2,10 +2,18 @@ local patterns = require("nvim-highlight-colors.color.patterns")
 
 local M = {}
 
+---Converts a rgb color to hex
+---@param r number
+---@param g number
+---@param b number
+---@return string
 function M.rgb_to_hex(r, g, b)
  	return string.format("#%02X%02X%02X", r, g, b)
 end
 
+---Converts a hex color to rgb
+---@param hex string
+---@return {r: number, g: number, b: number}|nil
 function M.hex_to_rgb(hex)
 	if patterns.is_short_hex_color(hex) then
 		hex = M.short_hex_to_hex(hex)
@@ -20,6 +28,9 @@ function M.hex_to_rgb(hex)
 	return r ~= nil and g ~= nil and b ~= nil and {r, g, b} or nil
 end
 
+---Converts a short hex color to hex
+---@param color string
+---@return string
 function M.short_hex_to_hex(color)
 	local new_color = "#"
 	for char in color:gmatch"." do
@@ -33,6 +44,11 @@ end
 
 local a
 
+---Converts a hsl color to rgb
+---@param h number
+---@param s number
+---@param l number
+---@return {r: number, g: number, b: number, a: number}
 -- Function retrieved from this stackoverflow post:
 -- https://stackoverflow.com/questions/68317097/how-to-properly-convert-hsl-colors-to-rgb-colors-in-lua
 function M.hsl_to_rgb(h, s, l)
