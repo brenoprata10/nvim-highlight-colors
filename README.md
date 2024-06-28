@@ -55,7 +55,7 @@ require("nvim-highlight-colors").setup {
 	---Highlight hex colors, e.g. '#FFFFFF'
 	enable_hex = true,
 
-    ---Highlight short hex colors e.g. '#fff'
+    	---Highlight short hex colors e.g. '#fff'
 	enable_short_hex = true,
 
 	---Highlight rgb colors, e.g. 'rgb(0 0 0)'
@@ -82,8 +82,8 @@ require("nvim-highlight-colors").setup {
 	},
 
  	-- Exclude filetypes or buftypes from highlighting e.g. 'exclude_buftypes = {'text'}'
-    exclude_filetypes = {},
-    exclude_buftypes = {}
+    	exclude_filetypes = {},
+    	exclude_buftypes = {}
 }
 ```
 
