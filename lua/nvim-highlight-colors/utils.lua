@@ -188,7 +188,7 @@ end
 ---Highlights colors based on connected LSPs
 ---@param active_buffer_id number
 ---@param ns_id number
----@param positions table Table array of {row: number, start_column: number, end_column: number, value: string}
+---@param positions {row: number, start_column: number, end_column: number, value: string}[]
 ---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
@@ -218,7 +218,7 @@ end
 ---@param response table Table array of {color: {red: number, green: number, blue: number, alpha: number}, range: {start: {character: number}, end: {character: number}}
 ---@param active_buffer_id number
 ---@param ns_id number
----@param positions table Table array of {row: number, start_column: number, end_column: number, value: string}
+---@param positions {row: number, start_column: number, end_column: number, value: string}[]
 ---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, positions, options)
 	local results = {}
