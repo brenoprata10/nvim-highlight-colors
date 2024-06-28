@@ -1,5 +1,4 @@
 local colors = require("nvim-highlight-colors.color.utils")
-local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local table_utils = require("nvim-highlight-colors.table_utils")
 
 local M = {
@@ -267,7 +266,7 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 end
 
 ---Returns a boolean indicating if tailwindcss LSP is connected
----@return number
+---@return boolean
 function M.has_tailwind_css_lsp()
 	local clients = M.get_lsp_clients()
 	for _, client in pairs(clients) do

@@ -6,6 +6,12 @@ local patterns = require("nvim-highlight-colors.color.patterns")
 
 local M = {}
 
+---Returns the color value in hex
+---@param color string
+---@param row_offset? number
+---@param custom_colors? {label: string, color: string}[]
+---@param enable_short_hex? boolean
+---@return string | nil
 function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 	if (enable_short_hex and patterns.is_short_hex_color(color)) then
 		return converters.short_hex_to_hex(color)
@@ -39,7 +45,7 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 		end
 	end
 
-	if (patterns.is_var_color(color)) then
+	if (row_offset ~= nil and patterns.is_var_color(color)) then
 		return M.get_css_var_color(color, row_offset)
 	end
 
@@ -56,6 +62,9 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 	return nil
 end
 
+---Returns the rgb table of a rgb string
+---@param color string
+---@return string[]
 function M.get_rgb_values(color)
 	local rgb_table = {}
 	for color_number in string.gmatch(color, "%d+") do
@@ -65,6 +74,9 @@ function M.get_rgb_values(color)
 	return rgb_table
 end
 
+---Returns the hsl table of a hsl string
+---@param color string
+---@return string[]
 function M.get_hsl_values(color)
 	local hsl_table = {}
 	for color_number in string.gmatch(color, "%d?%.?%d+") do
@@ -74,11 +86,19 @@ function M.get_hsl_values(color)
 	return hsl_table
 end
 
+---Returns the hex value of a CSS color
+---@param color string
+---@return string
+---@usage get_css_named_color_value('red') => Returns '#FF0000'
 function M.get_css_named_color_value(color)
 	local color_name = string.match(color, "%a+")
 	return css_named_colors[color_name]
 end
 
+---Returns the hex value of a tailwind color
+---@param color string
+---@return string|nil
+---@usage get_tailwind_named_color_value('bg-white') => Returns '#FFFFFF'
 function M.get_tailwind_named_color_value(color)
 	local tailwind_color_name = color
 	-- Removing tailwind prefix from color name: text-slate-500 -> slate-500
@@ -96,14 +116,23 @@ function M.get_tailwind_named_color_value(color)
 	end
 end
 
+---Returns a pattern for tailwind colors
+---@return string
 function M.get_tailwind_named_color_pattern()
 	return patterns.tailwind_prefix .. "%-%a+[%-%d+]*"
 end
 
+---Returns a pattern for CSS colors
+---@return string
 function M.get_css_named_color_pattern()
 	return buffer_utils.color_usage_regex .. "%a+"
 end
 
+---Returns the hex value of a custom color
+---@param color string
+---@param custom_colors {label: string, color: string}[]
+---@usage get_custom_color('custom-white', {{label = 'custom%-white', color: '#FFFFFF'}}) => Returns '#FFFFFF'
+---@return string|nil
 function M.get_custom_color(color, custom_colors)
 	for _, custom_color in pairs(custom_colors) do
 		if color == custom_color.label:gsub("%%", "") then
@@ -114,6 +143,10 @@ function M.get_custom_color(color, custom_colors)
 	return nil
 end
 
+---Returns the hex value of a CSS variable
+---@param color string
+---@param row_offset number
+---@return string|nil
 function M.get_css_var_color(color, row_offset)
 	local var_name = string.match(color, patterns.var_regex)
 	local var_name_regex = string.gsub(var_name, "%-", "%%-")
@@ -149,6 +182,9 @@ function M.get_css_var_color(color, row_offset)
 	return color
 end
 
+---Returns a contrast friendly color that matches the current color for reading purposes
+---@param color string
+---@return string|nil
 function M.get_foreground_color_from_hex_color(color)
 	local rgb_table = converters.hex_to_rgb(color)
 
