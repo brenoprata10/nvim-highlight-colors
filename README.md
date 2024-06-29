@@ -114,6 +114,11 @@ require("nvim-highlight-colors").setup {
 
 <img width="640" src="https://github.com/mvllow/nvim-highlight-colors/assets/1474821/536b16e4-04ad-4ede-95f5-c1855386c294" alt="Virtual text highlights for named colors, CSS variables, and Tailwind CSS colors" />
 
+**nvim-cmp integration**
+
+![image](https://github.com/brenoprata10/nvim-highlight-colors/assets/26099427/0f6858fe-f7e2-4710-a22f-c3b3a455f74b)
+
+
 ## Commands
 
 | Command                   | Description         |
