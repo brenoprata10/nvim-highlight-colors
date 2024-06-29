@@ -1,4 +1,5 @@
 local utils = require("nvim-highlight-colors.utils")
+local table_utils = require("nvim-highlight-colors.table_utils")
 local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 local colors = require("nvim-highlight-colors.color.utils")
 local color_patterns = require("nvim-highlight-colors.color.patterns")
@@ -162,6 +163,49 @@ function M.clear_highlights(active_buffer_id)
 	)
 end
 
+
+---Formats nvim-cmp to showcase colors in the autocomplete
+---@usage 
+---Add the following to your nvim-cmp setup
+---cmp.setup({
+---...other configs
+---formatting = {
+---    format = require("nvim-highlight-colors").format
+---}
+function M.format(entry, item)
+	item.menu = item.kind
+	item.kind = item.abbr
+	item.kind_hl_group = ''
+	item.abbr = ''
+
+	if item.menu ~= "Color" then
+		return item
+	end
+
+	local entryItem = entry:get_completion_item()
+	if entryItem == nil then
+		return item
+	end
+
+	local entryDoc = entryItem.documentation
+	if entryDoc == nil or type(entryDoc) ~= "string" then
+		return item
+	end
+
+	local color_hex = colors.get_color_value(entryDoc)
+	if color_hex == nil then
+		return item
+	end
+
+	local highlight_group = utils.create_highlight_name(color_hex)
+	vim.api.nvim_set_hl(0, highlight_group, {fg = color_hex})
+
+	item.abbr_hl_group = highlight_group
+	item.abbr = options.virtual_symbol
+
+	return item
+end
+
 ---Callback to manually show the highlights
 function M.turn_on()
 	local buffers = vim.fn.getbufinfo({ buflisted = true })
@@ -251,4 +295,5 @@ return {
 	turnOn = M.turn_on,
 	setup = M.setup,
 	toggle = M.toggle,
+	format = M.format,
 }

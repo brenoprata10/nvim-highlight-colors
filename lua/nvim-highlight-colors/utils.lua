@@ -35,7 +35,7 @@ end
 ---Returns a highlight name that can be used as a group highlight
 ---@param color_value string
 ---@return string
-local function create_highlight_name(color_value)
+function M.create_highlight_name(color_value)
 	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"']+", "")
 end
 
@@ -49,7 +49,7 @@ end
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
 ---* `color`: A string representing the actual color value in a valid format (e.g., '#0f1219').
 function M.create_highlight(active_buffer_id, ns_id, data, options)
-	local highlight_group = create_highlight_name(data.value)
+	local highlight_group = M.create_highlight_name(data.value)
 	local color_value = colors.get_color_value(data.value, 2, options.custom_colors, options.enable_short_hex)
 
 	if color_value == nil then

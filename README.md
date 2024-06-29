@@ -28,6 +28,17 @@ vim.opt.termguicolors = true
 require('nvim-highlight-colors').setup({})
 ```
 
+Configure nvim-cmp integration:
+
+```lua
+require("cmp").setup({
+        ... other configs
+        formatting = {
+                format = require("nvim-highlight-colors").format
+        }
+})
+```
+
 ## Options
 
 ```lua
