@@ -39,6 +39,19 @@ require("cmp").setup({
 })
 ```
 
+or
+```
+require("cmp").setup({
+        ... other configs
+        formatting = {
+                format = function(entry, item)
+                        item = -- YOUR other configs come first
+                        return require("nvim-highlight-colors").format(entry, item)
+                end
+        }
+})
+```
+
 ## Options
 
 ```lua
