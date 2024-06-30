@@ -28,7 +28,7 @@ vim.opt.termguicolors = true
 require('nvim-highlight-colors').setup({})
 ```
 
-Configure nvim-cmp integration:
+### `nvim-cmp` integration
 
 ```lua
 require("cmp").setup({
@@ -40,7 +40,8 @@ require("cmp").setup({
 ```
 
 or
-```
+
+```lua
 require("cmp").setup({
         ... other configs
         formatting = {
@@ -51,6 +52,30 @@ require("cmp").setup({
         }
 })
 ```
+
+#### `lspkind` integration
+
+The out of the box `format` function does not necessarily play nicely with `lspkind` and potentially other formatters provided by plugins and may require manual intervention. Here is an example of making the integration work nicely with `lspkind`:
+
+```lua
+require("cmp").setup({
+        ... other configs
+        formatting = {
+                format = function(entry, item)
+                        local color_item = require("nvim-highlight-colors").format(entry, { kind = item.kind })
+                        item = require("lspkind").cmp_format({
+                                -- any lspkind format settings here
+                        })(entry, item)
+                        if color_item.abbr_hl_group then
+                                item.kind_hl_group = color_item.abbr_hl_group
+                                item.kind = color_item.abbr
+                        end
+                        return item
+                end
+        }
+})
+```
+
 
 ## Options
 
