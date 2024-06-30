@@ -49,7 +49,7 @@ end
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
 ---* `color`: A string representing the actual color value in a valid format (e.g., '#0f1219').
 function M.create_highlight(active_buffer_id, ns_id, data, options)
-	local highlight_group = M.create_highlight_name(data.value)
+	local highlight_group
 	local color_value = colors.get_color_value(data.value, 2, options.custom_colors, options.enable_short_hex)
 
 	if color_value == nil then
@@ -58,14 +58,18 @@ function M.create_highlight(active_buffer_id, ns_id, data, options)
 
 	if options.render == M.render_options.background then
 		local foreground_color = colors.get_foreground_color_from_hex_color(color_value)
+		highlight_group = M.create_highlight_name("fg-bg-" .. data.value)
 		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
-            		fg = foreground_color,
-            		bg = color_value
-        	})
+			fg = foreground_color,
+			bg = color_value,
+			default = true,
+		})
 	else
+		highlight_group = M.create_highlight_name("fg-" .. data.value)
 		pcall(vim.api.nvim_set_hl, 0, highlight_group, {
-            		fg = color_value
-        	})
+			fg = color_value,
+			default = true,
+		})
 	end
 
 	if options.render == M.render_options.virtual then

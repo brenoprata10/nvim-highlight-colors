@@ -197,8 +197,8 @@ function M.format(entry, item)
 		return item
 	end
 
-	local highlight_group = utils.create_highlight_name(color_hex)
-	vim.api.nvim_set_hl(0, highlight_group, {fg = color_hex})
+	local highlight_group = utils.create_highlight_name("fg-" .. color_hex)
+	vim.api.nvim_set_hl(0, highlight_group, { fg = color_hex, default = true })
 
 	item.abbr_hl_group = highlight_group
 	item.abbr = options.virtual_symbol
