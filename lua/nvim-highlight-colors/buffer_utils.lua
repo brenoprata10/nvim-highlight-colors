@@ -34,8 +34,9 @@ function M.get_positions_by_regex(patterns, min_row, max_row, active_buffer_id, 
 				local pattern_without_usage_regex = M.remove_color_usage_pattern(match)
 				local valid_start, start_column = pcall(vim.fn.match, value, pattern_without_usage_regex, column_offset)
 				local valid_end, end_column = pcall(vim.fn.matchend, value, pattern_without_usage_regex, column_offset)
+				local isFalsePositiveCSSVariable = match == ': var'
 
-				if valid_start and valid_end then
+				if valid_start and valid_end and not isFalsePositiveCSSVariable then
 					table.insert(positions, {
 						value = match,
 						row = row,

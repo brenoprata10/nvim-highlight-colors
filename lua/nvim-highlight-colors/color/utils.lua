@@ -179,7 +179,7 @@ function M.get_css_var_color(color, row_offset)
 		end
 	end
 
-	return color
+	return nil
 end
 
 ---Returns a contrast friendly color that matches the current color for reading purposes
