@@ -163,6 +163,12 @@ function M.clear_highlights(active_buffer_id)
 	)
 end
 
+-- a cache of documentation text to hex code & hlgroup
+-- an entry of nil means a cache miss
+-- an entry of false means a cache hit with no color
+-- an entry of a table means a cache hit with a color
+---@type table<string,nil|false|{ hl_group: string, color_hex: string }>
+local format_cache = {}
 
 ---Formats nvim-cmp to showcase colors in the autocomplete
 ---@usage 
@@ -192,17 +198,18 @@ function M.format(entry, item)
 		return item
 	end
 
-	local color_hex = colors.get_color_value(entryDoc)
-	if color_hex == nil then
-		return item
+	local cached = format_cache[entryDoc]
+	if cached == nil then
+		local color_hex = colors.get_color_value(entryDoc)
+		cached = color_hex and { hl_group = utils.create_highlight_name("fg-" .. color_hex), color_hex = color_hex }
+			or false
+		format_cache[entryDoc] = cached
 	end
-
-	local highlight_group = utils.create_highlight_name("fg-" .. color_hex)
-	vim.api.nvim_set_hl(0, highlight_group, { fg = color_hex, default = true })
-
-	item.abbr_hl_group = highlight_group
-	item.abbr = options.virtual_symbol
-
+	if cached then
+		vim.api.nvim_set_hl(0, cached.hl_group, { fg = cached.color_hex, default = true })
+		item.abbr_hl_group = cached.hl_group
+		item.abbr = options.virtual_symbol
+	end
 	return item
 end
 
