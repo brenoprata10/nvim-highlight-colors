@@ -24,4 +24,23 @@ return {
 	["35"] = "#800080", -- PURPLE
 	["36"] = "#00FFFF", -- CYAN
 	["37"] = "#D3D3D3", -- LIGHT_GRAY
+
+	-- High Intensity Colors
+	["0;90"] = "#A9A9A9", -- BRIGHT_BLACK (Gray)
+	["0;91"] = "#FF5555", -- BRIGHT_RED
+	["0;92"] = "#55FF55", -- BRIGHT_GREEN
+	["0;93"] = "#FFFF55", -- BRIGHT_YELLOW
+	["0;94"] = "#5555FF", -- BRIGHT_BLUE
+	["0;95"] = "#FF55FF", -- BRIGHT_PURPLE
+	["0;96"] = "#55FFFF", -- BRIGHT_CYAN
+	["0;97"] = "#FFFFFF", -- BRIGHT_WHITE
+
+	["90"] = "#A9A9A9", -- BRIGHT_BLACK
+	["91"] = "#FF5555", -- BRIGHT_RED
+	["92"] = "#55FF55", -- BRIGHT_GREEN
+	["93"] = "#FFFF55", -- BRIGHT_YELLOW
+	["94"] = "#5555FF", -- BRIGHT_BLUE
+	["95"] = "#FF55FF", -- BRIGHT_PURPLE
+	["96"] = "#55FFFF", -- BRIGHT_CYAN
+	["97"] = "#FFFFFF", -- BRIGHT_WHITE
 }
