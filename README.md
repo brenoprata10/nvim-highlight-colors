@@ -115,6 +115,7 @@ require("nvim-highlight-colors").setup {
 	
 	---Highlight ansi colors, e.g '\033[0;34m'
 	enable_ansi = true,
+
 	---Highlight CSS variables, e.g. 'var(--testing-color)'
 	enable_var_usage = true,
 
