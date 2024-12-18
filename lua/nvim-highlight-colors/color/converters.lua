@@ -92,4 +92,5 @@ function M.hsl_to_rgb(h, s, l)
 	end
 	return { r * 255, g * 255, b * 255, a * 255 }
 end
+
 return M
