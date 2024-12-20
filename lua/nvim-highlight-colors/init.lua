@@ -188,12 +188,7 @@ function M.format(entry, item)
 		return item
 	end
 
-	local entryItem = entry:get_completion_item()
-	if entryItem == nil then
-		return item
-	end
-
-	local entryDoc = entryItem.documentation
+	local entryDoc = type(entry) ~= "table" and entry or vim.tbl_get(entry, "completion_item", "documentation")
 	if entryDoc == nil or type(entryDoc) ~= "string" then
 		return item
 	end
