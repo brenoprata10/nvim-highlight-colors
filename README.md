@@ -159,11 +159,12 @@ require("nvim-highlight-colors").setup {
 
 ## Commands
 
-| Command                   | Description         |
-| :------------------------ | :------------------ |
-| `:HighlightColors On`     | Turn highlights on  |
-| `:HighlightColors Off`    | Turn highlights off |
-| `:HighlightColors Toggle` | Toggle highlights   |
+| Command                     | Description                  |
+| :-------------------------- | :--------------------------- |
+| `:HighlightColors On`       | Turn highlights on           |
+| `:HighlightColors Off`      | Turn highlights off          |
+| `:HighlightColors Toggle`   | Toggle highlights            |
+| `:HighlightColors IsActive` | Highlights active / disabled |
 
 Commands are also available in lua:
 
@@ -171,4 +172,5 @@ Commands are also available in lua:
 require("nvim-highlight-colors").turnOn()
 require("nvim-highlight-colors").turnOff()
 require("nvim-highlight-colors").toggle()
+require("nvim-highlight-colors").is_active()
 ```

@@ -244,6 +244,11 @@ function M.toggle()
 	end
 end
 
+---Callback to get the current on/off state of the plugin.
+function M.is_active()
+	return is_loaded
+end
+
 ---Autocmd callback to handle changes that require a complete redraw of the highlights (clear current highlights + highlight again)
 ---@param props {buf: number}
 function M.handle_change_autocmd_callback(props)
@@ -286,12 +291,14 @@ vim.api.nvim_create_user_command("HighlightColors",
 			M.turn_off()
 		elseif arg == "toggle" then
 			M.toggle()
+		elseif arg == "isactive" then
+			M.is_active()
 		end
 	end,
 	{
 		nargs = 1,
 		complete = function()
-			return { "On", "Off", "Toggle" }
+			return { "On", "Off", "Toggle", "IsActive" }
 		end,
 		desc = "Config color highlight"
 	}
@@ -302,5 +309,6 @@ return {
 	turnOn = M.turn_on,
 	setup = M.setup,
 	toggle = M.toggle,
+	is_active = M.is_active,
 	format = M.format,
 }
