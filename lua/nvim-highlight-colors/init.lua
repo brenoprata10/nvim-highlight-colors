@@ -18,6 +18,7 @@ local options = {
 	enable_hex = true,
 	enable_rgb = true,
 	enable_hsl = true,
+  enable_hsl_without_function = true,
 	enable_var_usage = true,
 	enable_named_colors = true,
 	enable_short_hex = true,
@@ -69,6 +70,10 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			is_enabled = options.enable_hsl,
 			patterns = { color_patterns.hsl_regex },
 		},
+    HSL_WITHOUT_FUNC = {
+      is_enabled = options.enable_hsl_without_function,
+      patterns = { color_patterns.hsl_without_func_regex }
+    },
 		VAR_USAGE = {
 			is_enabled = options.enable_var_usage,
 			patterns = { color_patterns.var_usage_regex }
