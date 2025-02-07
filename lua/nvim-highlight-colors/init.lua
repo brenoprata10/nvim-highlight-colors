@@ -14,7 +14,7 @@ local render_options = utils.render_options
 local row_offset = 2
 local is_loaded = false
 local options = {
-	render = render_options.background,
+	render = { render_options.background },
 	enable_hex = true,
 	enable_rgb = true,
 	enable_hsl = true,
@@ -28,28 +28,70 @@ local options = {
 	virtual_symbol_suffix = " ",
 	virtual_symbol_position = "inline",
 	exclude_filetypes = {},
-	exclude_buftypes = {}
+	exclude_buftypes = {},
 }
 
 local M = {}
+
+local function validate_render_options(user_render)
+	local valid_render_types = {
+		[render_options.background] = true,
+		[render_options.foreground] = true,
+		[render_options.virtual] = true,
+	}
+	local filtered_render = {}
+	for _, r in ipairs(user_render) do
+		if valid_render_types[r] then
+			table.insert(filtered_render, r)
+		end
+	end
+
+	if #filtered_render >= 2 then
+		local has_background = false
+		local has_foreground = false
+		for _, v in ipairs(filtered_render) do
+			if v == render_options.background then
+				has_background = true
+			elseif v == render_options.foreground then
+				has_foreground = true
+			end
+		end
+		if has_background and has_foreground then
+			for i, v in ipairs(filtered_render) do
+				if v == render_options.foreground then
+					filtered_render[i] = render_options.virtual
+					break
+				end
+			end
+		end
+	end
+
+	return filtered_render
+end
 
 ---Plugin entry point
 ---@param user_options table Check 'options' variable above
 function M.setup(user_options)
 	is_loaded = true
-	if (user_options ~= nil and user_options ~= {}) then
+	if user_options ~= nil and user_options ~= {} then
 		for key, _ in pairs(user_options) do
 			if user_options[key] ~= nil then
-				options[key] = user_options[key]
+				if key == "render" and type(user_options[key]) == "table" then
+					options[key] = validate_render_options(user_options[key])
+				elseif key == "render" and type(user_options[key]) == "string" then
+					options[key] = validate_render_options({ user_options[key] })
+				else
+					options[key] = user_options[key]
+				end
 			end
 		end
 	end
 end
 
 ---Highlight visible colors within specified buffer id
----@param min_row number 
----@param max_row number 
----@param active_buffer_id number 
+---@param min_row number
+---@param max_row number
+---@param active_buffer_id number
 function M.highlight_colors(min_row, max_row, active_buffer_id)
 	local patterns = {}
 
@@ -58,7 +100,7 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			is_enabled = options.enable_hex,
 			patterns = {
 				color_patterns.hex_regex,
-				color_patterns.hex_0x_regex
+				color_patterns.hex_0x_regex,
 			},
 		},
 		RGB = {
@@ -71,16 +113,16 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 		},
 		VAR_USAGE = {
 			is_enabled = options.enable_var_usage,
-			patterns = { color_patterns.var_usage_regex }
+			patterns = { color_patterns.var_usage_regex },
 		},
 		NAMED_COLORS = {
 			is_enabled = options.enable_named_colors,
-			patterns = { colors.get_css_named_color_pattern() }
+			patterns = { colors.get_css_named_color_pattern() },
 		},
 		TAILWIND = {
 			is_enabled = options.enable_tailwind and not utils.has_tailwind_css_lsp(),
-			patterns = { colors.get_tailwind_named_color_pattern() }
-		}
+			patterns = { colors.get_tailwind_named_color_pattern() },
+		},
 	}
 
 	for _, config in pairs(patterns_config) do
@@ -91,32 +133,27 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 		end
 	end
 
-	if (options.custom_colors ~= nil) then
+	if options.custom_colors ~= nil then
 		for _, custom_color in pairs(options.custom_colors) do
 			table.insert(patterns, custom_color.label)
 		end
 	end
 
-	local positions = buffer_utils.get_positions_by_regex(
-		patterns,
-		min_row - 1,
-		max_row,
-		active_buffer_id,
-		row_offset
-	)
+	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, active_buffer_id, row_offset)
 
 	for _, data in pairs(positions) do
-		utils.create_highlight(
-			active_buffer_id,
-			ns_id,
-			data,
-			options
-		)
+		for _, render_type in ipairs(options.render) do
+			utils.create_highlight(
+				active_buffer_id,
+				ns_id,
+				data,
+				vim.tbl_extend("force", options, { render = render_type }) -- Pass render type dynamically
+			)
+		end
 	end
 
 	utils.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 end
-
 
 ---Refreshes current highlights within the specified buffer
 ---@param active_buffer_id number
@@ -124,13 +161,14 @@ end
 function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
 
- 	if not vim.api.nvim_buf_is_valid(active_buffer_id)
- 		or vim.bo[buffer_id].buftype == "terminal"
- 		or vim.tbl_contains(options.exclude_filetypes, vim.bo[buffer_id].filetype)
- 		or vim.tbl_contains(options.exclude_buftypes, vim.bo[buffer_id].buftype)
-  	then
- 		return
- 	end
+	if
+		not vim.api.nvim_buf_is_valid(active_buffer_id)
+		or vim.bo[buffer_id].buftype == "terminal"
+		or vim.tbl_contains(options.exclude_filetypes, vim.bo[buffer_id].filetype)
+		or vim.tbl_contains(options.exclude_buftypes, vim.bo[buffer_id].buftype)
+	then
+		return
+	end
 
 	if should_clear_highlights then
 		M.clear_highlights(buffer_id)
@@ -144,23 +182,21 @@ end
 ---Deletes highlights for the specified buffer
 ---@param active_buffer_id number
 function M.clear_highlights(active_buffer_id)
-	pcall(
-		function ()
-			local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
+	pcall(function()
+		local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
 
-			vim.api.nvim_buf_clear_namespace(buffer_id, ns_id, 0, utils.get_last_row_index())
-			local virtual_texts = vim.api.nvim_buf_get_extmarks(buffer_id, ns_id, 0, -1, {})
+		vim.api.nvim_buf_clear_namespace(buffer_id, ns_id, 0, utils.get_last_row_index())
+		local virtual_texts = vim.api.nvim_buf_get_extmarks(buffer_id, ns_id, 0, -1, {})
 
-			if #virtual_texts then
-				for _, virtual_text in pairs(virtual_texts) do
-					local extmart_id = virtual_text[1]
-					if (tonumber(extmart_id) ~= nil) then
-						vim.api.nvim_buf_del_extmark(buffer_id, ns_id, extmart_id)
-					end
+		if #virtual_texts then
+			for _, virtual_text in pairs(virtual_texts) do
+				local extmart_id = virtual_text[1]
+				if tonumber(extmart_id) ~= nil then
+					vim.api.nvim_buf_del_extmark(buffer_id, ns_id, extmart_id)
 				end
 			end
 		end
-	)
+	end)
 end
 
 -- a cache of documentation text to hex code & hlgroup
@@ -171,7 +207,7 @@ end
 local format_cache = {}
 
 ---Formats nvim-cmp to showcase colors in the autocomplete
----@usage 
+---@usage
 ---Add the following to your nvim-cmp setup
 ---cmp.setup({
 ---...other configs
@@ -181,8 +217,8 @@ local format_cache = {}
 function M.format(entry, item)
 	item.menu = item.kind
 	item.kind = item.abbr
-	item.kind_hl_group = ''
-	item.abbr = ''
+	item.kind_hl_group = ""
+	item.abbr = ""
 
 	if item.menu ~= "Color" then
 		return item
@@ -280,27 +316,24 @@ vim.api.nvim_create_autocmd({
 	callback = M.handle_autocmd_callback,
 })
 
-vim.api.nvim_create_user_command("HighlightColors",
-	function(opts)
-		local arg = string.lower(opts.fargs[1])
-		if arg == "on" then
-			M.turn_on()
-		elseif arg == "off" then
-			M.turn_off()
-		elseif arg == "toggle" then
-			M.toggle()
-		elseif arg == "isactive" then
-			M.is_active()
-		end
+vim.api.nvim_create_user_command("HighlightColors", function(opts)
+	local arg = string.lower(opts.fargs[1])
+	if arg == "on" then
+		M.turn_on()
+	elseif arg == "off" then
+		M.turn_off()
+	elseif arg == "toggle" then
+		M.toggle()
+	elseif arg == "isactive" then
+		M.is_active()
+	end
+end, {
+	nargs = 1,
+	complete = function()
+		return { "On", "Off", "Toggle", "IsActive" }
 	end,
-	{
-		nargs = 1,
-		complete = function()
-			return { "On", "Off", "Toggle", "IsActive" }
-		end,
-		desc = "Config color highlight"
-	}
-)
+	desc = "Config color highlight",
+})
 
 return {
 	turnOff = M.turn_off,
