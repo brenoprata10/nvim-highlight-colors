@@ -39,6 +39,7 @@ local function validate_render_options(user_render)
 		[render_options.foreground] = true,
 		[render_options.virtual] = true,
 	}
+
 	local filtered_render = {}
 	for _, r in ipairs(user_render) do
 		if valid_render_types[r] then
@@ -94,7 +95,6 @@ end
 ---@param active_buffer_id number
 function M.highlight_colors(min_row, max_row, active_buffer_id)
 	local patterns = {}
-
 	local patterns_config = {
 		HEX = {
 			is_enabled = options.enable_hex,
@@ -140,7 +140,6 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 	end
 
 	local positions = buffer_utils.get_positions_by_regex(patterns, min_row - 1, max_row, active_buffer_id, row_offset)
-
 	for _, data in pairs(positions) do
 		for _, render_type in ipairs(options.render) do
 			utils.create_highlight(
@@ -160,7 +159,6 @@ end
 ---@param should_clear_highlights boolean Indicates whether the current highlights should be deleted before rendering
 function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
-
 	if
 		not vim.api.nvim_buf_is_valid(active_buffer_id)
 		or vim.bo[buffer_id].buftype == "terminal"
@@ -184,7 +182,6 @@ end
 function M.clear_highlights(active_buffer_id)
 	pcall(function()
 		local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
-
 		vim.api.nvim_buf_clear_namespace(buffer_id, ns_id, 0, utils.get_last_row_index())
 		local virtual_texts = vim.api.nvim_buf_get_extmarks(buffer_id, ns_id, 0, -1, {})
 
@@ -250,7 +247,6 @@ end
 ---Callback to manually show the highlights
 function M.turn_on()
 	local buffers = vim.fn.getbufinfo({ buflisted = true })
-
 	for _, buffer in ipairs(buffers) do
 		M.refresh_highlights(buffer.bufnr, false)
 	end
@@ -261,7 +257,6 @@ end
 ---Callback to manually hide the highlights
 function M.turn_off()
 	local buffers = vim.fn.getbufinfo({ buflisted = true })
-
 	for _, buffer in ipairs(buffers) do
 		M.clear_highlights(buffer.bufnr)
 	end
@@ -308,7 +303,6 @@ vim.api.nvim_create_autocmd({
 }, {
 	callback = M.handle_change_autocmd_callback,
 })
-
 vim.api.nvim_create_autocmd({
 	"VimResized",
 	"WinScrolled",
