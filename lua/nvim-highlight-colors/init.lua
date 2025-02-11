@@ -29,6 +29,7 @@ local options = {
 	virtual_symbol_position = "inline",
 	exclude_filetypes = {},
 	exclude_buftypes = {},
+	exclude_buffer = function(bufnr) end
 }
 
 local M = {}
@@ -159,14 +160,14 @@ end
 ---@param should_clear_highlights boolean Indicates whether the current highlights should be deleted before rendering
 function M.refresh_highlights(active_buffer_id, should_clear_highlights)
 	local buffer_id = active_buffer_id ~= nil and active_buffer_id or 0
-	if
-		not vim.api.nvim_buf_is_valid(active_buffer_id)
-		or vim.bo[buffer_id].buftype == "terminal"
-		or vim.tbl_contains(options.exclude_filetypes, vim.bo[buffer_id].filetype)
-		or vim.tbl_contains(options.exclude_buftypes, vim.bo[buffer_id].buftype)
-	then
-		return
-	end
+ 	if not vim.api.nvim_buf_is_valid(active_buffer_id)
+ 		or vim.bo[buffer_id].buftype == "terminal"
+ 		or vim.tbl_contains(options.exclude_filetypes, vim.bo[buffer_id].filetype)
+ 		or vim.tbl_contains(options.exclude_buftypes, vim.bo[buffer_id].buftype)
+ 		or (options.exclude_buffer and options.exclude_buffer(buffer_id))
+  	then
+ 		return
+ 	end
 
 	if should_clear_highlights then
 		M.clear_highlights(buffer_id)
