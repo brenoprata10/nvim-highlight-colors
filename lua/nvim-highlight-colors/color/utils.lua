@@ -34,6 +34,12 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 		return converters.rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 	end
 
+	if (patterns.is_hsl_without_func_color(color)) then
+		local hsl_table = M.get_hsl_without_func_values(color)
+		local rgb_table = converters.hsl_to_rgb(hsl_table[1], hsl_table[2], hsl_table[3])
+		return converters.rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
+	end
+
 	if (patterns.is_named_color({M.get_css_named_color_pattern()}, color)) then
 		return M.get_css_named_color_value(color)
 	end
@@ -84,6 +90,21 @@ function M.get_hsl_values(color)
 	end
 
 	return hsl_table
+end
+
+---Returns the hsl table from a custom property HSL format (e.g. "--name: 0 84.2% 60.2%;")
+---@param color string HSL color in format "--name: h s% l%;"
+---@return string[]
+function M.get_hsl_without_func_values(color)
+    local hsl_table = {}
+    -- Remove the colon and any leading whitespace before matching numbers
+    local clean_color = color:match(":%s*(.+)")
+    if clean_color then
+        for value in clean_color:gmatch("%d+%.?%d*") do
+            table.insert(hsl_table, value)
+        end
+    end
+    return hsl_table
 end
 
 ---Returns the hex value of a CSS color
@@ -150,7 +171,12 @@ end
 function M.get_css_var_color(color, row_offset)
 	local var_name = string.match(color, patterns.var_regex)
 	local var_name_regex = string.gsub(var_name, "%-", "%%-")
-	local value_patterns = {patterns.hex_regex, patterns.rgb_regex, patterns.hsl_regex}
+	local value_patterns = {
+    patterns.hex_regex,
+    patterns.rgb_regex,
+    patterns.hsl_regex,
+    patterns.hsl_without_func_regex:gsub("^:%s*", "")
+  }
 	local var_patterns = {}
 
 	for _, pattern in pairs(value_patterns) do
@@ -166,12 +192,15 @@ function M.get_css_var_color(color, row_offset)
 		local hex_color = string.match(var_position[1].value, patterns.hex_regex)
 		local rgb_color = string.match(var_position[1].value, patterns.rgb_regex)
 		local hsl_color = string.match(var_position[1].value, patterns.hsl_regex)
+    local hsl_without_func_color = string.match(var_position[1].value, patterns.hsl_without_func_regex)
 		if hex_color then
 			return M.get_color_value(hex_color)
 		elseif rgb_color then
 			return M.get_color_value(rgb_color)
 		elseif hsl_color then
 			return M.get_color_value(hsl_color)
+    elseif hsl_without_func_color then
+      return M.get_color_value(hsl_without_func_color)
 		else
 			return M.get_css_named_color_value(
 				string.gsub(var_position[1].value, var_name_regex, "")
