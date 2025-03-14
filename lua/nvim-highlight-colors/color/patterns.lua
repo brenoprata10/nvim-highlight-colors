@@ -12,6 +12,8 @@ M.var_usage_regex = "var%(" .. M.var_regex .. "%)"
 
 M.tailwind_prefix = "!?%a+"
 
+M.ansi_regex = "\\033%[[0-9;]*m"
+
 ---Checks whether a color is short hex
 ---@return boolean
 function M.is_short_hex_color(color)
@@ -76,6 +78,10 @@ function M.is_named_color(named_color_patterns, color)
 	end
 
 	return false
+end
+
+function M.is_ansi_color(color)
+	return string.match(color, M.ansi_regex)
 end
 
 return M

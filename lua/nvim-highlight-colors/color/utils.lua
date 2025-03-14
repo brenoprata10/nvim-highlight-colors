@@ -3,6 +3,7 @@ local css_named_colors = require("nvim-highlight-colors.named-colors.css")
 local tailwind_named_colors = require("nvim-highlight-colors.named-colors.tailwind")
 local converters = require("nvim-highlight-colors.color.converters")
 local patterns = require("nvim-highlight-colors.color.patterns")
+local ansi_named_colors = require("nvim-highlight-colors.named-colors.ansi")
 
 local M = {}
 
@@ -42,6 +43,10 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 
 	if (patterns.is_named_color({M.get_css_named_color_pattern()}, color)) then
 		return M.get_css_named_color_value(color)
+	end
+
+	if patterns.is_ansi_color(color) then
+		return M.get_ansi_named_color_value(color)
 	end
 
 	if (patterns.is_named_color({M.get_tailwind_named_color_pattern()}, color)) then
@@ -135,6 +140,21 @@ function M.get_tailwind_named_color_value(color)
 	if (#rgb_table >= 3) then
 		return converters.rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 	end
+end
+
+---Returns the hex value of a python ansi color
+---@param color string
+---@return string|nil
+---@usage get_ansi_named_color_value("\033[31m") => Returns '#FF0000'
+function M.get_ansi_named_color_value(color)
+	local color_code = nil
+	if string.match(color, patterns.ansi_regex) then
+		color_code = string.match(color, "([0-9;]+)m")
+	end
+	if ansi_named_colors[color_code] then
+		return tostring(ansi_named_colors[color_code])
+	end
+	return nil
 end
 
 ---Returns a pattern for tailwind colors
