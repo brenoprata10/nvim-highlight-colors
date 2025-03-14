@@ -14,6 +14,7 @@
 - Supports hex, rgb, hsl, CSS variables, and Tailwind CSS
 - LSP support! For any LSP that supports `textDocument/documentColor` like [tailwindcss](https://github.com/tailwindlabs/tailwindcss-intellisense) and [csslsp](https://github.com/microsoft/vscode-css-languageservice)
 - Multiple rendering modes: background, foreground, and virtual text
+- Supports multiple rendering fields [Max 2] - `background` + `virtual` or `foreground` + `virtual` or the classic single render...
 
 ## Usage
 
@@ -31,6 +32,10 @@ vim.opt.termguicolors = true
 
 require('nvim-highlight-colors').setup({})
 ```
+
+
+### Icon integration (nvim-cmp, blink.cmp, lspkind+nvim-cmp)
+<details><summary>nvim-cmp</summary>
 
 ### `nvim-cmp` integration
 
@@ -56,6 +61,8 @@ require("cmp").setup({
         }
 })
 ```
+</details>
+<details><summary>lspkind+nvim-cmp</summary>
 
 #### `lspkind` integration
 
@@ -79,6 +86,8 @@ require("cmp").setup({
         }
 })
 ```
+</details>
+<details><summary>blink.cmp</summary>
 
 ### `blink.cmp` integration
 
@@ -121,13 +130,16 @@ require("blink.cmp").setup {
 	},
 }
 ```
+</details>
 
 ## Options
 
 ```lua
 require("nvim-highlight-colors").setup {
 	---Render style
+	---@type string|table?
 	---@usage 'background'|'foreground'|'virtual'
+	---@usage {'background', 'virtual'}|{'foreground', 'virtual'} -- {'background', 'foreground'}|{'foreground', 'background'} are automatically converted to {'background', 'virtual'}|{'foreground', 'virtual'}
 	render = 'background',
 
 	---Set virtual symbol (requires render to be set to 'virtual')
