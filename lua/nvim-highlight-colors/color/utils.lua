@@ -148,7 +148,7 @@ end
 ---@usage get_ansi_named_color_value("\033[31m") => Returns '#FF0000'
 function M.get_ansi_named_color_value(color)
 	local color_code = nil
-	if string.match(color, "\\033[[0-9;]*m") then
+	if string.match(color, patterns.ansi_regex) then
 		color_code = string.match(color, "([0-9;]+)m")
 	end
 	if ansi_named_colors[color_code] then

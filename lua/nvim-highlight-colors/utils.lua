@@ -36,14 +36,7 @@ end
 ---@param color_value string
 ---@return string
 function M.create_highlight_name(color_value)
-	-- Checking to match on ansi codes to remove naughty chars
-	if string.match(color_value, "\\") then
-		local g1, g2 = string.match(color_value, "([0-9]);?([0-9]+)m")
-		if g1 and g2 then
-			color_value = g1 .. g2
-		end
-	end
-	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"'%%;#]+", "")
+	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("\\[0-9]*%[", ""):gsub("[!(),%s%.-/%%=:\"'%%[%];#]+", "")
 end
 
 ---Creates the highlight based on the received params
