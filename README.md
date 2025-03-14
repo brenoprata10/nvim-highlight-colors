@@ -1,7 +1,11 @@
 # nvim-highlight-colors
+<a href="https://dotfyle.com/plugins/brenoprata10/nvim-highlight-colors">
+    <img src="https://dotfyle.com/plugins/brenoprata10/nvim-highlight-colors/shield?style=flat-square" />
+</a>
+</br>
 
 > Highlight colors within Neovim
-
+  
 <img width="640" src="https://github.com/mvllow/nvim-highlight-colors/assets/1474821/d99a800c-0ea9-44f9-bc1c-986236adf44a" alt="Background highlights for hex, rgb, hsl, named colors, and CSS variables" />
 
 ## Features
@@ -76,6 +80,47 @@ require("cmp").setup({
 })
 ```
 
+### `blink.cmp` integration
+
+```lua
+require("blink.cmp").setup {
+	completion = {
+		menu = {
+			draw = {
+				components = {
+					-- customize the drawing of kind icons
+					kind_icon = {
+						text = function(ctx)
+						  -- default kind icon
+						  local icon = ctx.kind_icon
+							-- if LSP source, check for color derived from documentation
+							if ctx.item.source_name == "LSP" then
+								local color_item = require("nvim-highlight-colors").format(ctx.item.documentation, { kind = ctx.kind })
+								if color_item and color_item.abbr then
+								  icon = color_item.abbr
+								end
+							end
+							return icon .. ctx.icon_gap
+						end,
+						highlight = function(ctx)
+							-- default highlight group
+							local highlight = "BlinkCmpKind" .. ctx.kind
+							-- if LSP source, check for color derived from documentation
+							if ctx.item.source_name == "LSP" then
+								local color_item = require("nvim-highlight-colors").format(ctx.item.documentation, { kind = ctx.kind })
+								if color_item and color_item.abbr_hl_group then
+								  highlight = color_item.abbr_hl_group
+								end
+							end
+							return highlight
+						end,
+					},
+				},
+			},
+		},
+	},
+}
+```
 
 ## Options
 
@@ -116,6 +161,9 @@ require("nvim-highlight-colors").setup {
 	---Highlight ansi colors, e.g '\033[0;34m'
 	enable_ansi = true,
 
+  -- Highlight hsl colors without function, e.g. '--foreground: 0 69% 69%;'
+  enable_hsl_without_function = true,
+
 	---Highlight CSS variables, e.g. 'var(--testing-color)'
 	enable_var_usage = true,
 
@@ -135,7 +183,9 @@ require("nvim-highlight-colors").setup {
 
  	-- Exclude filetypes or buftypes from highlighting e.g. 'exclude_buftypes = {'text'}'
     	exclude_filetypes = {},
-    	exclude_buftypes = {}
+    	exclude_buftypes = {},
+ 	-- Exclude buffer from highlighting e.g. 'exclude_buffer = function(bufnr) return vim.fn.getfsize(vim.api.nvim_buf_get_name(bufnr)) > 1000000 end'
+    	exclude_buffer = function(bufnr) end
 }
 ```
 
@@ -162,11 +212,12 @@ require("nvim-highlight-colors").setup {
 
 ## Commands
 
-| Command                   | Description         |
-| :------------------------ | :------------------ |
-| `:HighlightColors On`     | Turn highlights on  |
-| `:HighlightColors Off`    | Turn highlights off |
-| `:HighlightColors Toggle` | Toggle highlights   |
+| Command                     | Description                  |
+| :-------------------------- | :--------------------------- |
+| `:HighlightColors On`       | Turn highlights on           |
+| `:HighlightColors Off`      | Turn highlights off          |
+| `:HighlightColors Toggle`   | Toggle highlights            |
+| `:HighlightColors IsActive` | Highlights active / disabled |
 
 Commands are also available in lua:
 
@@ -174,4 +225,5 @@ Commands are also available in lua:
 require("nvim-highlight-colors").turnOn()
 require("nvim-highlight-colors").turnOff()
 require("nvim-highlight-colors").toggle()
+require("nvim-highlight-colors").is_active()
 ```

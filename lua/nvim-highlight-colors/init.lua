@@ -18,6 +18,7 @@ local options = {
 	enable_hex = true,
 	enable_rgb = true,
 	enable_hsl = true,
+  enable_hsl_without_function = true,
 	enable_var_usage = true,
 	enable_named_colors = true,
 	enable_short_hex = true,
@@ -29,7 +30,8 @@ local options = {
 	virtual_symbol_suffix = " ",
 	virtual_symbol_position = "inline",
 	exclude_filetypes = {},
-	exclude_buftypes = {}
+	exclude_buftypes = {},
+	exclude_buffer = function(bufnr) end
 }
 
 local M = {}
@@ -70,6 +72,10 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			is_enabled = options.enable_hsl,
 			patterns = { color_patterns.hsl_regex },
 		},
+    HSL_WITHOUT_FUNC = {
+      is_enabled = options.enable_hsl_without_function,
+      patterns = { color_patterns.hsl_without_func_regex }
+    },
 		VAR_USAGE = {
 			is_enabled = options.enable_var_usage,
 			patterns = { color_patterns.var_usage_regex }
@@ -133,6 +139,7 @@ function M.refresh_highlights(active_buffer_id, should_clear_highlights)
  		or vim.bo[buffer_id].buftype == "terminal"
  		or vim.tbl_contains(options.exclude_filetypes, vim.bo[buffer_id].filetype)
  		or vim.tbl_contains(options.exclude_buftypes, vim.bo[buffer_id].buftype)
+ 		or (options.exclude_buffer and options.exclude_buffer(buffer_id))
   	then
  		return
  	end
@@ -193,13 +200,11 @@ function M.format(entry, item)
 		return item
 	end
 
-	local entryItem = entry:get_completion_item()
-	if entryItem == nil then
-		return item
+	local entryDoc = entry
+	if type(entryDoc) == "table" then
+		entryDoc = vim.tbl_get(entry or {}, "completion_item", "documentation")
 	end
-
-	local entryDoc = entryItem.documentation
-	if entryDoc == nil or type(entryDoc) ~= "string" then
+	if type(entryDoc) ~= "string" then
 		return item
 	end
 
@@ -249,6 +254,11 @@ function M.toggle()
 	end
 end
 
+---Callback to get the current on/off state of the plugin.
+function M.is_active()
+	return is_loaded
+end
+
 ---Autocmd callback to handle changes that require a complete redraw of the highlights (clear current highlights + highlight again)
 ---@param props {buf: number}
 function M.handle_change_autocmd_callback(props)
@@ -291,12 +301,14 @@ vim.api.nvim_create_user_command("HighlightColors",
 			M.turn_off()
 		elseif arg == "toggle" then
 			M.toggle()
+		elseif arg == "isactive" then
+			M.is_active()
 		end
 	end,
 	{
 		nargs = 1,
 		complete = function()
-			return { "On", "Off", "Toggle" }
+			return { "On", "Off", "Toggle", "IsActive" }
 		end,
 		desc = "Config color highlight"
 	}
@@ -307,5 +319,6 @@ return {
 	turnOn = M.turn_on,
 	setup = M.setup,
 	toggle = M.toggle,
+	is_active = M.is_active,
 	format = M.format,
 }

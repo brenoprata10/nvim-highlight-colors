@@ -43,7 +43,7 @@ function M.create_highlight_name(color_value)
 			color_value = g1 .. g2
 		end
 	end
-	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"']+", "")
+	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("[!(),%s%.-/%%=:\"'%%;#]+", "")
 end
 
 ---Creates the highlight based on the received params
