@@ -1,7 +1,11 @@
 # nvim-highlight-colors
+<a href="https://dotfyle.com/plugins/brenoprata10/nvim-highlight-colors">
+    <img src="https://dotfyle.com/plugins/brenoprata10/nvim-highlight-colors/shield?style=flat-square" />
+</a>
+</br>
 
 > Highlight colors within Neovim
-
+  
 <img width="640" src="https://github.com/mvllow/nvim-highlight-colors/assets/1474821/d99a800c-0ea9-44f9-bc1c-986236adf44a" alt="Background highlights for hex, rgb, hsl, named colors, and CSS variables" />
 
 ## Features
