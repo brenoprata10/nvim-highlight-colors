@@ -23,6 +23,7 @@ local options = {
 	enable_named_colors = true,
 	enable_short_hex = true,
 	enable_tailwind = false,
+	enable_ansi = false,
 	custom_colors = nil,
 	virtual_symbol = "■",
 	virtual_symbol_prefix = "",
@@ -86,6 +87,10 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 		TAILWIND = {
 			is_enabled = options.enable_tailwind and not utils.has_tailwind_css_lsp(),
 			patterns = { colors.get_tailwind_named_color_pattern() }
+		},
+		ANSI = {
+			is_enabled = options.enable_ansi,
+			patterns = { color_patterns.ansi_regex },
 		}
 	}
 
