@@ -1,0 +1,32 @@
+local converters = require("nvim-highlight-colors.color.converters")
+
+describe('Converters', function()
+  it('should convert rgb to hex', function()
+    local hex_value = converters.rgb_to_hex(255, 255, 255)
+    assert.are.equal(hex_value, '#FFFFFF')
+  end)
+
+  it('should convert hex to rgb', function()
+    local rgb_table = converters.hex_to_rgb('#FFFFFF')
+    assert.are.equal(rgb_table[1], 255)
+    assert.are.equal(rgb_table[2], 255)
+    assert.are.equal(rgb_table[3], 255)
+  end)
+
+  it('should convert short hex to rgb', function()
+    local rgb_table = converters.hex_to_rgb('#FFF')
+    assert.are.equal(rgb_table[1], 255)
+    assert.are.equal(rgb_table[2], 255)
+    assert.are.equal(rgb_table[3], 255)
+  end)
+
+  it('should convert short hex to hex', function()
+    local hex_value = converters.short_hex_to_hex('#FFF')
+    assert.are.equal(hex_value, '#FFFFFF')
+  end)
+
+  it('should return nil for invalid hex', function()
+    local rgb_table = converters.hex_to_rgb('#FLK')
+    assert.is_nil(rgb_table)
+  end)
+end)
