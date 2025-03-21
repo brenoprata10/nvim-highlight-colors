@@ -15,48 +15,56 @@ M.tailwind_prefix = "!?%a+"
 M.ansi_regex = "\\033%[[0-9;]*m"
 
 ---Checks whether a color is short hex
+---@param color string
 ---@return boolean
 function M.is_short_hex_color(color)
 	return string.match(color, M.hex_regex) and string.len(color) == 4
 end
 
 ---Checks whether a color is hex
+---@param color string
 ---@return boolean
 function M.is_hex_color(color)
 	return string.match(color, M.hex_regex) and string.len(color) == 7
 end
 
 ---Checks whether a color is hex with alpha data
+---@param color string
 ---@return boolean
 function M.is_alpha_layer_hex(color)
 	return string.match(color, M.hex_regex) ~= nil and string.len(color) == 9
 end
 
 ---Checks whether a color is rgb
+---@param color string
 ---@return boolean
 function M.is_rgb_color(color)
 	return string.match(color, M.rgb_regex)
 end
 
 ---Checks whether a color is hsl
+---@param color string
 ---@return boolean
 function M.is_hsl_color(color)
 	return string.match(color, M.hsl_regex)
 end
 
 -- Checks wether a color is a hsl without function color
+---@param color string
 ---@return boolean
 function M.is_hsl_without_func_color(color)
 	return string.match(color, M.hsl_without_func_regex)
 end
 
 ---Checks whether a color is a CSS var color
+---@param color string
 ---@return boolean
 function M.is_var_color(color)
 	return string.match(color, M.var_usage_regex)
 end
 
 ---Checks whether a color is a custom color
+---@param color string
 ---@return boolean
 function M.is_custom_color(color, custom_colors)
 	for _, custom_color in pairs(custom_colors) do
@@ -80,6 +88,9 @@ function M.is_named_color(named_color_patterns, color)
 	return false
 end
 
+---Checks whether a color is a ansi color
+---@param color string
+---@return boolean
 function M.is_ansi_color(color)
 	return string.match(color, M.ansi_regex)
 end
