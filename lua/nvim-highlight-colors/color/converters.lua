@@ -6,6 +6,7 @@ local M = {}
 ---@param r string
 ---@param g string
 ---@param b string
+---@usage rgb_to_hex(255, 255, 255) => Returns '#FFFFFF'
 ---@return string
 function M.rgb_to_hex(r, g, b)
  	return string.format("#%02X%02X%02X", r, g, b)
@@ -13,6 +14,7 @@ end
 
 ---Converts a hex color to rgb
 ---@param hex string
+---@usage hex_to_rgb("#FFFFFF") => Returns {255, 255, 255}
 ---@return {r: number, g: number, b: number}|nil
 function M.hex_to_rgb(hex)
 	if patterns.is_short_hex_color(hex) then
@@ -30,6 +32,7 @@ end
 
 ---Converts a short hex color to hex
 ---@param color string
+---@usage short_hex_to_hex("#FFF") => Returns "#FFFFFF"
 ---@return string
 function M.short_hex_to_hex(color)
 	local new_color = "#"
@@ -48,6 +51,7 @@ local a
 ---@param h string
 ---@param s string
 ---@param l string
+---@usage hsl_to_rgb(240, 100, 68) => Returns {91, 91, 255, 255}
 ---@return {r: number, g: number, b: number, a: number}
 -- Function retrieved from this stackoverflow post:
 -- https://stackoverflow.com/questions/68317097/how-to-properly-convert-hsl-colors-to-rgb-colors-in-lua

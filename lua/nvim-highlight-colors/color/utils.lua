@@ -185,18 +185,19 @@ function M.get_custom_color(color, custom_colors)
 end
 
 ---Returns the hex value of a CSS variable
----@param color string
+---@param color string --my-css-variable-name
 ---@param row_offset number
+---@usage get_css_var_color("--css-variable-name", 0) => Returns "#000000" 
 ---@return string|nil
 function M.get_css_var_color(color, row_offset)
 	local var_name = string.match(color, patterns.var_regex)
 	local var_name_regex = string.gsub(var_name, "%-", "%%-")
 	local value_patterns = {
-    patterns.hex_regex,
-    patterns.rgb_regex,
-    patterns.hsl_regex,
-    patterns.hsl_without_func_regex:gsub("^:%s*", "")
-  }
+		patterns.hex_regex,
+		patterns.rgb_regex,
+		patterns.hsl_regex,
+		patterns.hsl_without_func_regex:gsub("^:%s*", "")
+	}
 	local var_patterns = {}
 
 	for _, pattern in pairs(value_patterns) do
@@ -212,18 +213,18 @@ function M.get_css_var_color(color, row_offset)
 		local hex_color = string.match(var_position[1].value, patterns.hex_regex)
 		local rgb_color = string.match(var_position[1].value, patterns.rgb_regex)
 		local hsl_color = string.match(var_position[1].value, patterns.hsl_regex)
-    local hsl_without_func_color = string.match(var_position[1].value, patterns.hsl_without_func_regex)
+		local hsl_without_func_color = string.match(var_position[1].value, patterns.hsl_without_func_regex)
 		if hex_color then
 			return M.get_color_value(hex_color)
 		elseif rgb_color then
 			return M.get_color_value(rgb_color)
 		elseif hsl_color then
 			return M.get_color_value(hsl_color)
-    elseif hsl_without_func_color then
-      return M.get_color_value(hsl_without_func_color)
+		elseif hsl_without_func_color then
+			return M.get_color_value(hsl_without_func_color)
 		else
 			return M.get_css_named_color_value(
-				string.gsub(var_position[1].value, var_name_regex, "")
+			string.gsub(var_position[1].value, var_name_regex, "")
 			)
 		end
 	end
@@ -233,6 +234,7 @@ end
 
 ---Returns a contrast friendly color that matches the current color for reading purposes
 ---@param color string
+---@usage get_foreground_color_from_hex_color("#FFFFFF") => Returns "#000000" 
 ---@return string|nil
 function M.get_foreground_color_from_hex_color(color)
 	local rgb_table = converters.hex_to_rgb(color)
