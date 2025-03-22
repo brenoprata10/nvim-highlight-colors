@@ -144,8 +144,8 @@ end
 
 ---Returns the hex value of a python ansi color
 ---@param color string
+---@usage get_ansi_named_color_value("\\033[1;37m") => Returns '#FFFFFF'
 ---@return string|nil
----@usage get_ansi_named_color_value("\033[31m") => Returns '#FF0000'
 function M.get_ansi_named_color_value(color)
 	local color_code = nil
 	if string.match(color, patterns.ansi_regex) then

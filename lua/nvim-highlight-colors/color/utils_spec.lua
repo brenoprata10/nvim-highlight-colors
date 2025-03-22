@@ -67,4 +67,16 @@ describe('Color Utils', function()
 		assert.is_nil(hex_value)
 
 	end)
+
+	it('should return ansi color value', function()
+		local hex_value = utils.get_ansi_named_color_value("\\033[1;37m")
+		assert.are.equal(hex_value, "#FFFFFF")
+
+	end)
+
+	it('should return nil if ansi color is invalid', function()
+		local hex_value = utils.get_ansi_named_color_value("\\033[9;37m")
+		assert.is_nil(hex_value)
+
+	end)
 end)
