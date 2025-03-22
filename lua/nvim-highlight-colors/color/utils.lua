@@ -75,6 +75,7 @@ end
 
 ---Returns the rgb table of a rgb string
 ---@param color string
+---@usage get_rgb_values("rgb(92, 92, 255)") => Returns {'92', '92', '255'}
 ---@return string[]
 function M.get_rgb_values(color)
 	local rgb_table = {}
@@ -87,6 +88,7 @@ end
 
 ---Returns the hsl table of a hsl string
 ---@param color string
+---@usage get_hsl_values("hsl(240, 100%, 68%)") => Returns {'240', '100', '68'}
 ---@return string[]
 function M.get_hsl_values(color)
 	local hsl_table = {}
@@ -99,6 +101,7 @@ end
 
 ---Returns the hsl table from a custom property HSL format (e.g. "--name: 0 84.2% 60.2%;")
 ---@param color string HSL color in format "--name: h s% l%;"
+---@usage get_hsl_without_func_values("--name: 0 0% 100%;") => Returns {'0', '0', '100'}
 ---@return string[]
 function M.get_hsl_without_func_values(color)
     local hsl_table = {}
@@ -114,8 +117,8 @@ end
 
 ---Returns the hex value of a CSS color
 ---@param color string
----@return string
 ---@usage get_css_named_color_value('red') => Returns '#FF0000'
+---@return string
 function M.get_css_named_color_value(color)
 	local color_name = string.match(color, "%a+")
 	return css_named_colors[color_name]
@@ -123,8 +126,8 @@ end
 
 ---Returns the hex value of a tailwind color
 ---@param color string
----@return string|nil
 ---@usage get_tailwind_named_color_value('bg-white') => Returns '#FFFFFF'
+---@return string|nil
 function M.get_tailwind_named_color_value(color)
 	local tailwind_color_name = color
 	-- Removing tailwind prefix from color name: text-slate-500 -> slate-500
