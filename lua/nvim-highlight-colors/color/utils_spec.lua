@@ -6,6 +6,70 @@ local buffer_utils = require("nvim-highlight-colors.buffer_utils")
 _G.vim = _G.vim or { tbl_map = function() end, fn = function() return {} end }
 
 describe('Color Utils', function()
+	it('should return color value when receiving hex', function()
+		local hex_value = utils.get_color_value("#FFFFFF")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving short hex', function()
+		local hex_value = utils.get_color_value("#FFF", 0, nil, true)
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving hex with alpha layer', function()
+		local hex_value = utils.get_color_value("#FFFFFFFF")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving rgb', function()
+		local hex_value = utils.get_color_value("rgb(255, 255, 255)")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving rgb without commas', function()
+		local hex_value = utils.get_color_value("rgb(255 255 255 / .2)")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving hsl', function()
+		local hex_value = utils.get_color_value("hsl(0, 0, 0)")
+		assert.are.equal(hex_value, '#000000')
+	end)
+
+	it('should return color value when receiving hsl css variable', function()
+		local hex_value = utils.get_color_value("--name: 0 0% 100%;")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving css color', function()
+		local hex_value = utils.get_color_value(": white")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving ansi color', function()
+		local hex_value = utils.get_color_value("\\033[1;37m")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving tailwind color', function()
+		local hex_value = utils.get_color_value("bg-white")
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving custom colors', function()
+		local hex_value = utils.get_color_value("custom-color", 0, {{label = 'custom%-color', color = '#FFFFFF'}})
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
+	it('should return color value when receiving custom colors', function()
+		-- Mock vim.fn.line call
+		stub(vim, "fn").returns({line = function() end})
+		stub(vim.fn, "line")
+		stub(buffer_utils,"get_positions_by_regex").returns({{value = "rgb(0, 0, 0)"}})
+		local hex_value = utils.get_color_value("var(--css-variable-name)", 0)
+		assert.are.equal(hex_value, '#000000')
+	end)
+
 	it('should return readable foreground color for bright colors', function()
 		stub(vim, "tbl_map").returns({255, 255, 255})
 		local hex_value = utils.get_foreground_color_from_hex_color("#FFFFFF")

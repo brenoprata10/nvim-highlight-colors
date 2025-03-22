@@ -175,7 +175,7 @@ end
 ---Returns the hex value of a custom color
 ---@param color string
 ---@param custom_colors {label: string, color: string}[]
----@usage get_custom_color('custom-white', {{label = 'custom%-white', color: '#FFFFFF'}}) => Returns '#FFFFFF'
+---@usage get_custom_color('custom-white', {{label = 'custom%-white', color = '#FFFFFF'}}) => Returns '#FFFFFF'
 ---@return string|nil
 function M.get_custom_color(color, custom_colors)
 	for _, custom_color in pairs(custom_colors) do
