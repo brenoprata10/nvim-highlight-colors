@@ -12,6 +12,7 @@ local M = {}
 ---@param row_offset? number
 ---@param custom_colors? {label: string, color: string}[]
 ---@param enable_short_hex? boolean
+---@usage get_color_value("rgb(255, 255, 255)") => Returns "#FFFFFF"
 ---@return string | nil
 function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 	if (enable_short_hex and patterns.is_short_hex_color(color)) then

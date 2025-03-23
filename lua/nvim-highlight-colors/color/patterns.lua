@@ -17,20 +17,29 @@ M.ansi_regex = "\\033%[[0-9;]*m"
 
 ---Checks whether a color is short hex
 ---@param color string
+---@usage is_short_hex_color("#FFF") => Returns true
 ---@return boolean
 function M.is_short_hex_color(color)
-	return string.match(color, M.hex_regex) and string.len(color) == 4
+	if string.match(color, M.hex_regex) then
+		return string.len(color) == 4
+	end
+	return false
 end
 
 ---Checks whether a color is hex
 ---@param color string
+---@usage is_hex_color("#FFFFFF") => Returns true
 ---@return boolean
 function M.is_hex_color(color)
-	return string.match(color, M.hex_regex) and string.len(color) == 7
+	if string.match(color, M.hex_regex) then
+		return string.len(color) == 7
+	end
+	return false
 end
 
 ---Checks whether a color is hex with alpha data
 ---@param color string
+---@usage is_alpha_layer_hex("#FFFFFFFF") => Returns true
 ---@return boolean
 function M.is_alpha_layer_hex(color)
 	return string.match(color, M.hex_regex) ~= nil and string.len(color) == 9

@@ -1,0 +1,51 @@
+local patterns = require("nvim-highlight-colors.color.patterns")
+local assert = require("luassert")
+
+describe('Patterns', function()
+	it('should return true if color is short hex', function()
+		assert.is_true(patterns.is_short_hex_color("#FFF"))
+	end)
+
+	it('should return false if color is not short hex', function()
+		assert.is_false(patterns.is_short_hex_color("#FFFFFF"))
+		assert.is_false(patterns.is_short_hex_color("rgb(255, 255, 255)"))
+		assert.is_false(patterns.is_short_hex_color("hsl(240, 100%, 50%)"))
+	end)
+
+	it('should return true if color is hex', function()
+		assert.is_true(patterns.is_hex_color("#FFFFFF"))
+	end)
+
+	it('should return false if color is not hex', function()
+		assert.is_false(patterns.is_hex_color("#FFF"))
+		assert.is_false(patterns.is_hex_color("rgb(255, 255, 255)"))
+		assert.is_false(patterns.is_hex_color("hsl(240, 100%, 50%)"))
+	end)
+
+	it('should return true if color is hex with alpha layer', function()
+		assert.is_true(patterns.is_alpha_layer_hex("#FFFFFFFF"))
+	end)
+
+	it('should return false if color is not hex with alpha layer', function()
+		assert.is_false(patterns.is_alpha_layer_hex("#FFF"))
+		assert.is_false(patterns.is_alpha_layer_hex("#FFFFFF"))
+		assert.is_false(patterns.is_alpha_layer_hex("rgb(255, 255, 255)"))
+		assert.is_false(patterns.is_alpha_layer_hex("hsl(240, 100%, 50%)"))
+	end)
+
+	--it('should return true if color is rgb', function()
+	--	assert.is_true(patterns.is_rgb_color("rgb(255, 255, 255)"))
+	--	assert.is_true(patterns.is_rgb_color("rgb(255 255 255)"))
+	--	assert.is_true(patterns.is_rgb_color("rgba(92, 92, 255 / 0.2)"))
+	--	assert.is_true(patterns.is_rgb_color("rgba(0, 255, 0 / 20%)"))
+	--	assert.is_true(patterns.is_rgb_color("rgba(255 0 0 0)"))
+	--end)
+
+	--it('should return false if color is not rgb', function()
+	--	assert.is_false(patterns.is_rgb_color("#FFF"))
+	--	assert.is_false(patterns.is_rgb_color("#FFFFFF"))
+	--	assert.is_false(patterns.is_rgb_color("#FFFFFFFF"))
+	--	assert.is_false(patterns.is_rgb_color("hsl(240, 100%, 50%)"))
+	--end)
+end)
+
