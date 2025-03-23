@@ -8,6 +8,7 @@ M.color_usage_regex = "[:=]+%s*[\"']?"
 ---@param min_row number
 ---@param max_row number
 ---@param active_buffer_id number
+---@usage buffer_utils.get_buffer_contents(0, 10, 1) => Returns {'first row', 'second row'}
 ---@return string[]
 function M.get_buffer_contents(min_row, max_row, active_buffer_id)
 	if not vim.api.nvim_buf_is_valid(active_buffer_id) then
@@ -21,6 +22,13 @@ end
 ---@param max_row number
 ---@param active_buffer_id number
 ---@param row_offset number
+---@usage buffer_utils.get_positions_by_regex(
+---           {patterns.hsl_without_func_regex}, 0, 10, 1, 0
+---       ) => Returns {
+---           {row = 1, start_column = 10, end_column = 16, value = "#FFFFFF"}
+---           {row = 2, start_column = 1, end_column = 8, value = ": blue"}
+---           {row = 2, start_column = 1, end_column = 8, value = "rgb(240, 231, 14)"}
+---       }
 ---@return {row: number, start_column: number, end_column: number, value: string}[]
 function M.get_positions_by_regex(patterns, min_row, max_row, active_buffer_id, row_offset)
 	local positions = {}
@@ -66,6 +74,9 @@ end
 ---@param positions {row: number, start_column: number, end_column: number, value: string}[]
 ---@param match string
 ---@param row number
+---@usage buffer_utils.get_column_offset({
+---           {row = 1, start_column = 1, end_column = 4, value = "#fff"}
+---       }, "#fff", row) => Returns 4
 ---@return number | nil
 function M.get_column_offset(positions, match, row)
 	local repeated_colors_in_row = table_utils.filter(
@@ -85,6 +96,7 @@ end
 ---
 ---The issue with this logic is that the `match` value for said color would be `= blue`, which is not what we want. This function transforms this string to just `blue`
 ---@param match string
+---@usage remove_color_usage_pattern(": blue") => Returns "blue"
 ---@return string
 function M.remove_color_usage_pattern(match)
 	local _, end_index = string.find(match, M.color_usage_regex)
