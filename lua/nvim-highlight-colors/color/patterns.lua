@@ -5,7 +5,7 @@ M.hex_regex = "#%x%x%x+%f[^%w_]"
 M.hex_0x_regex = "%f[%w_]0x%x%x%x+%f[^%w_]"
 M.hsl_regex = "hsla?[(]+" .. string.rep("%s*%d?%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "[,%s]") .. "[%s,/]?%s*%d*%.?%d*%%?%s*[)]+"
 -- Matches: `: 0 69% 69%`
-M.hsl_without_func_regex = ":%s*%d+%.?%d*%s+%d+%.?%d*%%%s+%d+%.?%d*%%"
+M.hsl_without_func_regex = ":" .. string.rep("%s*%d?%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "[,%s]")
 
 M.var_regex = "%-%-[%d%a-_]+"
 M.var_declaration_regex = M.var_regex .. ":%s*" .. M.hex_regex
@@ -13,7 +13,7 @@ M.var_usage_regex = "var%(" .. M.var_regex .. "%)"
 
 M.tailwind_prefix = "!?%a+"
 
-M.ansi_regex = "\\033%[[0-9;]*m"
+M.ansi_regex = "\\033%[%d;%d%dm"
 
 ---Checks whether a color is short hex
 ---@param color string
@@ -47,34 +47,39 @@ end
 
 ---Checks whether a color is rgb
 ---@param color string
+---@usage is_rgb_color("rgb(255, 255, 255)") => Returns true
 ---@return boolean
 function M.is_rgb_color(color)
-	return string.match(color, M.rgb_regex)
+	return string.match(color, M.rgb_regex) ~= nil
 end
 
 ---Checks whether a color is hsl
 ---@param color string
+---@usage is_hsl_color("hsl(240, 100%, 50%)") => Returns true
 ---@return boolean
 function M.is_hsl_color(color)
-	return string.match(color, M.hsl_regex)
+	return string.match(color, M.hsl_regex) ~= nil
 end
 
 -- Checks wether a color is a hsl without function color
 ---@param color string
+---@usage is_hsl_without_func_color(": 0 0% 100%;") => Returns true
 ---@return boolean
 function M.is_hsl_without_func_color(color)
-	return string.match(color, M.hsl_without_func_regex)
+	return string.match(color, M.hsl_without_func_regex) ~= nil
 end
 
 ---Checks whether a color is a CSS var color
 ---@param color string
+---@usage is_var_color("var(--css-color)") => Returns true
 ---@return boolean
 function M.is_var_color(color)
-	return string.match(color, M.var_usage_regex)
+	return string.match(color, M.var_usage_regex) ~= nil
 end
 
 ---Checks whether a color is a custom color
 ---@param color string
+---@usage is_custom_color("custom-color", {{label = 'custom%-color', color = '#FFFFFF'}}) => Returns true
 ---@return boolean
 function M.is_custom_color(color, custom_colors)
 	for _, custom_color in pairs(custom_colors) do
@@ -87,6 +92,8 @@ function M.is_custom_color(color, custom_colors)
 end
 
 ---Checks whether a color is a named color e.g. 'blue', 'green'
+---@usage is_named_color({M.get_css_named_color_pattern()}, ": blue") => Returns true
+---@usage is_named_color({M.get_tailwind_named_color_pattern()}, "--bg-white") => Returns true
 ---@return boolean
 function M.is_named_color(named_color_patterns, color)
 	for _, pattern in pairs(named_color_patterns) do
@@ -100,9 +107,10 @@ end
 
 ---Checks whether a color is a ansi color
 ---@param color string
+---@usage is_ansi_color("\\033[1;37m") => Returns true
 ---@return boolean
 function M.is_ansi_color(color)
-	return string.match(color, M.ansi_regex)
+	return string.match(color, M.ansi_regex) ~= nil
 end
 
 return M
