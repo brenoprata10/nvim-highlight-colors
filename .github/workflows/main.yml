@@ -6,8 +6,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: CD to ./lua folder
+      - name: Run Busted in ./lua
         run: |
-          cd lua
-      - name: Unit Tests
-        uses: lunarmodules/busted@v2.2.0
+           docker run -v $(pwd)/lua:/data ghcr.io/lunarmodules/busted:2.2.0
