@@ -1,13 +1,12 @@
 name: Busted
 on: [push, pull_request]
 jobs:
-  busted:
+  unit-tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Run Busted from ./lua
-        working-directory: ./lua
-        run: |
-          docker pull ghcr.io/lunarmodules/busted:2.2.0 && 
-          docker run -v $(pwd):/data -w /data ghcr.io/lunarmodules/busted:2.2.0
+      - name: Run Unit Tests
+        uses: lunarmodules/busted@2.2.0
+        with:
+            args: --directory=lua ./nvim-highlight-colors/
