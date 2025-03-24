@@ -1,7 +1,7 @@
-name: Unit Tests
+name: Busted
 on: [push, pull_request]
 jobs:
-  sile:
+  busted:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -9,4 +9,5 @@ jobs:
       - name: Run Busted from ./lua
         working-directory: ./lua
         run: |
-          docker run -v $(pwd):/data -w /data ghcr.io/lunarmodules/busted:latest
+          docker pull ghcr.io/lunarmodules/busted:2.2.0 && 
+          docker run -v $(pwd):/data -w /data ghcr.io/lunarmodules/busted:2.2.0
