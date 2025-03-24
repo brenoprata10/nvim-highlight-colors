@@ -7,6 +7,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Run Unit Tests
-        uses: lunarmodules/busted@2.2.0
+        uses: lunarmodules/busted@v2.2.0
         with:
             args: --directory=lua ./nvim-highlight-colors/
