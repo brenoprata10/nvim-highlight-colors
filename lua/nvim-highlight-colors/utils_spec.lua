@@ -78,7 +78,7 @@ describe('Utils', function()
 		)
 	end)
 
-	it('should return create highlight for hex color in foreground mode', function()
+	it('should create highlight for hex color in foreground mode', function()
 		spy.on(vim.api, "nvim_set_hl")
 		spy.on(vim.api, "nvim_buf_add_highlight")
 		local params = {
@@ -113,7 +113,7 @@ describe('Utils', function()
 		)
 	end)
 
-	it('should return create highlight for hex color in background mode', function()
+	it('should create highlight for hex color in background mode', function()
 		stub(vim, "tbl_map").returns({255, 255, 255})
 		spy.on(vim.api, "nvim_set_hl")
 		spy.on(vim.api, "nvim_buf_add_highlight")
@@ -148,9 +148,10 @@ describe('Utils', function()
 		)
 	end)
 
-	it('should return create highlight for short hex color in background mode', function()
+	it('should create highlight for short hex color in background mode', function()
 		stub(vim, "tbl_map").returns({255, 255, 255})
 		spy.on(vim.api, "nvim_set_hl")
+		spy.on(vim.api, "nvim_buf_add_highlight")
 		local params = {
 			buffer_id = 1,
 			ns_id = 2,
@@ -176,16 +177,17 @@ describe('Utils', function()
 		assert.spy(vim.api.nvim_buf_add_highlight).was.called_with(
 			params.buffer_id,
 			params.ns_id,
-			"nvim-highlight-colors-backgroundFFFFFFFFFFFF",
+			"nvim-highlight-colors-backgroundFFFFFFFFF",
 			params.data.row + 1,
 			params.data.start_column,
 			params.data.end_column
 		)
 	end)
 
-	it('should return create highlight for custom colors in background mode', function()
+	it('should create highlight for custom colors in background mode', function()
 		stub(vim, "tbl_map").returns({255, 255, 255})
 		spy.on(vim.api, "nvim_set_hl")
+		spy.on(vim.api, "nvim_buf_add_highlight")
 		local params = {
 			buffer_id = 1,
 			ns_id = 2,
@@ -217,6 +219,52 @@ describe('Utils', function()
 			params.data.row + 1,
 			params.data.start_column,
 			params.data.end_column
+		)
+	end)
+
+	it('should create highlight for hex colors in virtual mode', function()
+		stub(vim, "version").returns({major = 0, minor = 10})
+		stub(vim.api, "nvim_buf_get_extmarks").returns({})
+		stub(vim.api, "nvim_buf_del_extmark")
+		stub(vim.api, "nvim_get_hl_id_by_name").returns(2)
+		spy.on(vim.api, "nvim_buf_set_extmark")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			options = {
+				render = "virtual",
+				virtual_symbol_position = 'inline',
+				virtual_symbol = "■",
+				virtual_symbol_prefix = "",
+				virtual_symbol_suffix = " ",
+			}
+		}
+
+		utils.create_highlight(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+
+		assert.spy(vim.api.nvim_buf_set_extmark).was.called_with(
+			params.buffer_id,
+			params.ns_id,
+			params.data.row + 1,
+			params.data.start_column,
+			{
+				hl_mode = 'combine',
+				virt_text = {
+					{
+						'■ ',
+						2
+					},
+				},
+				virt_text_pos = 'inline'
+			}
 		)
 	end)
 end)
