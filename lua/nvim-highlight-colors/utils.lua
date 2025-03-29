@@ -10,6 +10,7 @@ local M = {
 }
 
 ---Returns the last row index of the current buffer
+---@usage get_last_row_index() => Returns 60
 ---@return number
 function M.get_last_row_index()
 	return vim.fn.line('$')
@@ -17,6 +18,7 @@ end
 
 ---Returns a range of visible rows of the specified buffer
 ---@param buffer_id number
+---@usage get_visible_rows_by_buffer_id(2) => Returns {0, 60}
 ---@return table {first_line_index, last_line_index}
 function M.get_visible_rows_by_buffer_id(buffer_id)
 	local window_id = vim.fn.bufwinid(buffer_id)
@@ -34,6 +36,7 @@ end
 
 ---Returns a highlight name that can be used as a group highlight
 ---@param color_value string
+---@usage create_highlight_name("#FFFFFF") => Returns "nvim-highlight-colors-FFFFFF"
 ---@return string
 function M.create_highlight_name(color_value)
 	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("\\[0-9]*%[", ""):gsub("[!(),%s%.-/%%=:\"'%%[%];#]+", "")
