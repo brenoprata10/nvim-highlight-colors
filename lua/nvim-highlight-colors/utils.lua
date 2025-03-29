@@ -199,20 +199,37 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 
 	for _, client in pairs(clients) do
 		if client.server_capabilities.colorProvider then
-			client.request(
-				"textDocument/documentColor",
-				param,
-				function(_, response)
-					M.highlight_lsp_document_color(
-						response,
-						active_buffer_id,
-						ns_id,
-						positions,
-						options
-					)
-				end,
-				active_buffer_id
-			)
+			if vim.fn.has('nvim-0.11') then
+				client:request(
+					"textDocument/documentColor",
+					param,
+					function(_, response)
+						M.highlight_lsp_document_color(
+							response,
+							active_buffer_id,
+							ns_id,
+							positions,
+							options
+						)
+					end,
+					active_buffer_id
+				)
+			else
+				client.request(
+					"textDocument/documentColor",
+					param,
+					function(_, response)
+						M.highlight_lsp_document_color(
+							response,
+							active_buffer_id,
+							ns_id,
+							positions,
+							options
+						)
+					end,
+					active_buffer_id
+				)
+			end
 		end
 	end
 end
