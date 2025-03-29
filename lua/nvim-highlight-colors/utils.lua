@@ -199,7 +199,8 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 
 	for _, client in pairs(clients) do
 		if client.server_capabilities.colorProvider then
-			if vim.fn.has('nvim-0.11') then
+			local nvim_version = vim.version()
+			if nvim_version.major == 0 and nvim_version.minor > 10 then
 				client:request(
 					"textDocument/documentColor",
 					param,
