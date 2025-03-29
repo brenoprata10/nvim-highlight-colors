@@ -77,4 +77,146 @@ describe('Utils', function()
 			"nvim-highlight-colors-blue"
 		)
 	end)
+
+	it('should return create highlight for hex color in foreground mode', function()
+		spy.on(vim.api, "nvim_set_hl")
+		spy.on(vim.api, "nvim_buf_add_highlight")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			options = {
+				render = "foreground"
+			}
+		}
+		utils.create_highlight(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+		assert.spy(vim.api.nvim_set_hl).was.called_with(
+			0,
+			"nvim-highlight-colors-foregroundFFFFFFFFFFFF",
+			{fg = "#FFFFFF", default = true}
+		)
+
+		assert.spy(vim.api.nvim_buf_add_highlight).was.called_with(
+			params.buffer_id,
+			params.ns_id,
+			"nvim-highlight-colors-foregroundFFFFFFFFFFFF",
+			params.data.row + 1,
+			params.data.start_column,
+			params.data.end_column
+		)
+	end)
+
+	it('should return create highlight for hex color in background mode', function()
+		stub(vim, "tbl_map").returns({255, 255, 255})
+		spy.on(vim.api, "nvim_set_hl")
+		spy.on(vim.api, "nvim_buf_add_highlight")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			options = {
+				render = "background"
+			}
+		}
+		utils.create_highlight(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+		assert.spy(vim.api.nvim_set_hl).was.called_with(
+			0,
+			"nvim-highlight-colors-backgroundFFFFFFFFFFFF",
+			{fg = "#000000", bg = "#FFFFFF", default = true}
+		)
+		assert.spy(vim.api.nvim_buf_add_highlight).was.called_with(
+			params.buffer_id,
+			params.ns_id,
+			"nvim-highlight-colors-backgroundFFFFFFFFFFFF",
+			params.data.row + 1,
+			params.data.start_column,
+			params.data.end_column
+		)
+	end)
+
+	it('should return create highlight for short hex color in background mode', function()
+		stub(vim, "tbl_map").returns({255, 255, 255})
+		spy.on(vim.api, "nvim_set_hl")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFF"
+			},
+			options = {
+				render = "background",
+				enable_short_hex = true
+			}
+		}
+		utils.create_highlight(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+		assert.spy(vim.api.nvim_set_hl).was.called_with(
+			0,
+			"nvim-highlight-colors-backgroundFFFFFFFFF",
+			{fg = "#000000", bg = "#FFFFFF", default = true}
+		)
+		assert.spy(vim.api.nvim_buf_add_highlight).was.called_with(
+			params.buffer_id,
+			params.ns_id,
+			"nvim-highlight-colors-backgroundFFFFFFFFFFFF",
+			params.data.row + 1,
+			params.data.start_column,
+			params.data.end_column
+		)
+	end)
+
+	it('should return create highlight for custom colors in background mode', function()
+		stub(vim, "tbl_map").returns({255, 255, 255})
+		spy.on(vim.api, "nvim_set_hl")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "custom-color"
+			},
+			options = {
+				render = "background",
+				custom_colors = {{label = "custom%-color", color = '#FFFFFF'}}
+			}
+		}
+
+		utils.create_highlight(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+		assert.spy(vim.api.nvim_set_hl).was.called_with(
+			0,
+			"nvim-highlight-colors-backgroundcustomcolorFFFFFF",
+			{fg = "#000000", bg = "#FFFFFF", default = true}
+		)
+
+		assert.spy(vim.api.nvim_buf_add_highlight).was.called_with(
+			params.buffer_id,
+			params.ns_id,
+			"nvim-highlight-colors-backgroundcustomcolorFFFFFF",
+			params.data.row + 1,
+			params.data.start_column,
+			params.data.end_column
+		)
+	end)
 end)
