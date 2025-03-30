@@ -104,7 +104,7 @@ end
 ---@param ns_id number
 ---@param data {row: number, start_column: number, end_column: number, value: string}
 ---@param highlight_group string
----@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
+---@param options {custom_colors: table, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_extmarks(active_buffer_id, ns_id, data, highlight_group, options)
 	local start_extmark_row = data.row + 1
 	local start_extmark_column = data.start_column - 1

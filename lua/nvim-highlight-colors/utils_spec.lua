@@ -148,6 +148,61 @@ describe('Utils', function()
 		)
 	end)
 
+	it('should not call highlight_extmarks in background mode', function()
+		stub(vim, "tbl_map").returns({255, 255, 255})
+		spy.on(vim.api, "nvim_set_hl")
+		spy.on(vim.api, "highlight_extmarks")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			options = {
+				render = "background"
+			}
+		}
+		utils.create_highlight(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+		assert.spy(vim.api.nvim_set_hl).was.called_with(
+			0,
+			"nvim-highlight-colors-backgroundFFFFFFFFFFFF",
+			{fg = "#000000", bg = "#FFFFFF", default = true}
+		)
+		assert.spy(vim.api.highlight_extmarks).was_not_called()
+	end)
+
+	it('should not call highlight_extmarks in foreground mode', function()
+		spy.on(vim.api, "nvim_set_hl")
+		spy.on(vim.api, "highlight_extmarks")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			options = {
+				render = "foreground"
+			}
+		}
+		utils.create_highlight(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+		assert.spy(vim.api.nvim_set_hl).was.called_with(
+			0,
+			"nvim-highlight-colors-foregroundFFFFFFFFFFFF",
+			{fg = "#FFFFFF", default = true}
+		)
+		assert.spy(vim.api.highlight_extmarks).was_not_called()
+	end)
+
 	it('should create highlight for short hex color in background mode', function()
 		stub(vim, "tbl_map").returns({255, 255, 255})
 		spy.on(vim.api, "nvim_set_hl")
@@ -238,8 +293,8 @@ describe('Utils', function()
 				render = "virtual",
 				virtual_symbol_position = 'inline',
 				virtual_symbol = "■",
-				virtual_symbol_prefix = "",
-				virtual_symbol_suffix = " ",
+				virtual_symbol_prefix = "_",
+				virtual_symbol_suffix = "=",
 			}
 		}
 
@@ -259,12 +314,106 @@ describe('Utils', function()
 				hl_mode = 'combine',
 				virt_text = {
 					{
-						'■ ',
+						'_■=',
 						2
 					},
 				},
 				virt_text_pos = 'inline'
 			}
 		)
+	end)
+
+	it('should replace highlight for hex colors in virtual mode', function()
+		stub(vim, "version").returns({major = 0, minor = 10})
+		stub(vim.api, "nvim_buf_del_extmark")
+		stub(vim.api, "nvim_get_hl_id_by_name").returns(2)
+		spy.on(vim.api, "nvim_buf_set_extmark")
+		spy.on(vim.api, "nvim_buf_del_extmark")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			highlight_group = "nvim-highlight-colors-virtualFFFFFF",
+			options = {
+				render = "virtual",
+				virtual_symbol_position = 'inline',
+				virtual_symbol = "■",
+				virtual_symbol_prefix = "",
+				virtual_symbol_suffix = "",
+			}
+		}
+		local already_highlighted_extmark_id = 35
+		local already_highlighted_group = "nvim-highlight-colors-virtual000000"
+		local extmart_data = {virt_text = {{0, already_highlighted_group}}}
+		stub(vim, "deepcopy").returns(extmart_data)
+		stub(vim.api, "nvim_buf_get_extmarks").returns({{already_highlighted_extmark_id, 0, 0, extmart_data}})
+
+		utils.highlight_extmarks(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.highlight_group,
+			params.options
+		)
+
+		assert.spy(vim.api.nvim_buf_del_extmark).was.called_with(
+			params.buffer_id,
+			params.ns_id,
+			already_highlighted_extmark_id
+		)
+
+		assert.spy(vim.api.nvim_buf_set_extmark).was.called_with(
+			params.buffer_id,
+			params.ns_id,
+			params.data.row + 1,
+			params.data.start_column,
+			{
+				hl_mode = 'combine',
+				virt_text = {
+					{
+						'■',
+						2
+					},
+				},
+				virt_text_pos = 'inline'
+			}
+		)
+	end)
+
+	it('should skip virtual highlight if text is already highlighted', function()
+		stub(vim, "version").returns({major = 0, minor = 10})
+		stub(vim.api, "nvim_buf_del_extmark")
+		stub(vim.api, "nvim_get_hl_id_by_name").returns(2)
+		spy.on(vim.api, "nvim_buf_set_extmark")
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			highlight_group = "nvim-highlight-colors-virtualFFFFFF",
+			options = {
+				render = "virtual",
+				virtual_symbol_position = 'inline',
+				virtual_symbol = "■",
+				virtual_symbol_prefix = "",
+				virtual_symbol_suffix = "",
+			}
+		}
+		local extmart_data = {virt_text = {{0, params.highlight_group}}}
+		stub(vim, "deepcopy").returns(extmart_data)
+		stub(vim.api, "nvim_buf_get_extmarks").returns({{0, 0, 0, extmart_data}})
+
+		utils.highlight_extmarks(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.highlight_group,
+			params.options
+		)
+
+		assert.spy(vim.api.nvim_buf_set_extmark).was_not_called()
 	end)
 end)
