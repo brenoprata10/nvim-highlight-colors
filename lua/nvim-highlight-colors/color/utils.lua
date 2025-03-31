@@ -93,7 +93,7 @@ end
 ---@return string[]
 function M.get_hsl_values(color)
 	local hsl_table = {}
-	for color_number in string.gmatch(color, "%d?%.?%d+") do
+	for color_number in string.gmatch(color, "%d*%.?%d+") do
 		table.insert(hsl_table, color_number)
 	end
 
@@ -109,7 +109,7 @@ function M.get_hsl_without_func_values(color)
     -- Remove the colon and any leading whitespace before matching numbers
     local clean_color = color:match(":%s*(.+)")
     if clean_color then
-        for value in clean_color:gmatch("%d+%.?%d*") do
+        for value in clean_color:gmatch("%d*%.?%d+") do
             table.insert(hsl_table, value)
         end
     end
