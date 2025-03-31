@@ -93,7 +93,7 @@ end
 ---@return string[]
 function M.get_hsl_values(color)
 	local hsl_table = {}
-	for color_number in string.gmatch(color, "%d?%.?%d+") do
+	for color_number in string.gmatch(color, "%d*%.?%d+") do
 		table.insert(hsl_table, color_number)
 	end
 
