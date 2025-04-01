@@ -1,4 +1,3 @@
-
 local assert = require("luassert")
 local utils = require("nvim-highlight-colors.utils")
 
@@ -415,5 +414,135 @@ describe('Utils', function()
 		)
 
 		assert.spy(vim.api.nvim_buf_set_extmark).was_not_called()
+	end)
+
+	it('should return true if tailwindcss LSP is available', function()
+		stub(utils, "get_lsp_clients").returns({{name = "tailwindcss"}})
+
+		local is_tailwind_available = utils.has_tailwind_css_lsp()
+
+		assert.are.equal(is_tailwind_available, true)
+	end)
+
+	it('should return false if tailwindcss LSP is unavailable', function()
+		stub(utils, "get_lsp_clients").returns({{name = "some-lsp"}})
+
+		local is_tailwind_available = utils.has_tailwind_css_lsp()
+
+		assert.are.equal(is_tailwind_available, false)
+	end)
+
+	it('should return virtual symbol position if neovim version if higher then 0.9', function()
+		stub(vim, "version").returns({major = 0, minor = 10})
+
+		assert.are.equal(
+			utils.get_virtual_text_position({virtual_symbol_position = "eow"}),
+			"eow"
+		)
+		assert.are.equal(
+			utils.get_virtual_text_position({virtual_symbol_position = "eol"}),
+			"eol"
+		)
+		assert.are.equal(
+			utils.get_virtual_text_position({virtual_symbol_position = "inline"}),
+			"inline"
+		)
+	end)
+
+	it('should return "eol" as virtual symbol position if neovim version if 0.9 or below', function()
+		stub(vim, "version").returns({major = 0, minor = 9})
+
+		assert.are.equal(
+			utils.get_virtual_text_position({virtual_symbol_position = "eow"}),
+			"eol"
+		)
+		assert.are.equal(
+			utils.get_virtual_text_position({virtual_symbol_position = "eol"}),
+			"eol"
+		)
+		assert.are.equal(
+			utils.get_virtual_text_position({virtual_symbol_position = "inline"}),
+			"eol"
+		)
+	end)
+
+	it('should return virtual text column for extmark', function()
+		local start_extmark_column = 1
+		local end_extmark_column = 10
+
+		assert.are.equal(
+			utils.get_virtual_text_column("eol", start_extmark_column, end_extmark_column),
+			start_extmark_column
+		)
+		assert.are.equal(
+			utils.get_virtual_text_column("eow", start_extmark_column, end_extmark_column),
+			end_extmark_column
+		)
+		assert.are.equal(
+			utils.get_virtual_text_column("inline", start_extmark_column, end_extmark_column),
+			start_extmark_column + 1
+		)
+	end)
+
+	it('should call highlight_lsp_document_color only if supported LSP is detected', function()
+		local lsp_response = {"response"}
+		stub(vim, "version").returns({major = 0, minor = 11})
+		stub(vim, "lsp")
+		stub(vim.lsp, "util").returns({make_text_document_params = function () end})
+		stub(vim.lsp.util, "make_text_document_params").returns("")
+		stub(utils, "get_lsp_clients").returns({
+			{
+				server_capabilities = {colorProvider = true},
+				request = function (_,_,_, handler)
+					handler(1, lsp_response)
+				end
+			},
+			{
+				server_capabilities = {colorProvider = false},
+				request = function (_,_,_, handler)
+					handler()
+				end
+			},
+			{
+				server_capabilities = {colorProvider = true},
+				request = function (_,_,_, handler)
+					handler(1, lsp_response)
+				end
+			}
+		})
+		spy.on(utils, "highlight_lsp_document_color")
+		stub(utils, "highlight_lsp_document_color")
+
+
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			options = {
+				render = "virtual",
+				virtual_symbol_position = 'inline',
+				virtual_symbol = "■",
+				virtual_symbol_prefix = "",
+				virtual_symbol_suffix = "",
+			}
+		}
+
+		utils.highlight_with_lsp(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+
+		assert.spy(utils.highlight_lsp_document_color).was_called(2)
+		assert.spy(utils.highlight_lsp_document_color).was_called_with(
+			lsp_response,
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
 	end)
 end)

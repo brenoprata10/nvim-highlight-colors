@@ -162,6 +162,7 @@ end
 
 ---Returns the virtual text(extmark) position based on the user preferences
 ---@param options {virtual_symbol_position: 'inline' | 'eol' | 'eow'}
+---@usage get_virtual_text_position({virtual_symbol_position = "eow"}) => Returns "eow"
 ---@return 'inline' | 'eol' | 'eow'
 function M.get_virtual_text_position(options)
 	local nvim_version = vim.version()
@@ -178,6 +179,7 @@ end
 ---@param virtual_text_position 'inline' | 'eol' | 'eow'
 ---@param start_extmark_column number
 ---@param end_extmark_column number
+---@usage get_virtual_text_column("inline", 1, 10) => Returns 2
 ---@return number
 function M.get_virtual_text_column(virtual_text_position, start_extmark_column, end_extmark_column)
 	if virtual_text_position == 'eol' then
