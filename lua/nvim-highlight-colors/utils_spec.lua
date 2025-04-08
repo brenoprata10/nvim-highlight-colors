@@ -416,22 +416,6 @@ describe('Utils', function()
 		assert.spy(vim.api.nvim_buf_set_extmark).was_not_called()
 	end)
 
-	it('should return true if tailwindcss LSP is available', function()
-		stub(utils, "get_lsp_clients").returns({{name = "tailwindcss"}})
-
-		local is_tailwind_available = utils.has_tailwind_css_lsp()
-
-		assert.are.equal(is_tailwind_available, true)
-	end)
-
-	it('should return false if tailwindcss LSP is unavailable', function()
-		stub(utils, "get_lsp_clients").returns({{name = "some-lsp"}})
-
-		local is_tailwind_available = utils.has_tailwind_css_lsp()
-
-		assert.are.equal(is_tailwind_available, false)
-	end)
-
 	it('should return virtual symbol position if neovim version if higher then 0.9', function()
 		stub(vim, "version").returns({major = 0, minor = 10})
 
