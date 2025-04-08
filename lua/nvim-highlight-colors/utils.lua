@@ -295,9 +295,11 @@ end
 ---@param active_buffer_id number
 ---@return boolean
 function M.has_tailwind_css_lsp(active_buffer_id)
-	local clients = M.get_lsp_clients(active_buffer_id, "tailwindcss")
-	if next(clients) then
-		return true
+	local clients = M.get_lsp_clients(active_buffer_id)
+	for _, client in pairs(clients) do
+		if client.name == 'tailwindcss' then
+			return true
+		end
 	end
 
 	return false
@@ -305,11 +307,10 @@ end
 
 ---Get active LSP clients
 ---@param active_buffer_id number?
----@param client_name string?
 ---@return vim.lsp.Client[]
-function M.get_lsp_clients(active_buffer_id, client_name)
+function M.get_lsp_clients(active_buffer_id)
 	local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
-	return get_clients({ bufnr = active_buffer_id, name = client_name })
+	return get_clients({ bufnr = active_buffer_id })
 end
 
 return M
