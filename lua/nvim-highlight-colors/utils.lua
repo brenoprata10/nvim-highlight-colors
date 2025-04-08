@@ -203,10 +203,10 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local clients = M.get_lsp_clients(active_buffer_id)
 
 	for _, client in pairs(clients) do
-		if client.server_capabilities.colorProvider then
-			local nvim_version = vim.version()
-			if nvim_version.major == 0 and nvim_version.minor > 10 then
-				client:request(
+		local nvim_version = vim.version()
+		if nvim_version.major == 0 and nvim_version.minor < 11 then
+			if client.supports_method("textDocument/documentColor", { bufnr = active_buffer_id }) then
+				client.request(
 					"textDocument/documentColor",
 					param,
 					function(_, response)
@@ -220,8 +220,10 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 					end,
 					active_buffer_id
 				)
-			else
-				client.request(
+			end
+		else
+			if client:supports_method("textDocument/documentColor", active_buffer_id) then
+				client:request(
 					"textDocument/documentColor",
 					param,
 					function(_, response)
@@ -291,7 +293,7 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 	return results
 end
 
----Get active LSP clients
+---Get active LSP clients that support textDocument/documentColor
 ---@param active_buffer_id number?
 ---@param client_name string?
 ---@return vim.lsp.Client[]
