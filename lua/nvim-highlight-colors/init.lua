@@ -85,7 +85,7 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			patterns = { colors.get_css_named_color_pattern() }
 		},
 		TAILWIND = {
-			is_enabled = options.enable_tailwind and not utils.has_tailwind_css_lsp(),
+			is_enabled = options.enable_tailwind and not utils.has_tailwind_css_lsp(active_buffer_id),
 			patterns = { colors.get_tailwind_named_color_pattern() }
 		},
 		ANSI = {
