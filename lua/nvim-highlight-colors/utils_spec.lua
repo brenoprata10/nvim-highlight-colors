@@ -467,4 +467,66 @@ describe('Utils', function()
 			start_extmark_column + 1
 		)
 	end)
+
+	it('should call highlight_lsp_document_color only if supported LSP is detected', function()
+		local lsp_response = {"response"}
+		stub(vim, "version").returns({major = 0, minor = 11})
+		stub(vim, "lsp")
+		stub(vim.lsp, "util").returns({make_text_document_params = function () end})
+		stub(vim.lsp.util, "make_text_document_params").returns("")
+		stub(utils, "get_lsp_clients").returns({
+			{
+				supports_method = function() return true end,
+				request = function (_,_,_, handler)
+					handler(1, lsp_response)
+				end
+			},
+			{
+				supports_method = function() return false end,
+				request = function (_,_,_, handler)
+					handler()
+				end
+			},
+			{
+				supports_method = function() return true end,
+				request = function (_,_,_, handler)
+					handler(1, lsp_response)
+				end
+			}
+		})
+		spy.on(utils, "highlight_lsp_document_color")
+		stub(utils, "highlight_lsp_document_color")
+
+
+		local params = {
+			buffer_id = 1,
+			ns_id = 2,
+			data = {
+				row = 1, start_column = 3, end_column = 10, value = "#FFFFFF"
+			},
+			options = {
+				render = "virtual",
+				virtual_symbol_position = 'inline',
+				virtual_symbol = "■",
+				virtual_symbol_prefix = "",
+				virtual_symbol_suffix = "",
+			}
+		}
+
+		utils.highlight_with_lsp(
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+
+		assert.spy(utils.highlight_lsp_document_color).was_called(2)
+		assert.spy(utils.highlight_lsp_document_color).was_called_with(
+			lsp_response,
+			params.buffer_id,
+			params.ns_id,
+			params.data,
+			params.options
+		)
+	end)
 end)
