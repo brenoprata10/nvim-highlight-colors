@@ -200,13 +200,13 @@ end
 ---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 	local param = { textDocument = vim.lsp.util.make_text_document_params() }
-	local clients = M.get_lsp_clients()
+	local clients = M.get_lsp_clients(active_buffer_id)
 
 	for _, client in pairs(clients) do
-		if client.server_capabilities.colorProvider then
-			local nvim_version = vim.version()
-			if nvim_version.major == 0 and nvim_version.minor > 10 then
-				client:request(
+		local nvim_version = vim.version()
+		if nvim_version.major == 0 and nvim_version.minor < 11 then
+			if client.supports_method("textDocument/documentColor", { bufnr = active_buffer_id }) then
+				client.request(
 					"textDocument/documentColor",
 					param,
 					function(_, response)
@@ -220,8 +220,10 @@ function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
 					end,
 					active_buffer_id
 				)
-			else
-				client.request(
+			end
+		else
+			if client:supports_method("textDocument/documentColor", active_buffer_id) then
+				client:request(
 					"textDocument/documentColor",
 					param,
 					function(_, response)
@@ -291,24 +293,13 @@ function M.highlight_lsp_document_color(response, active_buffer_id, ns_id, posit
 	return results
 end
 
----Returns a boolean indicating if tailwindcss LSP is connected
----@return boolean
-function M.has_tailwind_css_lsp()
-	local clients = M.get_lsp_clients()
-	for _, client in pairs(clients) do
-		if client.name == 'tailwindcss' then
-			return true
-		end
-	end
-
-	return false
-end
-
----Get active LSP clients
+---Get active LSP clients that support textDocument/documentColor
+---@param active_buffer_id number?
+---@param client_name string?
 ---@return vim.lsp.Client[]
-function M.get_lsp_clients()
+function M.get_lsp_clients(active_buffer_id, client_name)
 	local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
-	return get_clients()
+	return get_clients({ bufnr = active_buffer_id, name = client_name })
 end
 
 return M
