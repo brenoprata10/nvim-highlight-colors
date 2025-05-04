@@ -278,6 +278,11 @@ function M.get_oklch_values(color)
     table.insert(oklch_table, color_number)
   end
 
+  -- Ensure we have at least 3 values (L, C, H)
+  while #oklch_table < 3 do
+    table.insert(oklch_table, '0')
+  end
+
   return oklch_table
 end
 
