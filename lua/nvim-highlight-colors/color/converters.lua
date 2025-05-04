@@ -103,12 +103,22 @@ function M.hsl_to_rgb(h, s, l)
 end
 
 ---Converts an oklch color to rgb
----@param l string Lightness (0-1 or 0-100%)
----@param c string Chroma (0-0.4 typically)
----@param h string Hue (0-360deg)
+---param l string Lightness (0-1 or 0-100%)
+---param c string Chroma (0-0.4 typically)
+---param h string Hue (0-360deg)
 ---@usage oklch_to_rgb(0.4, 0.268, 34.8) => Returns {r, g, b}
 ---@return {r: number, g: number, b: number, a: number}
 function M.oklch_to_rgb(l, c, h)
+  -- Convert string values to numbers
+  l = tonumber(l)
+  c = tonumber(c)
+  h = tonumber(h)
+
+  -- Validate the input
+  if not l or not c or not h then
+    return { 0, 0, 0, 255 } -- Default to black if conversion fails
+  end
+
   -- Normalize input values
   if l > 1 then
     l = l / 100
