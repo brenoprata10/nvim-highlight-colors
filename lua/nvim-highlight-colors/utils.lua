@@ -39,7 +39,7 @@ end
 ---@usage create_highlight_name("#FFFFFF") => Returns "nvim-highlight-colors-FFFFFF"
 ---@return string
 function M.create_highlight_name(color_value)
-	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("\\[0-9]*%[", ""):gsub("[!(),%s%.-/%%=:\"'%%[%];#]+", "")
+	return 'nvim-highlight-colors-' .. string.gsub(color_value, "#", ""):gsub("\\[0-9]*%[", ""):gsub("[!(),%s%.-/%%=:\"'%%[%];#<>]+", "")
 end
 
 ---Creates the highlight based on the received params
@@ -50,7 +50,9 @@ end
 ---
 ---For `options.custom_colors`, a table with the following structure is expected:
 ---* `label`: A string representing a template for the color name, likely using placeholders for the theme name. (e.g., '%-%-theme%-primary%-color')
----* `color`: A string representing the actual color value in a valid format (e.g., '#0f1219').
+---* `color` (optional): A string representing the actual color value in a valid format (e.g., '#0f1219')
+---* `transform` (optional): A function to transform a matched template into a valid HEX color
+---One of `color` or `transform` is required.
 function M.create_highlight(active_buffer_id, ns_id, data, options)
 	local color_value = colors.get_color_value(data.value, 2, options.custom_colors, options.enable_short_hex)
 

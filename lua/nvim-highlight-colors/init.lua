@@ -104,7 +104,8 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 
 	if (options.custom_colors ~= nil) then
 		for _, custom_color in pairs(options.custom_colors) do
-			table.insert(patterns, custom_color.label)
+			custom_color[1] = custom_color.label
+			table.insert(patterns, custom_color)
 		end
 	end
 

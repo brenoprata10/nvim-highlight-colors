@@ -42,6 +42,11 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 		return converters.rgb_to_hex(rgb_table[1], rgb_table[2], rgb_table[3])
 	end
 
+	-- process custom colors prior to css colors in case they use colons
+	if (custom_colors ~= nil and patterns.is_custom_color(color, custom_colors)) then
+		return M.get_custom_color(color, custom_colors)
+	end
+
 	if (patterns.is_named_color({M.get_css_named_color_pattern()}, color)) then
 		return M.get_css_named_color_value(color)
 	end
@@ -59,10 +64,6 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 
 	if (row_offset ~= nil and patterns.is_var_color(color)) then
 		return M.get_css_var_color(color, row_offset)
-	end
-
-	if (custom_colors ~= nil and patterns.is_custom_color(color, custom_colors)) then
-		return M.get_custom_color(color, custom_colors)
 	end
 
 	local hex_color = color:gsub("0x", "#")
@@ -175,12 +176,16 @@ end
 
 ---Returns the hex value of a custom color
 ---@param color string
----@param custom_colors {label: string, color: string}[]
+---@param custom_colors {label: string, color?: string, transform?: fun(input:string):string|nil}[]
 ---@usage get_custom_color('custom-white', {{label = 'custom%-white', color = '#FFFFFF'}}) => Returns '#FFFFFF'
 ---@return string|nil
 function M.get_custom_color(color, custom_colors)
 	for _, custom_color in pairs(custom_colors) do
-		if color == custom_color.label:gsub("%%", "") then
+		if custom_color.transform ~= nil then
+			if color:match(custom_color.label) ~= nil then
+				return custom_color.transform(color)
+			end
+		elseif color == custom_color.label:gsub("%%", "") then
 			return M.get_color_value(custom_color.color)
 		end
 	end
