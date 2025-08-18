@@ -199,7 +199,7 @@ end
 ---@param positions {row: number, start_column: number, end_column: number, value: string}[]
 ---@param options {custom_colors: table, render: string, virtual_symbol: string, virtual_symbol_prefix: string, virtual_symbol_suffix: string, virtual_symbol_position: 'inline' | 'eol' | 'eow', enable_short_hex: boolean}
 function M.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
-	local param = { textDocument = vim.lsp.util.make_text_document_params() }
+	local param = { textDocument = vim.lsp.util.make_text_document_params(active_buffer_id) }
 	local clients = M.get_lsp_clients(active_buffer_id)
 
 	for _, client in pairs(clients) do
