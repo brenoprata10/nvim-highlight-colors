@@ -19,6 +19,10 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex )
 		return converters.short_hex_to_hex(color)
 	end
 
+	if (enable_short_hex and patterns.is_alpha_layer_short_hex(color)) then
+		return string.sub(converters.short_hex_to_hex(color), 1, 7)
+	end
+
 	if (patterns.is_alpha_layer_hex(color)) then
 		return string.sub(color, 1, 7)
 	end
