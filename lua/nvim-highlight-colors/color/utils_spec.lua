@@ -21,6 +21,11 @@ describe('Color Utils', function()
 		assert.are.equal(hex_value, '#FFFFFF')
 	end)
 
+	it('should return color value when receiving short hex with alpha layer', function()
+		local hex_value = utils.get_color_value("#FFFF", 0, nil, true)
+		assert.are.equal(hex_value, '#FFFFFF')
+	end)
+
 	it('should return color value when receiving rgb', function()
 		local hex_value = utils.get_color_value("rgb(255, 255, 255)")
 		assert.are.equal(hex_value, '#FFFFFF')
