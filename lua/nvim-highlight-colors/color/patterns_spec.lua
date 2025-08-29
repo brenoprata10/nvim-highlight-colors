@@ -8,7 +8,7 @@ describe('Patterns', function()
 	end)
 
 	it('should return false if color is not short hex', function()
-		assert.is_true(patterns.is_short_hex_color("#FFFF"))
+		assert.is_false(patterns.is_short_hex_color("#FFFF"))
 		assert.is_false(patterns.is_short_hex_color("#FFFFFF"))
 		assert.is_false(patterns.is_short_hex_color("#FFFFFFFF"))
 		assert.is_false(patterns.is_short_hex_color("rgb(255, 255, 255)"))
