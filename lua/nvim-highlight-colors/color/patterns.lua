@@ -79,11 +79,16 @@ end
 
 ---Checks whether a color is a custom color
 ---@param color string
+---@param custom_colors {label: string, color?: string, transform?: fun(input:string):string|nil}[]
 ---@usage is_custom_color("custom-color", {{label = 'custom%-color', color = '#FFFFFF'}}) => Returns true
 ---@return boolean
 function M.is_custom_color(color, custom_colors)
 	for _, custom_color in pairs(custom_colors) do
-		if color == custom_color.label:gsub("%%", "") then
+		if custom_color.transform ~= nil then
+			if color:match(custom_color.label) ~= nil then
+				return true
+			end
+		elseif color == custom_color.label:gsub("%%", "") then
 			return true
 		end
 	end

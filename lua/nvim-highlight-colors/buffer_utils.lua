@@ -34,12 +34,17 @@ function M.get_positions_by_regex(patterns, min_row, max_row, active_buffer_id, 
 	local positions = {}
 	local content = M.get_buffer_contents(min_row, max_row, active_buffer_id)
 
-	for _, pattern in pairs(patterns) do
+	for _, pattern_entry in pairs(patterns) do
+		local pattern = pattern_entry
+		if type(pattern_entry) == "table" then
+			-- custom colors use a table to pass an optional .remove_usage_pattern
+			pattern = pattern_entry[1]
+		end
 		for key, value in pairs(content) do
 			for match in string.gmatch(value, pattern) do
 				local row = key + min_row - row_offset
 				local column_offset = M.get_column_offset(positions, match, row)
-				local pattern_without_usage_regex = M.remove_color_usage_pattern(match)
+				local pattern_without_usage_regex = (pattern_entry.remove_usage_pattern or M.remove_color_usage_pattern)(match)
 				local valid_start, start_column = pcall(vim.fn.match, value, pattern_without_usage_regex, column_offset)
 				local valid_end, end_column = pcall(vim.fn.matchend, value, pattern_without_usage_regex, column_offset)
 				local isFalsePositiveCSSVariable = match == ': var'
