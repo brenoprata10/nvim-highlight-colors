@@ -26,6 +26,14 @@ function M.is_short_hex_color(color)
 	return false
 end
 
+---Checks whether a color is short hex with alpha data
+---@param color string
+---@usage is_alpha_layer_short_hex("#FFFF") => Returns true
+---@return boolean
+function M.is_alpha_layer_short_hex(color)
+	return string.match(color, M.hex_regex) ~= nil and string.len(color) == 5
+end
+
 ---Checks whether a color is hex
 ---@param color string
 ---@usage is_hex_color("#FFFFFF") => Returns true
