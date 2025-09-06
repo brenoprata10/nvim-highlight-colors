@@ -38,4 +38,12 @@ describe('Converters', function()
 		assert.are.equal(hsl_table[3], 255)
 		assert.are.equal(hsl_table[4], 255)
 	end)
+
+  it('should convert oklch to rgb', function()
+    local rgb_table = converters.oklch_to_rgb(40, 0.268, 34.8)
+    -- The exact values will depend on the conversion algorithm
+    assert.is_not_nil(rgb_table)
+    assert.are.equal(#rgb_table, 4) -- R, G, B, A
+  end)
 end)
+

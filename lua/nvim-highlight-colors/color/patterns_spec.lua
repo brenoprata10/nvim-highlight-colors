@@ -165,5 +165,18 @@ describe('Patterns', function()
 		assert.is_false(patterns.is_ansi_color("\\033[1:37m"))
 		assert.is_false(patterns.is_ansi_color("\\033[1;37n"))
 	end)
+
+  it('should return true if color is oklch', function()
+    assert.is_true(patterns.is_oklch_color('oklch(40% 0.268 34.8deg)'))
+    assert.is_true(patterns.is_oklch_color('oklch(40% 0.268 34.8deg / 80%)'))
+    assert.is_true(patterns.is_oklch_color('oklch(0.4 0.268 34.8)'))
+  end)
+
+  it('should return false if color is not oklch', function()
+    assert.is_false(patterns.is_oklch_color('#FFF'))
+    assert.is_false(patterns.is_oklch_color('rgb(255, 255, 255)'))
+    assert.is_false(patterns.is_oklch_color('hsl(240, 100%, 50%)'))
+  end)
 end)
+
 

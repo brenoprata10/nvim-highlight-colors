@@ -270,4 +270,21 @@ function M.get_foreground_color_from_hex_color(color)
 	return luminance > 0.179 and "#000000" or "#ffffff"
 end
 
+---Returns the oklch table of an oklch string
+---@param color string
+---@usage get_oklch_values("oklch(40% 0.268 34.8deg)") => Returns {'40', '0.268', '34.8'}
+---@return string[]
+function M.get_oklch_values(color)
+  local oklch_table = {}
+  for color_number in string.gmatch(color, '%d*%.?%d+') do
+    table.insert(oklch_table, color_number)
+  end
+
+  while #oklch_table < 3 do
+    table.insert(oklch_table, '0')
+  end
+
+  return oklch_table
+end
+
 return M

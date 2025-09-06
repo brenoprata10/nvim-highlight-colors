@@ -90,4 +90,65 @@ function M.hsl_to_rgb(h, s, l)
     }
 end
 
+---Converts an oklch color to rgb
+---param l string Lightness (0-1 or 0-100%)
+---param c string Chroma (0-0.4 typically)
+---param h string Hue (0-360deg)
+---@usage oklch_to_rgb(0.4, 0.268, 34.8) => Returns {r, g, b}
+---@return {r: number, g: number, b: number, a: number}
+function M.oklch_to_rgb(l, c, h)
+	l = tonumber(l)
+	c = tonumber(c)
+	h = tonumber(h)
+
+	if not l or not c or not h then
+		return { 0, 0, 0, 255 } -- Default to black if conversion fails
+	end
+
+	-- Normalize input values
+	if l > 1 then
+		l = l / 100
+	end
+
+	local hrad = math.rad(tonumber(h) or 0)
+	local a = c * math.cos(hrad)
+	local b = c * math.sin(hrad)
+
+	-- Convert Oklab to linear RGB
+	-- These matrices are from the OKLCH specification
+	local l_ = l + 0.3963377774 * a + 0.2158037573 * b
+	local m_ = l - 0.1055613458 * a - 0.0638541728 * b
+	local s_ = l - 0.0894841775 * a - 1.2914855480 * b
+
+	local l_cubed = l_ * l_ * l_
+	local m_cubed = m_ * m_ * m_
+	local s_cubed = s_ * s_ * s_
+
+	-- Linear RGB to sRGB
+	local r_linear = 4.0767416621 * l_cubed - 3.3077115913 * m_cubed + 0.2309699292 * s_cubed
+	local g_linear = -1.2684380046 * l_cubed + 2.6097574011 * m_cubed - 0.3413193965 * s_cubed
+	local b_linear = -0.0041960863 * l_cubed - 0.7034186147 * m_cubed + 1.7076147010 * s_cubed
+
+	local function srgb_transfer(x)
+		if x <= 0 then
+			return 0
+		end
+		if x >= 1 then
+			return 1
+		end
+		if x < 0.0031308 then
+			return 12.92 * x
+		else
+			return 1.055 * (x ^ (1 / 2.4)) - 0.055
+		end
+	end
+
+	-- Apply gamma correction and clamp to 0-255
+	local r = math.max(0, math.min(255, math.floor(255 * srgb_transfer(r_linear))))
+	local g = math.max(0, math.min(255, math.floor(255 * srgb_transfer(g_linear))))
+	local b = math.max(0, math.min(255, math.floor(255 * srgb_transfer(b_linear))))
+
+	return { r, g, b, 255 }
+end
+
 return M
