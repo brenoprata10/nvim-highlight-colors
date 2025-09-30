@@ -13,6 +13,7 @@ vim.g.loaded_nvim_highlight_colors = 1
 local render_options = utils.render_options
 local row_offset = 2
 local is_loaded = false
+---@class nvim-highlight-colors.Config
 local options = {
 	render = render_options.background,
 	enable_hex = true,
@@ -33,13 +34,19 @@ local options = {
 	virtual_symbol_position = "inline",
 	exclude_filetypes = {},
 	exclude_buftypes = {},
-	exclude_buffer = function(bufnr) end
+	exclude_buffer = function(bufnr) end,
+	---@param bufnr number
+	---@param row number
+	---@param col number
+	exclude_pattern = function(bufnr, row, col) return false end
 }
+
+---@class (partial) nvim-highlight-colors.PartialConfig : nvim-highlight-colors.Config
 
 local M = {}
 
 ---Plugin entry point
----@param user_options table Check 'options' variable above
+---@param user_options nvim-highlight-colors.PartialConfig Check 'options' variable above
 function M.setup(user_options)
 	is_loaded = true
 	if (user_options ~= nil and user_options ~= {}) then
@@ -128,12 +135,14 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 	)
 
 	for _, data in pairs(positions) do
-		utils.create_highlight(
-			active_buffer_id,
-			ns_id,
-			data,
-			options
-		)
+		if not options.exclude_pattern(active_buffer_id, data.row, data.start_column) then
+			utils.create_highlight(
+				active_buffer_id,
+				ns_id,
+				data,
+				options
+			)
+		end
 	end
 
 	utils.highlight_with_lsp(active_buffer_id, ns_id, positions, options)
