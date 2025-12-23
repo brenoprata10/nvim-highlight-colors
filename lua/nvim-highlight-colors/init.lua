@@ -36,7 +36,7 @@ local options = {
     exclude_buftypes = {},
     exclude_buffer = function(bufnr) end
 }
-}
+
 
 local M = {}
 
@@ -61,7 +61,7 @@ end
 function M.highlight_colors(min_row, max_row, active_buffer_id)
     local patterns = {}
 
-local patterns_config = {
+    local patterns_config = {
         HEX = {
             is_enabled = options.enable_hex,
             patterns = {

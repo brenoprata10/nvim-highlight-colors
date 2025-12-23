@@ -56,7 +56,7 @@ function M.get_color_value(color, row_offset, custom_colors, enable_short_hex)
 
             local rgb = converters.oklch_to_rgb(tostring(l), tostring(c), tostring(h))
             if rgb then
-                return converters.rgb_to_hex(tostring(rgb.r), tostring(rgb.g), tostring(rgb.b))
+                return converters.rgb_to_hex(rgb.r, rgb.g, rgb.b)
             end
         end
     end

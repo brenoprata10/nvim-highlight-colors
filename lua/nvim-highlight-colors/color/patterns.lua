@@ -3,8 +3,7 @@ local M = {}
 M.rgb_regex = "rgba?[(]+" .. string.rep("%s*%d+%s*", 3, "[,%s]") .. "[,%s/]?%s*%d*%.?%d*%%?%s*[)]+"
 M.hex_regex = "#%x%x%x+%f[^%w_-]"
 M.hex_0x_regex = "%f[%w_]0x%x%x%x+%f[^%w_]"
-M.hsl_regex = "hsla?[(]+" ..
-    string.rep("%s*%d*%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "[,%s]") .. "[%s,/]?%s*%d*%.?%d*%%?%s*[)]+"
+M.hsl_regex = "hsla?[(]+" .. string.rep("%s*%d*%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "[,%s]") .. "[%s,/]?%s*%d*%.?%d*%%?%s*[)]+"
 M.oklch_regex = "oklch%(%s*[%d%.]+%%?%s+[%d%.]+%s+[%d%.]+%s*[/%s]*[%d%.]*%%?%s*%)"
 -- Matches: `: 0 69% 69%`
 M.hsl_without_func_regex = ":" .. string.rep("%s*%d*%.?%d+%%?d?e?g?t?u?r?n?%s*", 3, "[,%s]")
@@ -71,7 +70,7 @@ end
 ---@usage is_oklch_color("oklch(1 0 0)")
 ---@return boolean
 function M.is_oklch_color(color)
-    return string.match(color, M.oklch_regex) ~= nil
+	return string.match(color, M.oklch_regex) ~= nil
 end
 
 ---Checks whether a color is hsl

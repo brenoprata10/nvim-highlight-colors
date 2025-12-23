@@ -137,4 +137,52 @@ function M.oklch_to_rgb(l, c, h)
     }
 end
 
+---Converts an OKLCH color to RGB
+---@param l string
+---@param c string
+---@param h string
+---@usage oklch_to_rgb(1, 0, 0) => Returns {255, 255, 255, 255}
+---@return {r: number, g: number, b: number, a: number}
+function M.oklch_to_rgb(l, c, h)
+	l = math.min(math.max(tonumber(l), 0), 1)
+	c = math.max(tonumber(c), 0)
+	h = tonumber(h) % 360
+
+	local hr = math.rad(h)
+	local a_oklab = c * math.cos(hr)
+	local b_oklab = c * math.sin(hr)
+
+	-- OKLab to Linear RGB using the correct conversion matrix
+	local L_ = l + 0.3963377774 * a_oklab + 0.2158037573 * b_oklab
+	local M_ = l - 0.1055613458 * a_oklab - 0.0638541728 * b_oklab
+	local S_ = l - 0.0894841775 * a_oklab - 1.2914855480 * b_oklab
+
+	local L_cubed = L_ * L_ * L_
+	local M_cubed = M_ * M_ * M_
+	local S_cubed = S_ * S_ * S_
+
+	local r_linear = 4.0767416621 * L_cubed - 3.3077115913 * M_cubed + 0.2309699292 * S_cubed
+	local g_linear = -1.2684380046 * L_cubed + 2.6097574011 * M_cubed - 0.3413193965 * S_cubed
+	local b_linear = -0.0041960863 * L_cubed - 0.7034186147 * M_cubed + 1.7076147010 * S_cubed
+
+	local function lin_to_srgb(x)
+		if x <= 0.0031308 then
+			return 12.92 * x
+		else
+			return 1.055 * (x ^ (1 / 2.4)) - 0.055
+		end
+	end
+
+	local function clamp(x)
+		return math.min(math.max(x, 0), 1)
+	end
+
+	return {
+		math.floor(clamp(lin_to_srgb(r_linear)) * 255),
+		math.floor(clamp(lin_to_srgb(g_linear)) * 255),
+		math.floor(clamp(lin_to_srgb(b_linear)) * 255),
+		255 -- alpha
+	}
+end
+
 return M
