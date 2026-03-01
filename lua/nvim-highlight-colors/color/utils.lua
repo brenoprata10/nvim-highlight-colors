@@ -270,7 +270,8 @@ function M.get_css_var_color(color, row_offset)
 		patterns.hex_regex,
 		patterns.rgb_regex,
 		patterns.hsl_regex,
-		patterns.hsl_without_func_regex:gsub("^:%s*", "")
+		patterns.hsl_without_func_regex:gsub("^:%s*", ""),
+        patterns.oklch_regex
 	}
 	local var_patterns = {}
 
@@ -288,6 +289,7 @@ function M.get_css_var_color(color, row_offset)
 		local rgb_color = string.match(var_position[1].value, patterns.rgb_regex)
 		local hsl_color = string.match(var_position[1].value, patterns.hsl_regex)
 		local hsl_without_func_color = string.match(var_position[1].value, patterns.hsl_without_func_regex)
+        local oklch_color = string.match(var_position[1].value, patterns.oklch_regex)
 		if hex_color then
 			return M.get_color_value(hex_color)
 		elseif rgb_color then
@@ -296,6 +298,8 @@ function M.get_css_var_color(color, row_offset)
 			return M.get_color_value(hsl_color)
 		elseif hsl_without_func_color then
 			return M.get_color_value(hsl_without_func_color)
+        elseif oklch_color then
+            return M.get_color_value(oklch_color)
 		else
 			return M.get_css_named_color_value(
 			string.gsub(var_position[1].value, var_name_regex, "")
