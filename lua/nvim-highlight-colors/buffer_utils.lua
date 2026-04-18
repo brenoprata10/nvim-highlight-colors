@@ -3,7 +3,7 @@ local table_utils = require "nvim-highlight-colors.table_utils"
 local M = {}
 
 M.color_usage_regex = "[:=]+%s*[\"']?"
-M.color_usage_extended_regex = "[:=]+%s*[\"']?(%a+)[\"']?"
+M.color_usage_removal_regex = M.color_usage_regex .. "(%a+)[\"']?"
 
 ---Returns the text content of the specified buffer within received range
 ---@param min_row number
@@ -100,7 +100,7 @@ end
 ---@usage remove_color_usage_pattern(": blue") => Returns "blue"
 ---@return string
 function M.remove_color_usage_pattern(match)
-    local color = string.match(match, M.color_usage_extended_regex)
+    local color = string.match(match, M.color_usage_removal_regex)
     return color or match
 end
 
