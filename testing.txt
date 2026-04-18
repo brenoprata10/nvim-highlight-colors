@@ -1,23 +1,39 @@
-+-------------------------+
-| Named CSS colors        |
-+-------------------------+
-| color:gold              |
-| color: gold             |
-| color :gold             |
-| color : gold            |
-| background-color:blue   |
-| background-color: blue  |
-| background-color :blue  |
-| background-color : blue |
-| color=green             |
-| color= green            |
-| color =green            |
-| color = green           |
-| background-color=red    |
-| background-color= red   |
-| background-color =red   |
-| background-color = red  |
-+-------------------------+
++---------------------------+
+| Named CSS colors          |
++---------------------------+
+| color:gold                |
+| color: gold               |
+| color :gold               |
+| color : gold              |
+| color:"gold"              |
+| color: "gold"             |
+| color :"gold"             |
+| color : "gold"            |
+| background-color:blue     |
+| background-color: blue    |
+| background-color :blue    |
+| background-color : blue   |
+| background-color:"blue"   |
+| background-color: "blue"  |
+| background-color :"blue"  |
+| background-color : "blue" |
+| color=green               |
+| color= green              |
+| color =green              |
+| color = green             |
+| color="green"             |
+| color= "green"            |
+| color ="green"            |
+| color = "green"           |
+| background-color=red      |
+| background-color= red     |
+| background-color =red     |
+| background-color = red    |
+| background-color="red"    |
+| background-color= "red"   |
+| background-color ="red"   |
+| background-color = "red"  |
++---------------------------+
 
 +---------+----------+--------------------+-------------------------+
 | Colors  | Hex      | RGB                | RGB (With Alpha Layer)  |
@@ -69,6 +85,9 @@
 | 800       | bg-sky-800   |
 | 900       | bg-sky-900   |
 +-----------+--------------+
+
+Tailwind possible examples:
+<div class="font-medium text-gray-500 dark:text-gray-400 dark:border-pink-300/10 dark:bg-pink-400/10 border">...</div>
 
 +--------------------------+----------------------+
 | CSS Var Color            | Usage                |
@@ -129,13 +148,13 @@
 +--------------------+---------------+----------+
 | Color name         | LS_COLORS     | Hex code |
 +--------------------+---------------+----------+
-| SteelBlue1         | =38;5;81:     |  #5FD7FF |
-| DeepPink4          | =38;5;125:    |  #AF005F |
-| DarkGoldenrod      | =38;5;136:    |  #AF8700 |
-| Grey35             | =38;5;240:    |  #585858 |
-| Bold Red           | =1;38;5;9:    |  #FF0000 |
-| Fast blink Purple4 | =6;38;5;54:   |  #5F0087 |
-| Faint italic Cyan1 | =2;3;38;5;51: |  #00FFFF |
+| SteelBlue1         | =38;5;81:     | #5FD7FF  |
+| DeepPink4          | =38;5;125:    | #AF005F  |
+| DarkGoldenrod      | =38;5;136:    | #AF8700  |
+| Grey35             | =38;5;240:    | #585858  |
+| Bold Red           | =1;38;5;9:    | #FF0000  |
+| Fast blink Purple4 | =6;38;5;54:   | #5F0087  |
+| Faint italic Cyan1 | =2;3;38;5;51: | #00FFFF  |
 +--------------------+---------------+----------+
 -- Names and values from:
 -- https://www.ditig.com/256-colors-cheat-sheet
@@ -153,6 +172,8 @@
 | Ready... GO!                                                           |
 +------------------------------------------------------------------------+
 
+" xterm-8 colors
+let s:xterm_8colors = {
   'black':          '#000000',
   'darkblue':       '#00008B',
   'darkgreen':      '#00CD00',
@@ -165,11 +186,11 @@
   'lightgray':      '#E5E5E5',
   'gray':           '#E5E5E5',
   'grey':           '#E5E5E5'
-  }
+}
 
-" xterm-16 colors "{{{2
+" xterm-16 colors
 let s:xterm_16colors = {
-  'darkgr  '#F7F',
+  'darkgr           '#F7F',
   'blue':           '#5C5CFF',
   'lightblue':      '#5C5CFF',
   'green':          '#00FF00',
@@ -183,11 +204,9 @@ let s:xterm_16colors = {
   'yellow':         '#FFFF00',
   'lightyellow':    '#FFFF00',
   'white':          '#FFFFFF',
-  }
-" add the items from the 8 color xterm variable to the 16 color xterm
-call extend(s:xterm_16colors, s:xterm_8colors)
+}
 
-" W3C Colors "{{{2
+" W3C Colors
 let s:w3c_color_names = {
   'aliceblue': '#F0F8FF',
   'antiquewhite': '#FAEBD7',
@@ -329,12 +348,9 @@ let s:w3c_color_names = {
   'whitesmoke': '#F5F5F5',
   'yellow': '#FFFF00',
   'yellowgreen': '#9ACD32'
-  }
+}
 
-   r
-
-" X11 color names taken from "{{{2
-" http://cvsweb.xfree86.org/cvsweb/*checkout*/xc/programs/rgb/rgb.txt?rev=1.2
+" X11 color names taken from http://cvsweb.xfree86.org/cvsweb/*checkout*/xc/programs/rgb/rgb.txt?rev=1.2
 let s:x11_color_names = {
   'snow': '#FFFAFA',
   'ghostwhite': '#F8F8FF',
@@ -993,4 +1009,4 @@ let s:x11_color_names = {
   'darkmagenta': '#8B008B',
   'darkred': '#8B0000',
   'lightgreen': '#90EE90'
-  }
+}
