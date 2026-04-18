@@ -18,7 +18,7 @@ M.ansi_regex = "\\033%[%d;%d%dm"
 M.xterm256_regex = "\\033%[[0-9;]*[34]8;5;%d?%d?%dm"
 M.xtermTrueColor_regex = "\\033%[[0-9;]*[34]8;2;%d?%d?%d;%d?%d?%d;%d?%d?%dm"
 
-M.ls_colors_regex = "=[0-9;]*[34]8;5;(%d?%d?%d):"
+M.ls_colors_regex = "=[0-9;]*[34]8;5;%d?%d?%d:"
 
 ---Checks whether a color is short hex
 ---@param color string
@@ -164,12 +164,11 @@ end
 ---@usage is_ls_colors_color("=1;6;38;5;75:") => Returns true
 ---@return boolean
 function M.is_ls_colors_color(color)
-    local n = string.match(color, M.ls_colors_regex)
-    if n == nil then
-       return false 
-    end
-
-    return (tonumber(n) < 256)
+	if (string.match(color, M.ls_colors_regex) ~= nil) then
+		local color_nr = tonumber(string.match(color, "(%d?%d?%d):"))
+		return (color_nr ~= nil and color_nr < 256)
+	end
+	return false
 end
 
 return M

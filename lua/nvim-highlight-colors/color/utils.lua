@@ -205,10 +205,10 @@ end
 
 ---Returns the hex value of an LS_COLORS color
 ---@param color string
----@usage get_ls_colors_named_color_value("\\033[38;5;190m") => Returns '#D7FF00'
+---@usage get_ls_colors_named_color_value("=38;5;190:") => Returns '#D7FF00'
 ---@return string|nil
 function M.get_ls_colors_named_color_value(color)
-	return xterm256_named_colors[tonumber(string.match(color, patterns.ls_colors_regex))]
+	return xterm256_named_colors[tonumber(string.match(color, "(%d?%d?%d)m"))]
 end
 
 ---Returns a pattern for tailwind colors
