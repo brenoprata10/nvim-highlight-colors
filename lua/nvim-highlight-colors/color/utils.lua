@@ -208,7 +208,7 @@ end
 ---@usage get_ls_colors_named_color_value("=38;5;190:") => Returns '#D7FF00'
 ---@return string|nil
 function M.get_ls_colors_named_color_value(color)
-	return xterm256_named_colors[tonumber(string.match(color, "(%d?%d?%d)m"))]
+	return xterm256_named_colors[tonumber(string.match(color, "(%d?%d?%d):"))]
 end
 
 ---Returns a pattern for tailwind colors
