@@ -1,11 +1,23 @@
-+------------------------+
-|       CSS Color        |
-+------------------------+
-| color: gold            |
-| color: yellow          |
-| color: pink            |
-| background-color: blue |
-+------------------------+
++-------------------------+
+| Named CSS colors        |
++-------------------------+
+| color:gold              |
+| color: gold             |
+| color :gold             |
+| color : gold            |
+| background-color:blue   |
+| background-color: blue  |
+| background-color :blue  |
+| background-color : blue |
+| color=green             |
+| color= green            |
+| color =green            |
+| color = green           |
+| background-color=red    |
+| background-color= red   |
+| background-color =red   |
+| background-color = red  |
++-------------------------+
 
 +---------+----------+--------------------+-------------------------+
 | Colors  | Hex      | RGB                | RGB (With Alpha Layer)  |
