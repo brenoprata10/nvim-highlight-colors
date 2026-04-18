@@ -18,6 +18,8 @@ M.ansi_regex = "\\033%[%d;%d%dm"
 M.xterm256_regex = "\\033%[[0-9;]*[34]8;5;%d?%d?%dm"
 M.xtermTrueColor_regex = "\\033%[[0-9;]*[34]8;2;%d?%d?%d;%d?%d?%d;%d?%d?%dm"
 
+M.ls_colors_regex = "=[0-9;]*[34]8;5;(%d?%d?%d):"
+
 ---Checks whether a color is short hex
 ---@param color string
 ---@usage is_short_hex_color("#FFF") => Returns true
@@ -153,6 +155,21 @@ function M.is_xtermTrueColor_color(color)
 		return (b ~= nil and r < 256 and g < 256 and b < 256)
 	end
 	return false
+end
+
+---Checks whether a color is one of LS_COLORS' 256 colors (8bit). Accepts 
+---modifiers like bold (1) underline (4) or blink (5).
+---@param color string
+---@usage is_ls_colors_color("=38;5;169:") => Returns true
+---@usage is_ls_colors_color("=1;6;38;5;75:") => Returns true
+---@return boolean
+function M.is_ls_colors_color(color)
+    local n = string.match(color, M.ls_colors_regex)
+    if n == nil then
+       return false 
+    end
+
+    return (tonumber(n) < 256)
 end
 
 return M

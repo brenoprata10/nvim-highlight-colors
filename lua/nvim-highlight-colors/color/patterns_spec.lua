@@ -196,5 +196,20 @@ describe('Patterns', function()
 		assert.is_false(patterns.is_xtermTrueColor_color("\\033[1;2;128;128;128m"))  -- Missing '38;'
 		assert.is_false(patterns.is_xtermTrueColor_color("\\033[2;3;38;2;0;0;0"))    -- Missing 'm'
 	end)
+
+    it('should return true if color is LS_COLORS color', function()
+		assert.is_true(patterns.is_ls_colors_color("=38;5;1:"))
+		assert.is_true(patterns.is_ls_colors_color("=48;5;136:"))
+		assert.is_true(patterns.is_ls_colors_color("=1;38;5;10:"))
+		assert.is_true(patterns.is_ls_colors_color("=2;3;38;5;51:"))
+	end)
+
+	it('should return false if color is not LS_COLORS color', function()
+        assert.is_false(patterns.is_ls_colors_color("38;5;136:"))        -- Missing '='
+		assert.is_false(patterns.is_ls_colors_color("=38;136:"))         -- Missing '5;'
+		assert.is_false(patterns.is_ls_colors_color("=38;5;356:"))       -- Out of range
+		assert.is_false(patterns.is_ls_colors_color("=1;5;10:"))         -- Missing '38;' or '48;'
+        assert.is_false(patterns.is_ls_colors_color("=2;3;38;2;0;0;0")) -- Missing ':'
+	end)
 end)
 

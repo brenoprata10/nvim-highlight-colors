@@ -18,7 +18,7 @@ local options = {
 	enable_hex = true,
 	enable_rgb = true,
 	enable_hsl = true,
-  enable_hsl_without_function = true,
+    enable_hsl_without_function = true,
 	enable_var_usage = true,
 	enable_named_colors = true,
 	enable_short_hex = true,
@@ -26,6 +26,7 @@ local options = {
 	enable_ansi = false,
 	enable_xterm256 = false,
 	enable_xtermTrueColor = false,
+    enable_ls_colors = false,
 	custom_colors = nil,
 	virtual_symbol = "■",
 	virtual_symbol_prefix = "",
@@ -103,6 +104,10 @@ function M.highlight_colors(min_row, max_row, active_buffer_id)
 			is_enabled = options.enable_xtermTrueColor,
 			patterns = { color_patterns.xtermTrueColor_regex },
 		},
+        LS_COLORS = {
+            is_enabled = options.enable_ls_colors,
+            patterns = { color_patterns.ls_colors_regex },
+        },
 	}
 
 	for _, config in pairs(patterns_config) do
