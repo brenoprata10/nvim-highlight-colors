@@ -38,4 +38,23 @@ describe('Converters', function()
 		assert.are.equal(hsl_table[3], 255)
 		assert.are.equal(hsl_table[4], 255)
 	end)
+
+	it('should convert oklch to rgb', function()
+		-- oklch(1 0 0) is white (or very close to it)
+		local rgb_table = converters.oklch_to_rgb(1, 0, 0)
+		-- Allow tolerance of ±2 for rounding errors
+		assert.is_true(rgb_table[1] >= 253 and rgb_table[1] <= 255)
+		assert.is_true(rgb_table[2] >= 253 and rgb_table[2] <= 255)
+		assert.is_true(rgb_table[3] >= 253 and rgb_table[3] <= 255)
+		assert.are.equal(rgb_table[4], 255)
+	end)
+
+	it('should convert oklch to rgb for color values', function()
+		-- oklch(0.628 0.225 328.4) is a pink/magenta color
+		local rgb_table = converters.oklch_to_rgb(0.628, 0.225, 328.4)
+		-- Allow some tolerance in the conversion (±10)
+		assert.is_true(rgb_table[1] >= 194 and rgb_table[1] <= 214)
+		assert.is_true(rgb_table[2] >= 59 and rgb_table[2] <= 79)
+		assert.is_true(rgb_table[3] >= 192 and rgb_table[3] <= 212)
+	end)
 end)
