@@ -36,22 +36,27 @@ function M.get_positions_by_regex(patterns, min_row, max_row, active_buffer_id, 
 
 	for _, pattern in pairs(patterns) do
 		for key, value in pairs(content) do
-			for match in string.gmatch(value, pattern) do
+			local search_start = 1
+			while true do
+				local match_start, match_end = string.find(value, pattern, search_start)
+				if not match_start then
+					break
+				end
+				local match = string.sub(value, match_start, match_end)
 				local row = key + min_row - row_offset
-				local column_offset = M.get_column_offset(positions, match, row)
-				local pattern_without_usage_regex = M.remove_color_usage_pattern(match)
-				local valid_start, start_column = pcall(vim.fn.match, value, pattern_without_usage_regex, column_offset)
-				local valid_end, end_column = pcall(vim.fn.matchend, value, pattern_without_usage_regex, column_offset)
+				local match_without_usage = M.remove_color_usage_pattern(match)
 				local isFalsePositiveCSSVariable = match == ': var'
 
-				if valid_start and valid_end and not isFalsePositiveCSSVariable then
+				if not isFalsePositiveCSSVariable then
 					table.insert(positions, {
 						value = match,
 						row = row,
-						start_column = start_column,
-						end_column = end_column,
+						start_column = match_start - 1 + #match - #match_without_usage,
+						end_column = match_end,
 					})
 				end
+				-- Advance even for zero-width matches to avoid repeating the same position.
+				search_start = math.max(match_end + 1, match_start + 1)
 			end
 		end
 	end

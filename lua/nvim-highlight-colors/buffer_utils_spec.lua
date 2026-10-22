@@ -185,6 +185,78 @@ describe('Buffer Utils', function()
 		assert.are.equal(buffer_contents[2].value, "\\033[1;30m")
 	end)
 
+	describe('color match positions', function()
+		local function positions_for(line, pattern)
+			stub(buffer_utils, "get_buffer_contents").returns({line})
+			return buffer_utils.get_positions_by_regex({pattern}, 0, 1, 1, 0)
+		end
+
+		it('should highlight the property value instead of the same color in a selector', function()
+			local positions = positions_for(
+				"    .named-orange { background-color: orange; }",
+				colors.get_css_named_color_pattern()
+			)
+			assert.are.same({
+				{value = ": orange", row = 1, start_column = 38, end_column = 44},
+			}, positions)
+		end)
+
+		it('should locate repeated named colors with different whitespace', function()
+			local positions = positions_for(
+				".many { color: orange; border-color:orange; }",
+				colors.get_css_named_color_pattern()
+			)
+			assert.are.same({
+				{value = ": orange", row = 1, start_column = 15, end_column = 21},
+				{value = ":orange", row = 1, start_column = 36, end_column = 42},
+			}, positions)
+		end)
+
+		it('should locate repeated named colors with different quotes', function()
+			local positions = positions_for(
+				[[first = "orange"; second = 'orange']],
+				colors.get_css_named_color_pattern()
+			)
+			assert.are.same({
+				{value = [[= "orange]], row = 1, start_column = 9, end_column = 15},
+				{value = "= 'orange", row = 1, start_column = 28, end_column = 34},
+			}, positions)
+		end)
+
+		it('should keep separate positions for repeated hex colors', function()
+			local positions = positions_for(
+				".many { color: #fff; background: #fff; }",
+				patterns.hex_regex
+			)
+			assert.are.same({
+				{value = "#fff", row = 1, start_column = 15, end_column = 19},
+				{value = "#fff", row = 1, start_column = 33, end_column = 37},
+			}, positions)
+		end)
+
+		it('should preserve byte offsets after multibyte text', function()
+			local positions = positions_for("背景: orange", colors.get_css_named_color_pattern())
+			assert.are.same({
+				{value = ": orange", row = 1, start_column = 8, end_column = 14},
+			}, positions)
+		end)
+
+		it('should preserve Lua pattern matches containing regex metacharacters', function()
+			local positions = positions_for("theme[primary]", "theme%[primary%]")
+			assert.are.same({
+				{value = "theme[primary]", row = 1, start_column = 0, end_column = 14},
+			}, positions)
+		end)
+
+		it('should advance past zero-width matches', function()
+			local positions = positions_for("a b", "%f[%a]")
+			assert.are.same({
+				{value = "", row = 1, start_column = 0, end_column = 0},
+				{value = "", row = 1, start_column = 2, end_column = 2},
+			}, positions)
+		end)
+	end)
+
 	it('should return column offset for repeated colors', function()
 		local row = 1
 		local match = "#fff"
